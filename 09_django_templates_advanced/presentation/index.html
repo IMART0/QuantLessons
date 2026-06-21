@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 9: DTL, наследование шаблонов, статика — ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="presentation-container">
+
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          Расширенная работа с шаблонами в Django:<br>DTL, наследование и статика
+        </h1>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Курс «Веб-разработка на Python (Django)»</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Урок 9 • 29 июня, 11:30 - 12:50</p>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Что такое DTL? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое Django Template Language (DTL)?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 15px;"><strong>DTL</strong> — это встроенный в Django шаблонизатор, предназначенный для динамической генерации HTML-страниц на основе данных из View.</p>
+            <h4 style="color: var(--primary-color); margin-bottom: 10px;">Философия DTL:</h4>
+            <ul>
+              <li><strong>Разделение логики:</strong> Шаблон отвечает за представление, Python-код — за логику.</li>
+              <li><strong>Ограниченность:</strong> В DTL намеренно нельзя писать произвольный Python-код (например, вызывать функции с аргументами или делать сложные вычисления).</li>
+              <li><strong>Безопасность:</strong> Автоматическое экранирование HTML для защиты от XSS-атак.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h4 style="color: var(--secondary-color); margin-bottom: 10px;">Почему это важно?</h4>
+              <p>Если в шаблоне разрешить писать чистый Python (как в некоторых других веб-фреймворках), разметка быстро превратится в нечитаемый спагетти-код, а дизайнеры не смогут работать с HTML-файлами.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Переменные в DTL -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Переменные в DTL</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">Переменные выводятся с помощью двойных фигурных скобок: <code>{{ переменная }}</code>. Django подставляет значение, переданное в контексте.</p>
+        <div class="columns">
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 10px;">Универсальный синтаксис точки (<code>.</code>)</h4>
+            <p>Django использует точку для доступа к элементам любой структуры данных:</p>
+            <ul>
+              <li><strong>Ключ словаря:</strong> <code>{{ user.name }}</code> &rarr; <code>user['name']</code></li>
+              <li><strong>Атрибут объекта:</strong> <code>{{ user.email }}</code> &rarr; <code>user.email</code></li>
+              <li><strong>Элемент списка по индексу:</strong> <code>{{ users.0 }}</code> &rarr; <code>users[0]</code></li>
+              <li><strong>Метод объекта (без скобок):</strong> <code>{{ user.get_full_name }}</code> &rarr; <code>user.get_full_name()</code></li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h4 style="color: var(--accent-color); margin-bottom: 5px;">Важная деталь</h4>
+              <p>Методы вызываются <strong>без скобок ()</strong>. Если метод требует аргументов, его <strong>нельзя</strong> вызвать напрямую в шаблоне! Для этого используются фильтры или кастомные теги.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Теги в DTL -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Теги в DTL (Синтаксис <code>{% tag %}</code>)</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">Теги управляют логикой рендеринга шаблона. Они записываются внутри фигурных скобок со знаком процента: <code>{% ... %}</code>.</p>
+        <div class="columns">
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 10px;">Основные категории тегов:</h4>
+            <ul>
+              <li><strong>Логические ветвления:</strong> <code>{% if %}</code>, <code>{% elif %}</code>, <code>{% else %}</code></li>
+              <li><strong>Циклы:</strong> <code>{% for %}</code>, <code>{% empty %}</code></li>
+              <li><strong>Управление структурой:</strong> <code>{% block %}</code>, <code>{% extends %}</code>, <code>{% include %}</code></li>
+              <li><strong>Работа со статикой и URL:</strong> <code>{% load static %}</code>, <code>{% url %}</code></li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box">
+              <h4 style="color: var(--primary-color); margin-bottom: 5px;">Закрытие тегов</h4>
+              <p>Многие теги в DTL являются парными и требуют явного закрытия. Например, для <code>{% if %}</code> нужен <code>{% endif %}</code>, а для <code>{% for %}</code> — <code>{% endfor %}</code>. Незакрытый тег вызовет синтаксическую ошибку шаблонизатора (TemplateSyntaxError).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Условный оператор if -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Логические ветвления: <code>{% if %}</code></h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <pre style="font-size: 0.9rem; margin: 0;"><code>{% if user.is_authenticated %}
+  &lt;p&gt;Привет, {{ user.username }}!&lt;/p&gt;
+  &lt;a href="/logout/"&gt;Выйти&lt;/a&gt;
+{% elif user.is_banned %}
+  &lt;p&gt;Ваш аккаунт временно заблокирован.&lt;/p&gt;
+{% else %}
+  &lt;p&gt;Войдите на сайт или зарегистрируйтесь.&lt;/p&gt;
+  &lt;a href="/login/"&gt;Войти&lt;/a&gt;
+{% endif %}</code></pre>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 10px;">Логические операторы:</h4>
+            <ul>
+              <li><code>and</code>, <code>or</code>, <code>not</code> — стандартная булева логика.</li>
+              <li><code>in</code> и <code>not in</code> — проверка вхождения в последовательность.</li>
+              <li>Операторы сравнения: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>.</li>
+              <li>Можно группировать выражения с помощью круглых скобок.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Цикл for -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Циклы: <code>{% for %}</code></h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Используется для перебора списков, кортежей или словарей в шаблоне.</p>
+        <div class="columns">
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 5px;">Перебор списка объектов:</h4>
+            <pre style="font-size: 0.85rem; margin: 5px 0;"><code>&lt;ul&gt;
+{% for book in books %}
+  &lt;li&gt;{{ book.title }} ({{ book.author }})&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;</code></pre>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 5px;">Перебор словаря (ключ, значение):</h4>
+            <pre style="font-size: 0.85rem; margin: 5px 0;"><code>&lt;dl&gt;
+{% for key, val in settings.items %}
+  &lt;dt&gt;{{ key }}&lt;/dt&gt;
+  &lt;dd&gt;{{ val }}&lt;/dd&gt;
+{% endfor %}
+&lt;/dl&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Переменная forloop -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Счетчики внутри цикла: <code>forloop</code></h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Внутри любого цикла <code>{% for %}</code> доступна специальная переменная <code>forloop</code>, содержащая полезную информацию о текущем шаге:</p>
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><code>forloop.counter</code> — текущая итерация (индекс начинается с 1).</li>
+              <li><code>forloop.counter0</code> — текущая итерация (индекс начинается с 0).</li>
+              <li><code>forloop.first</code> — <code>True</code>, если это первый элемент цикла.</li>
+              <li><code>forloop.last</code> — <code>True</code>, если это последний элемент цикла.</li>
+              <li><code>forloop.parentloop</code> — доступ к счетчику внешнего цикла (при вложенности).</li>
+            </ul>
+          </div>
+          <div class="column">
+            <pre style="font-size: 0.85rem; margin: 0;"><code>{% for item in items %}
+  &lt;div class="item {% if forloop.first %}highlight{% endif %}"&gt;
+    Шаг №{{ forloop.counter }}: {{ item }}
+  &lt;/div&gt;
+{% endfor %}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Обработка пустых списков empty -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Конструкция <code>{% empty %}</code> в цикле</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 15px;">Частая задача: вывести сообщение, если список пуст. Вместо того, чтобы писать <code>{% if items %} {% for ... %} {% endif %}</code>, в DTL есть элегантное решение.</p>
+            <p>Блок <code>{% empty %}</code> выполняется тогда, когда список пуст или равен <code>None</code>.</p>
+          </div>
+          <div class="column">
+            <pre style="font-size: 0.9rem; margin: 0;"><code>&lt;h3&gt;Список участников:&lt;/h3&gt;
+&lt;ul&gt;
+{% for user in active_users %}
+  &lt;li&gt;{{ user.username }}&lt;/li&gt;
+{% empty %}
+  &lt;li&gt;К сожалению, активных участников нет.&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Что такое фильтры? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Фильтры в DTL</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 15px;"><strong>Фильтры</strong> используются для преобразования или форматирования значения переменной перед её выводом на экран.</p>
+            <p>Синтаксис: символ вертикальной черты (pipe) <code>|</code> после переменной.</p>
+            <pre><code>{{ variable|filter_name }}</code></pre>
+            <p>Некоторые фильтры принимают аргументы через двоеточие:</p>
+            <pre><code>{{ variable|filter_name:"argument" }}</code></pre>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h4 style="color: var(--secondary-color); margin-bottom: 10px;">Цепочки фильтров</h4>
+              <p>Фильтры можно применять последовательно один за другим:</p>
+              <pre style="margin: 5px 0;"><code>{{ name|lower|capfirst }}</code></pre>
+              <p style="font-size: 0.95rem;">Сначала строка приводится к нижнему регистру, а затем первая буква делается заглавной.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Популярные фильтры -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Популярные встроенные фильтры</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns" style="font-size: 1.1rem;">
+          <div class="column">
+            <ul>
+              <li><code>default</code> — значение по умолчанию, если переменная пустая:
+                <pre style="font-size: 0.85rem; margin: 3px 0;"><code>{{ bio|default:"Информации нет" }}</code></pre>
+              </li>
+              <li><code>length</code> — возвращает длину списка или строки:
+                <pre style="font-size: 0.85rem; margin: 3px 0;"><code>Всего: {{ users|length }}</code></pre>
+              </li>
+              <li><code>truncatewords</code> — обрезает строку до N слов:
+                <pre style="font-size: 0.85rem; margin: 3px 0;"><code>{{ article|truncatewords:20 }}</code></pre>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li><code>date</code> — форматирует дату и время:
+                <pre style="font-size: 0.85rem; margin: 3px 0;"><code>{{ pub_date|date:"d.m.Y H:i" }}</code></pre>
+              </li>
+              <li><code>slice</code> — срез списка или строки:
+                <pre style="font-size: 0.85rem; margin: 3px 0;"><code>{{ news|slice:":3" }}</code></pre>
+              </li>
+              <li><code>lower</code> / <code>upper</code> — меняет регистр букв:
+                <pre style="font-size: 0.85rem; margin: 3px 0;"><code>{{ title|upper }}</code></pre>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Безопасный вывод safe и autoescape -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Безопасный вывод и XSS-защита</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 10px;">По умолчанию Django <strong>экранирует</strong> все специальные HTML-символы во избежание XSS (Cross-Site Scripting):</p>
+            <p>Если <code>text = "&lt;b&gt;Привет&lt;/b&gt;"</code>, то <code>{{ text }}</code> выведет на экран сырой текст с тегами: <code>&amp;lt;b&amp;gt;Привет&amp;lt;/b&amp;gt;</code>.</p>
+            <h4 style="color: var(--primary-color); margin-top: 10px;">Как сказать Django отрендерить теги?</h4>
+            <ul>
+              <li>Фильтр <code>safe</code>: <code>{{ text|safe }}</code></li>
+              <li>Тег <code>autoescape</code>:
+                <pre style="font-size: 0.85rem; margin: 5px 0;"><code>{% autoescape off %}
+  {{ text }}
+{% endautoescape %}</code></pre>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h4 style="color: var(--accent-color); margin-bottom: 5px;">Внимание! Безопасность!</h4>
+              <p>Никогда не применяйте фильтр <code>safe</code> к данным, которые ввёл пользователь (например, комментарии или имена). Иначе злоумышленник сможет вставить вредоносный JavaScript-код (<code>&lt;script&gt;...&lt;/script&gt;</code>) и украсть куки посетителей!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Наследование шаблонов: Проблема -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Наследование шаблонов: DRY-принцип</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h4 style="color: var(--accent-color); margin-bottom: 10px;">Проблема дублирования кода:</h4>
+            <p style="margin-bottom: 15px;">Обычно у всех страниц сайта одинаковая шапка (header), подвал (footer) и боковая панель (sidebar). Дублировать этот HTML-код на каждой странице — грубое нарушение принципа <strong>DRY</strong> (Don't Repeat Yourself).</p>
+            <p>При любом изменении дизайна (например, ссылки в меню) придётся вручную переписывать десятки файлов.</p>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h4 style="color: var(--secondary-color); margin-bottom: 10px;">Решение в Django</h4>
+              <p>Создать единый родительский шаблон (каркас сайта), а остальные страницы будут наследоваться от него, переопределяя только изменяющиеся части (блоки контента).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Шаблон-родитель base.html -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Шаблон-родитель: <code>base.html</code></h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Родительский шаблон описывает общую структуру страницы. В местах, где контент страниц будет различаться, расставляются теги <code>{% block &lt;имя_блока&gt; %} ... {% endblock %}</code>.</p>
+        <pre style="font-size: 0.85rem; margin: 0;"><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;{% block title %}Мой сайт{% endblock %}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;Шапка сайта с логотипом и меню&lt;/header&gt;
+  
+  &lt;main class="content"&gt;
+    {% block content %}
+      &lt;p&gt;Здесь будет основной контент страницы.&lt;/p&gt;
+    {% endblock %}
+  &lt;/main&gt;
+  
+  &lt;footer&gt;&copy; 2026 ЛФМШ "Квант"&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Шаблон-потомок extends -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Шаблон-потомок: Тег <code>{% extends %}</code></h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Чтобы создать страницу на базе <code>base.html</code>, мы используем тег <code>{% extends "путь/к/base.html" %}</code> в самой первой строчке файла.</p>
+        <pre style="font-size: 0.85rem; margin: 0;"><code>{% extends "base.html" %}
+
+{% block title %}Главная страница — Мой сайт{% endblock %}
+
+{% block content %}
+  &lt;h1&gt;Добро пожаловать на наш сайт!&lt;/h1&gt;
+  &lt;p&gt;Это контент главной страницы. Он автоматически встанет внутрь каркаса base.html.&lt;/p&gt;
+{% endblock %}</code></pre>
+        <div class="highlight-box success" style="margin-top: 10px; padding: 10px 15px;">
+          <p style="font-size: 1rem;"><strong>Правило:</strong> Тег <code>{% extends %}</code> должен быть самым первым тегом в шаблоне. Всё, что написано вне блоков <code>{% block %}</code> в файле-потомке, Django просто проигнорирует.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 15: block.super -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Расширение контента родителя: <code>{{ block.super }}</code></h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 10px;">По умолчанию блок в потомке полностью стирает и заменяет контент родительского блока.</p>
+            <p>Если мы хотим <strong>добавить</strong> новый контент к родительскому (а не стереть его), используется специальная переменная <code>{{ block.super }}</code>.</p>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 5px;">Пример (подключение стилей):</h4>
+            <pre style="font-size: 0.85rem; margin: 0;"><code>{% block styles %}
+  <!-- Сохраняем общие стили родителя -->
+  {{ block.super }}
+  <!-- Подключаем специфичные стили -->
+  &lt;link rel="stylesheet" href="page.css"&gt;
+{% endblock %}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 16: Тег include -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Включение шаблонов: Тег <code>{% include %}</code></h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 10px;">Тег <code>{% include %}</code> позволяет загрузить и отрендерить другой шаблон внутри текущего. Это полезно для вынесения повторяющихся мелких компонентов интерфейса (виджетов).</p>
+            <p>Примеры компонентов: карточка товара, форма подписки, боковая панель, блок комментариев.</p>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 5px;">Пример использования:</h4>
+            <pre style="font-size: 0.85rem; margin: 5px 0;"><code>&lt;div class="catalog"&gt;
+  {% for product in products %}
+    {% include "includes/product_card.html" with item=product %}
+  {% endfor %}
+&lt;/div&gt;</code></pre>
+            <p style="font-size: 0.95rem;">С помощью конструкции <code>with</code> можно передать в подключаемый шаблон дополнительные переменные.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 17: Что такое статические файлы? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое статические файлы (Static Files)?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 15px;"><strong>Статические файлы</strong> — это файлы, которые передаются клиенту "как есть" (без обработки сервером шаблонов). К ним относятся:</p>
+            <ul>
+              <li><strong>CSS</strong> стили</li>
+              <li><strong>JavaScript</strong> файлы</li>
+              <li>Изображения (<strong>PNG, JPG, SVG, WebP</strong>)</li>
+              <li>Шрифты (<strong>WOFF, TTF</strong>)</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h4 style="color: var(--accent-color); margin-bottom: 10px;">Статика vs Медиа</h4>
+              <p><strong>Статика</strong> создаётся разработчиком и является частью приложения (логотип сайта, скрипты логики, стили кнопок).</p>
+              <p><strong>Медиа (Media)</strong> загружается пользователями сайта в процессе работы (аватарки пользователей, картинки к товарам).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Конфигурация статики в Django -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Настройка статики в <code>settings.py</code></h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Для работы со статикой в файле настроек проекта необходимо объявить три ключевые переменные:</p>
+        <pre style="font-size: 0.85rem; margin: 0;"><code># settings.py
+
+# URL-префикс для статических файлов в браузере (например: /static/css/main.css)
+STATIC_URL = 'static/'
+
+# Списки директорий на диске, где Django ищет файлы во время разработки
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# Папка, куда соберутся все файлы для продакшена при вызове команды collectstatic
+STATIC_ROOT = BASE_DIR / 'staticfiles'</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 19: Подключение статики в шаблон -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Использование тега <code>{% static %}</code></h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Чтобы подключать статические файлы, нужно загрузить библиотеку тегов с помощью <code>{% load static %}</code> в начале шаблона.</p>
+        <pre style="font-size: 0.85rem; margin: 0;"><code>{% load static %}
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;!-- Подключаем CSS стили --&gt;
+  &lt;link rel="stylesheet" href="{% static 'css/styles.css' %}"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Выводим изображение --&gt;
+  &lt;img src="{% static 'images/logo.png' %}" alt="Логотип"&gt;
+  
+  &lt;!-- Подключаем JS скрипт --&gt;
+  &lt;script src="{% static 'js/main.js' %}"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Резюме урока -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме урока и практические задачи</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns" style="text-align: left;">
+          <div class="column">
+            <ul>
+              <li><strong>DTL</strong> используется для рендеринга данных во View.</li>
+              <li>Синтаксис <code>{{ ... }}</code> выводит значения, а <code>{% ... %}</code> управляет логикой.</li>
+              <li>Циклы <code>{% for %}</code> имеют полезный объект <code>forloop</code> и блок <code>{% empty %}</code>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li>Фильтры (например, <code>safe</code>, <code>date</code>, <code>default</code>) трансформируют вывод.</li>
+              <li>Наследование с <code>{% extends %}</code> и <code>{% block %}</code> исключает дублирование кода.</li>
+              <li>Статические файлы подключаются через <code>{% load static %}</code> и <code>{% static '...' %}</code>.</li>
+            </ul>
+          </div>
+        </div>
+        <p style="font-size: 1.25rem; margin-top: 15px; font-weight: bold; color: var(--primary-color); text-align: center;">Переходим к упражнениям! Давайте применим DTL, наследование и статику на практике.</p>
+      </div>
+    </div>
+
+    <!-- Кнопки управления -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Счетчик и прогресс-бар -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>

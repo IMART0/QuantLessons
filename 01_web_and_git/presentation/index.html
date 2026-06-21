@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 1: Как устроен веб? Основы Git — ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="presentation-container">
+
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          Как устроен веб?<br>Клиент-серверная архитектура и основы Git
+        </h1>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Курс «Веб-разработка на Python (Django)»</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Преподаватель: [Ваше имя]</p>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Введение -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Зачем нам это знать?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="font-size: 1.3rem; margin-bottom: 20px;">Сегодня мы заложим фундамент для всей смены:</p>
+            <ul>
+              <li><strong>Поймем</strong>, что происходит, когда вы вводите адрес сайта в браузере.</li>
+              <li><strong>Разберем</strong> язык, на котором общаются компьютеры в сети (HTTP).</li>
+              <li><strong>Освоим</strong> Git — главный инструмент для совместной работы над проектом.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Результат урока</h3>
+              <p>Вы сделаете свой первый Git-коммит и сможете объяснить любому человеку, как работает Интернет «под капотом».</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Клиент-сервер -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Клиент-серверная архитектура</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 20px; font-size: 1.3rem;">Веб работает по принципу взаимодействия двух сторон:</p>
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box" style="height: 100%;">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">📱 Клиент (Client)</h3>
+              <p>Тот, кто запрашивает данные. Это ваш браузер (Chrome, Safari, Firefox), мобильное приложение или консольная утилита.</p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">🖥️ Сервер (Server)</h3>
+              <p>Мощный компьютер, который постоянно включен, хранит файлы сайта, обрабатывает запросы от клиентов и отправляет им ответы.</p>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top: 20px; font-style: italic; text-align: center; font-size: 1.1rem;">
+          <strong>Аналогия:</strong> Гость в ресторане (Клиент) делает заказ официанту, а кухня (Сервер) готовит блюдо и отдает его гостю.
+        </p>
+      </div>
+    </div>
+
+    <!-- Слайд 4: IP-адрес -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как они находят друг друга? IP-адрес</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">У каждого устройства в сети Интернет есть свой уникальный адрес.</p>
+        <ul>
+          <li><strong>IP (Internet Protocol)</strong> — уникальный числовой идентификатор устройства в сети.</li>
+          <li><strong>IPv4:</strong> Состоит из 4 чисел от 0 до 255, разделенных точками (например, <code>192.168.1.1</code> или <code>87.250.250.242</code>).</li>
+          <li><strong>IPv6:</strong> Новый стандарт, использующий шестнадцатеричную систему записи из-за нехватки адресов IPv4 (например, <code>2001:0db8:85a3:0000:0000:8a2e:0370:7334</code>).</li>
+        </ul>
+        <div class="highlight-box warning" style="margin-top: 15px;">
+          <strong>Аналогия:</strong> IP-адрес — это почтовый адрес вашего дома. Без него почтальон (роутер) не поймет, куда нести письмо.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: DNS -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>DNS: Телефонная книга Интернета</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">Людям сложно запоминать цифры вроде <code>77.88.55.242</code>. Мы предпочитаем буквы: <code>yandex.ru</code> или <code>google.com</code>.</p>
+        <div class="columns">
+          <div class="column">
+            <p><strong>DNS (Domain Name System)</strong> — система доменных имен, переводящая понятные имена сайтов в числовые IP-адреса.</p>
+            <ol>
+              <li>Вы вводите: <code>kvant-camp.ru</code></li>
+              <li>Браузер спрашивает у DNS-сервера: <em>«Какой IP у этого имени?»</em></li>
+              <li>DNS-сервер отвечает: <code>185.178.104.14</code></li>
+              <li>Браузер делает запрос на IP <code>185.178.104.14</code></li>
+            </ol>
+          </div>
+          <div class="column" style="display: flex; align-items: center; justify-content: center;">
+            <div style="border: 2px dashed var(--primary-color); padding: 20px; border-radius: 8px; text-align: center; width: 100%;">
+              <p style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">DNS Server</p>
+              <p style="margin: 10px 0;">🔍 Находит соответствие:</p>
+              <code style="display: block; margin-bottom: 5px;">yandex.ru &rarr; 87.250.250.242</code>
+              <code style="display: block;">google.com &rarr; 142.250.74.46</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Порты -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Порты: Двери на сервере</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">На одном сервере может работать одновременно много программ: сайт, база данных, почтовый сервер.</p>
+        <ul>
+          <li><strong>Порт</strong> — числовой идентификатор конкретного процесса/программы на компьютере (от 0 до 65535).</li>
+          <li><strong>Стандартные порты для веб-сайтов:</strong>
+            <ul>
+              <li><code>80</code> — HTTP (простой веб, без шифрования)</li>
+              <li><code>443</code> — HTTPS (защищенный веб, с шифрованием)</li>
+            </ul>
+          </li>
+          <li><strong>Порты для разработки (часто используются нами):</strong>
+            <ul>
+              <li><code>8000</code> — стандартный порт для Django-сервера разработки</li>
+              <li><code>5432</code> — СУБД PostgreSQL, <code>3306</code> — MySQL</li>
+            </ul>
+          </li>
+        </ul>
+        <div class="highlight-box" style="margin-top: 15px;">
+          <strong>Аналогия:</strong> IP-адрес — это адрес отеля. Порт — это номер комнаты конкретного гостя.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Протокол HTTP -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Знакомьтесь: Протокол HTTP</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>HTTP (Hypertext Transfer Protocol)</strong> — протокол передачи гипертекста. Это набор правил, по которым общаются клиент и сервер.</li>
+          <li>Работает по схеме: <strong>«Запрос (Request) &rarr; Ответ (Response)»</strong>.</li>
+          <li>HTTP является протоколом <em>без сохранения состояния</em> (stateless): каждый запрос автономен и ничего не знает о предыдущих.</li>
+        </ul>
+        <div style="text-align: center; margin-top: 25px; font-size: 1.3rem;">
+          <span style="border: 2px solid var(--primary-color); padding: 10px 20px; border-radius: 6px;">📱 Клиент</span>
+          <span style="color: var(--primary-color); font-weight: bold; margin: 0 15px;">&mdash; HTTP Запрос &rarr;</span>
+          <span style="border: 2px solid var(--secondary-color); padding: 10px 20px; border-radius: 6px;">🖥️ Сервер</span>
+        </div>
+        <div style="text-align: center; margin-top: 15px; font-size: 1.3rem;">
+          <span style="border: 2px solid var(--primary-color); padding: 10px 20px; border-radius: 6px; visibility: hidden;">📱 Клиент</span>
+          <span style="color: var(--secondary-color); font-weight: bold; margin: 0 15px;">&larr; HTTP Ответ &mdash;&mdash;</span>
+          <span style="border: 2px solid var(--secondary-color); padding: 10px 20px; border-radius: 6px;">🖥️ Сервер</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: HTTP Запрос -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Анатомия HTTP-запроса</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Запрос клиента представляет собой обычный текст определенного формата:</p>
+        <pre><code>GET /news/ HTTP/1.1
+Host: kvant-camp.ru
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64)
+Accept-Language: ru-RU,ru;q=0.9
+
+[Здесь может быть тело запроса, если отправляются данные]</code></pre>
+        <ol style="margin-top: 10px;">
+          <li><strong>Стартовая строка:</strong> Метод (<code>GET</code>), путь к ресурсу (<code>/news/</code>) и версия протокола (<code>HTTP/1.1</code>).</li>
+          <li><strong>Заголовки (Headers):</strong> Дополнительная информация о клиенте (домен, язык, тип браузера).</li>
+          <li><strong>Тело запроса (Body):</strong> Данные, передаваемые серверу (например, пароль при авторизации).</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Слайд 9: GET vs POST -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Основные HTTP-методы: GET и POST</h2>
+      </div>
+      <div class="slide-body">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background-color: var(--primary-color); color: #fff;">
+              <th style="padding: 12px; border: 1px solid var(--border-color); text-align: left;">Характеристика</th>
+              <th style="padding: 12px; border: 1px solid var(--border-color); text-align: left;">GET</th>
+              <th style="padding: 12px; border: 1px solid var(--border-color); text-align: left;">POST</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--border-color); font-weight: bold;">Назначение</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Запрос/получение данных с сервера</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Отправка данных на сервер (создание/изменение)</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--border-color); font-weight: bold;">Передача параметров</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">В адресной строке: <code>?search=python&page=2</code></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">В скрытом теле запроса (Body)</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--border-color); font-weight: bold;">Безопасность данных</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Низкая (параметры видны в истории браузера)</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Выше (подходит для паролей, личных данных)</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--border-color); font-weight: bold;">Кэширование</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Да, кэшируется браузером</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Нет, не кэшируется</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 10: HTTP Ответ -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Анатомия HTTP-ответа</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 10px;">Сервер возвращает структурированный ответ:</p>
+        <pre><code>HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+Content-Length: 1542
+Server: gunicorn
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;&lt;head&gt;...&lt;/head&gt;&lt;body&gt;Привет, Квант!&lt;/body&gt;&lt;/html&gt;</code></pre>
+        <ol style="margin-top: 10px;">
+          <li><strong>Стартовая строка:</strong> Версия протокола и Код состояния (<code>200 OK</code>).</li>
+          <li><strong>Заголовки ответа:</strong> Формат данных (<code>Content-Type</code>), длина, серверное ПО.</li>
+          <li><strong>Тело ответа:</strong> Запрошенный контент (HTML-страница, картинка, JSON-данные).</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Коды состояния -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Коды состояния (Status Codes)</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">Трехзначное число, сообщающее о результате обработки запроса:</p>
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong style="color: var(--secondary-color);">2xx — Успех (Success):</strong>
+                <ul>
+                  <li><code>200 OK</code> — все прошло успешно.</li>
+                  <li><code>201 Created</code> — успешно создано.</li>
+                </ul>
+              </li>
+              <li><strong style="color: var(--primary-color);">3xx — Перенаправление (Redirect):</strong>
+                <ul>
+                  <li><code>301/302</code> — перейдите по другому адресу.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li><strong style="color: #d35400;">4xx — Ошибка клиента (Client Error):</strong>
+                <ul>
+                  <li><code>400 Bad Request</code> — неверный запрос.</li>
+                  <li><code>403 Forbidden</code> — нет доступа.</li>
+                  <li><code>404 Not Found</code> — страница не существует.</li>
+                </ul>
+              </li>
+              <li><strong style="color: var(--accent-color);">5xx — Ошибка сервера (Server Error):</strong>
+                <ul>
+                  <li><code>500 Internal Server Error</code> — сломался код на сервере.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Что такое Git -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое Git?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Git</strong> — распределенная система контроля версий (VCS). Она позволяет:</p>
+            <ul>
+              <li>Сохранять историю изменений проекта (кто, что и когда изменил).</li>
+              <li>Откатываться к любой предыдущей версии кода.</li>
+              <li>Разрабатывать проект параллельно в командах, не ломая код друг друга.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h3 style="color: var(--accent-color); margin-bottom: 10px;">Забудьте про:</h3>
+              <p style="text-decoration: line-through;">project_final.zip</p>
+              <p style="text-decoration: line-through;">project_final_v2_work.py</p>
+              <p>Git заменяет этот хаос одной чистой историей коммитов.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Три области Git -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как работает Git: Три области</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">Файлы в Git проходят три ключевых этапа перед сохранением в истории:</p>
+        <div style="display: flex; justify-content: space-between; align-items: stretch; gap: 20px; text-align: center;">
+          <div style="flex: 1; border: 2px solid var(--text-color); padding: 15px; border-radius: 8px; background-color: #fcfcfc;">
+            <span class="badge badge-accent" style="margin-bottom: 10px;">1. Working Directory</span>
+            <p style="font-size: 0.95rem;">Рабочая папка с файлами. Изменения еще не отслеживаются.</p>
+          </div>
+          <div style="flex: 1; border: 2px dashed var(--primary-color); padding: 15px; border-radius: 8px; background-color: #ebf5fb;">
+            <span class="badge badge-primary" style="margin-bottom: 10px;">2. Staging Area (Index)</span>
+            <p style="font-size: 0.95rem;">Черновик коммита. Сюда мы временно откладываем файлы для сохранения.</p>
+            <code style="font-size: 0.85rem; display: block; margin-top: 10px;">git add &rarr;</code>
+          </div>
+          <div style="flex: 1; border: 2px solid var(--secondary-color); padding: 15px; border-radius: 8px; background-color: #e8f8f5;">
+            <span class="badge badge-secondary" style="margin-bottom: 10px;">3. Git Repository (.git)</span>
+            <p style="font-size: 0.95rem;">База данных проекта. Здесь хранятся завершенные снимки (коммиты).</p>
+            <code style="font-size: 0.85rem; display: block; margin-top: 10px;">git commit &rarr;</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Настройка Git -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Первоначальная настройка Git</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">Перед началом работы нужно представиться Git, чтобы авторы коммитов были видны корректно:</p>
+        <pre><code># Задаем имя пользователя (латиницей)
+git config --global user.name "Ivan Ivanov"
+
+# Задаем email пользователя
+git config --global user.email "ivan.ivanov@yandex.ru"
+
+# Проверяем настройки
+git config --list</code></pre>
+        <div class="highlight-box success" style="margin-top: 10px;">
+          <strong>Важно:</strong> Делайте это один раз на своем компьютере. Имя и email будут привязаны к каждому вашему коммиту.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Инициализация репозитория -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Создание репозитория</h2>
+      </div>
+      <div class="slide-body">
+        <p>Чтобы Git начал отслеживать изменения в папке вашего проекта:</p>
+        <pre><code># Переходим в папку проекта (в терминале)
+cd my_project
+
+# Инициализируем репозиторий
+git init
+
+# Проверяем текущее состояние репозитория
+git status</code></pre>
+        <p style="margin-top: 10px;">Команда <code>git init</code> создает скрытую папку <code>.git</code>. В ней Git хранит всю историю изменений проекта.</p>
+      </div>
+    </div>
+
+    <!-- Слайд 16: git add -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Добавление изменений в индекс</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для добавления файлов в черновик коммита (Staging Area) используется команда <code>git add</code>:</p>
+        <pre><code># Добавить конкретный файл в индекс
+git add main.py
+
+# Добавить все измененные файлы в текущей папке
+git add .
+
+# Проверить статус добавленных файлов
+git status</code></pre>
+        <div class="highlight-box">
+          Файлы перейдут из статуса <strong>Untracked</strong> (неотслеживаемые) или <strong>Modified</strong> в статус <strong>Changes to be committed</strong> (готовые к коммиту).
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 17: git commit -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Фиксация изменений: Коммит</h2>
+      </div>
+      <div class="slide-body">
+        <p><strong>Коммит (Commit)</strong> — это моментальный снимок (сохранение) ваших файлов. Создается командой:</p>
+        <pre><code>git commit -m "Добавить начальную структуру сайта и файл main.py"</code></pre>
+        <p><strong>Правила хороших коммитов:</strong></p>
+        <ul>
+          <li>Пишите понятные сообщения на одном языке (русский или английский).</li>
+          <li>Сообщение должно отвечать на вопрос: <em>«Что делает этот коммит?»</em></li>
+          <li>Не делайте огромные коммиты раз в неделю. Лучше делать маленькие логические коммиты часто.</li>
+        </ul>
+        <div class="highlight-box warning" style="margin-top: 10px;">
+          <strong>Аналогия:</strong> Коммит — это точка быстрого сохранения (Quick Save) в компьютерной игре перед сложным уровнем.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 18: git log -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Просмотр истории: git log</h2>
+      </div>
+      <div class="slide-body">
+        <p>Чтобы увидеть историю всех коммитов в репозитории:</p>
+        <pre><code># Показать полную историю
+git log
+
+# Показать краткую историю (одна строка на коммит)
+git log --oneline</code></pre>
+        <p>Вывод <code>git log</code> содержит:</p>
+        <ul>
+          <li>Уникальный хеш коммита (например, <code>a1b2c3d...</code>) — его идентификатор.</li>
+          <li>Имя автора и дату создания.</li>
+          <li>Сообщение коммита.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 19: Удаленный репозиторий -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Git vs GitHub и удаленная работа</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>Git</strong> — инструмент на вашем локальном компьютере.</li>
+          <li><strong>GitHub / GitLab</strong> — облачные сервисы для хранения ваших Git-репозиториев и совместной работы.</li>
+        </ul>
+        <p style="margin-top: 10px;">Базовые команды для работы с удаленным репозиторием:</p>
+        <pre><code># Клонировать существующий проект с GitHub к себе
+git clone https://github.com/user/project.git
+
+# Привязать локальный репозиторий к удаленному
+git remote add origin https://github.com/user/project.git
+
+# Отправить свои локальные коммиты в облако
+git push -u origin main
+
+# Забрать свежие изменения других разработчиков из облака
+git pull</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Резюме -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и переходим к практике!</h2>
+      </div>
+      <div class="slide-body" style="text-align: center;">
+        <h3 style="color: var(--secondary-color); font-size: 1.8rem; margin-bottom: 25px;">Мы сегодня узнали:</h3>
+        <div class="columns" style="text-align: left; max-width: 900px; margin: 0 auto;">
+          <div class="column">
+            <ul>
+              <li><strong>Клиент</strong> запрашивает, <strong>сервер</strong> отвечает.</li>
+              <li>Сайты работают по протоколу <strong>HTTP</strong> через GET/POST.</li>
+              <li><strong>IP</strong> находит хост, <strong>порт</strong> — программу.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li><strong>Git</strong> сохраняет историю вашего кода.</li>
+              <li>Круг команд: <code>init &rarr; status &rarr; add &rarr; commit</code>.</li>
+              <li><strong>GitHub</strong> помогает делиться кодом в команде.</li>
+            </ul>
+          </div>
+        </div>
+        <p style="font-size: 1.3rem; margin-top: 30px; font-weight: bold; color: var(--primary-color);">Время открыть терминалы и попробовать всё самим!</p>
+      </div>
+    </div>
+
+    <!-- Кнопки управления -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Счетчик и прогресс-бар -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>

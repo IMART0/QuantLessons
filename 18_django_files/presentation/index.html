@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 18: Загрузка файлов в Django</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="presentation-container">
+    
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center; align-items: center; justify-content: center;">
+        <span class="badge badge-primary" style="font-size: 1.1rem; padding: 6px 14px; margin-bottom: 20px;">ЛФМШ «Квант» 2026</span>
+        <h1 style="font-size: 3rem; color: var(--brand-color); margin-bottom: 15px; font-weight: 800;">Загрузка файлов в Django</h1>
+        <p style="font-size: 1.5rem; color: var(--text-color); max-width: 800px; line-height: 1.6; margin-bottom: 30px;">
+          Урок 18: Как правильно настроить обработку медиафайлов, работать с FileField/ImageField, валидировать размер и тип файлов, и обеспечивать безопасность при загрузке.
+        </p>
+        <div style="font-size: 1.1rem; color: #7f8c8d;">
+          <strong>Дата:</strong> 4 июля &nbsp;|&nbsp; <strong>Время:</strong> 10:00 - 11:20
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Статика против Медиа -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Статические файлы vs Медиа-файлы</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--brand-color); margin-bottom: 10px;">Статические файлы (Static)</h3>
+            <p>Это ресурсы, созданные разработчиком на этапе написания кода сайта:</p>
+            <ul>
+              <li>CSS-стили, JS-скрипты.</li>
+              <li>Логотипы, иконки, элементы дизайна.</li>
+              <li>Шрифты.</li>
+            </ul>
+            <div class="highlight-box">
+              Хранятся в репозитории проекта. Обычно доступны только для чтения со стороны пользователей.
+            </div>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--accent-color); margin-bottom: 10px;">Медиа-файлы (Media)</h3>
+            <p>Это файлы, которые загружают пользователи сайта в процессе его работы:</p>
+            <ul>
+              <li>Аватарки пользователей.</li>
+              <li>Иллюстрации к статьям или товарам.</li>
+              <li>Документы, PDF-инструкции, архивы с заданиями.</li>
+            </ul>
+            <div class="highlight-box warning">
+              Загружаются динамически, не хранятся в Git. Требуют строгого контроля безопасности и валидации!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Настройки медиа-файлов: settings.py -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Настройки медиа-файлов: settings.py</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для корректного сохранения файлов и доступа к ним, в конфигурационном файле проекта необходимо объявить две ключевые переменные:</p>
+        <pre><code class="language-python">import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 1. Абсолютный путь на диске, куда Django будет сохранять загруженные файлы
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 2. Базовый URL-адрес для доступа к загруженным файлам через браузер
+MEDIA_URL = '/media/'</code></pre>
+        <div class="highlight-box success">
+          <strong>Важно:</strong> Никогда не помещайте директорию <code>media</code> внутрь папки со статикой или внутрь кода приложения. Она должна располагаться отдельно в корне проекта.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Настройка маршрутизации в urls.py -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раздача медиа-файлов в режиме разработки</h2>
+      </div>
+      <div class="slide-body">
+        <p>В режиме разработки (<code>DEBUG = True</code>) встроенный сервер Django должен уметь отдавать медиа-файлы из директории <code>MEDIA_ROOT</code> по адресу <code>MEDIA_URL</code>. Для этого редактируется корневой <code>urls.py</code>:</p>
+        <pre><code class="language-python">from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.split),
+    path('', include('catalog.urls')),
+]
+
+# Раздаем медиа-файлы только во время локальной разработки
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)</code></pre>
+        <div class="highlight-box warning">
+          В промышленной эксплуатации (production, <code>DEBUG = False</code>) раздачей медиа-файлов должен заниматься быстрый веб-сервер (Nginx, Apache) или облачные хранилища (S3). Django для этого не предназначен!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Поля в моделях: FileField и ImageField -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Поля моделей: FileField и ImageField</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для хранения файлов в таблицах БД используются специальные типы полей. В самой БД хранится только текстовый относительный путь к файлу.</p>
+        <ul>
+          <li><strong><code>FileField</code></strong> — базовое поле для любых файлов (PDF, ZIP, DOCX и т.д.).</li>
+          <li><strong><code>ImageField</code></strong> — наследник FileField, проверяющий, что загружен именно валидный файл изображения. Требует библиотеки <code>Pillow</code>.</li>
+        </ul>
+        <pre><code class="language-python">from django.db import models
+
+class UserProfile(models.Model):
+    username = models.CharField(max_length=150)
+    # Поле для изображений
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    # Поле для произвольных документов
+    resume = models.FileField(upload_to='documents/', null=True, blank=True)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Тонкая настройка: upload_to -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Куда сохраняются файлы? Аргумент upload_to</h2>
+      </div>
+      <div class="slide-body">
+        <p>Аргумент <code>upload_to</code> задает подпапку внутри <code>MEDIA_ROOT</code>. Он поддерживает шаблоны дат и функции для переименования файлов.</p>
+        <div class="columns">
+          <div class="column">
+            <h4 style="color: var(--brand-color)">1. Шаблоны форматирования дат</h4>
+            <pre><code class="language-python"># Файл сохранится в media/avatars/2026/07/04/
+avatar = models.ImageField(
+    upload_to='avatars/%Y/%m/%d/'
+)</code></pre>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--brand-color)">2. Кастомная функция переименования</h4>
+            <pre><code class="language-python">def get_upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    # Генерируем имя по username
+    return f'resumes/{instance.username}.{ext}'
+
+resume = models.FileField(
+    upload_to=get_upload_path
+)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: HTML-форма для загрузки файлов -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>HTML-форма для загрузки файлов</h2>
+      </div>
+      <div class="slide-body">
+        <p>Чтобы браузер мог корректно упаковать и отправить двоичные данные файла на сервер, HTML-форма должна соответствовать двум строгим правилам:</p>
+        <ol>
+          <li>Метод передачи данных должен быть исключительно <strong><code>POST</code></strong>.</li>
+          <li>Атрибут кодирования формы должен быть равен <strong><code>enctype="multipart/form-data"</code></strong>.</li>
+        </ol>
+        <pre><code class="language-html">&lt;form method="POST" enctype="multipart/form-data"&gt;
+    {% csrf_token %}
+    &lt;label for="username"&gt;Имя пользователя:&lt;/label&gt;
+    &lt;input type="text" name="username" id="username"&gt;
+    
+    &lt;label for="avatar"&gt;Выберите аватар:&lt;/label&gt;
+    &lt;input type="file" name="avatar" id="avatar"&gt;
+    
+    &lt;button type="submit"&gt;Загрузить&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="highlight-box warning">
+          Если забыть прописать <code>enctype="multipart/form-data"</code>, браузер отправит на сервер только текстовое имя файла, а сам файл останется на компьютере пользователя.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Обработка файлов в View: request.FILES -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Обработка файлов в View: request.FILES</h2>
+      </div>
+      <div class="slide-body">
+        <p>При отправке файлов они попадают не в <code>request.POST</code>, а в специальный словарь-подобный объект <strong><code>request.FILES</code></strong>.</p>
+        <pre><code class="language-python">from django.shortcuts import render
+from django.http import HttpResponse
+from .models import UserProfile
+
+def upload_avatar_view(request):
+    if request.method == 'POST':
+      username = request.POST.get('username')
+      # Получаем файл по ключу name из input'а
+      avatar_file = request.FILES.get('avatar') 
+      
+      if avatar_file:
+          profile = UserProfile(username=username, avatar=avatar_file)
+          profile.save()
+          return HttpResponse(f"Файл {avatar_file.name} успешно загружен! URL: {profile.avatar.url}")
+          
+    return render(request, 'upload.html')</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Загрузка файлов без моделей (Чанки) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Загрузка файлов без моделей (Ручное сохранение)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Иногда нужно загрузить файл и обработать его «на лету» без сохранения в базу. Для этого мы читаем файл чанками (кусками), чтобы не перегружать оперативную память сервера:</p>
+        <pre><code class="language-python">import os
+from django.conf import settings
+
+def handle_uploaded_file(uploaded_file):
+    # Путь сохранения на сервере
+    file_path = os.path.join(settings.MEDIA_ROOT, 'temp', uploaded_file.name)
+    
+    # Запись файла небольшими порциями (chunks) по 64 КБ
+    with open(file_path, 'wb+') as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)</code></pre>
+        <div class="highlight-box">
+          Метод <code>chunks()</code> гарантирует, что даже гигабайтный файл не переполнит память RAM сервера, так как Django считывает его по частям.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Формы Django и файлы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Формы Django и файлы</h2>
+      </div>
+      <div class="slide-body">
+        <p>При использовании Django Forms или ModelForms файлы обрабатываются автоматически, если в форму передать оба словаря: <code>request.POST</code> и <code>request.FILES</code>.</p>
+        <pre><code class="language-python">from django import forms
+from .models import UserProfile
+
+# Класс формы на основе модели
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['username', 'avatar', 'resume']
+
+# Обработка в представлении (View):
+def profile_create(request):
+    if request.method == 'POST':
+        # Важно передать request.FILES вторым аргументом!
+        form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('success_url')
+    else:
+        form = UserProfileForm()
+    return render(request, 'profile_form.html', {'form': form})</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Безопасность при загрузке файлов -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Безопасность загрузки файлов: Риски</h2>
+      </div>
+      <div class="slide-body">
+        <p>Предоставление пользователям возможности загружать любые файлы — это огромный риск для сервера. Основные угрозы:</p>
+        <ul>
+          <li><strong>Удаленное выполнение кода (RCE):</strong> Пользователь загружает PHP/Python-скрипт (например, <code>shell.py</code>) и запускает его, обращаясь по прямой ссылке, захватывая контроль над сервером.</li>
+          <li><strong>Отказ в обслуживании (DoS):</strong> Загрузка файлов огромных размеров (например, 100 ГБ), приводящая к быстрому переполнению диска.</li>
+          <li><strong>Межсайтовый скриптинг (XSS):</strong> Загрузка HTML-файла или SVG-картинки со встроенным JS-кодом, крадущим cookies пользователей.</li>
+        </ul>
+        <div class="highlight-box warning">
+          <strong>Главное правило безопасности:</strong> Никогда не доверяйте имени, расширению и контенту файла без жесткой проверки!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Валидация размера файлов -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Валидация размера файла</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для предотвращения DoS-атак необходимо ограничивать максимальный размер загружаемого файла. В Django это делается с помощью создания кастомного валидатора.</p>
+        <pre><code class="language-python">from django.core.exceptions import ValidationError
+
+def validate_file_size(value):
+    # Ограничение 5 Мегабайт (5 * 1024 * 1024 байт)
+    limit = 5 * 1024 * 1024
+    if value.size > limit:
+        raise ValidationError('Файл слишком большой. Максимальный размер: 5 МБ.')
+
+# Подключение в модели:
+class Document(models.Model):
+    file = models.FileField(upload_to='docs/', validators=[validate_file_size])</code></pre>
+        <p>Если пользователь попытается загрузить файл больше 5 МБ, Django Form вернет ошибку валидации и не сохранит файл на сервере.</p>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Валидация MIME-типа (контента) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Проверка подлинности типа: MIME-типы</h2>
+      </div>
+      <div class="slide-body">
+        <p>Нельзя верить просто расширению файла (например, <code>.png</code>). Злоумышленник может переименовать файл <code>exploit.py</code> в <code>exploit.png</code>. Проверять нужно реальный тип содержимого (MIME-тип):</p>
+        <pre><code class="language-python">import magic # Требует pip install python-magic
+from django.core.exceptions import ValidationError
+
+def validate_is_pdf(file):
+    # Считываем первые 2048 байт для определения сигнатуры файла
+    header = file.read(2048)
+    file.seek(0) # Обязательно сбрасываем указатель чтения обратно в начало!
+    
+    mime = magic.from_buffer(header, mime=True)
+    if mime != 'application/pdf':
+        raise ValidationError('Допускаются только PDF документы.')</code></pre>
+        <div class="highlight-box success">
+          Библиотека <code>python-magic</code> анализирует «магические байты» (сигнатуру) в заголовке файла, гарантируя точность определения формата.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Кастомный универсальный валидатор -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Кастомный универсальный валидатор файлов</h2>
+      </div>
+      <div class="slide-body">
+        <p>Ниже представлен пример профессионального класса-валидатора для проверки и размера, и MIME-типа файлов, готового к использованию:</p>
+        <pre><code class="language-python">from django.utils.deconstruct import deconstructible
+
+@deconstructible
+class FileValidator:
+    def __init__(self, max_size=None, allowed_mimes=None):
+        self.max_size = max_size
+        self.allowed_mimes = allowed_mimes
+
+    def __call__(self, file):
+        if self.max_size and file.size > self.max_size:
+            raise ValidationError(f"Максимальный размер: {self.max_size / (1024*1024)} МБ.")
+        
+        # Проверка MIME-типа
+        import magic
+        mime = magic.from_buffer(file.read(2048), mime=True)
+        file.seek(0)
+        if self.allowed_mimes and mime not in self.allowed_mimes:
+            raise ValidationError("Неподдерживаемый формат файла.")</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Очистка старых файлов с диска -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Очистка диска: Удаление файлов при удалении моделей</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Проблема:</strong> По умолчанию при вызове <code>profile.delete()</code> Django удаляет только строку из базы данных. Загруженный файл <strong>остается на диске навсегда</strong>, захламляя сервер.</p>
+            <div class="highlight-box warning">
+              Сотни удаленных профилей оставляют гигабайты «мусорных» файлов на диске!
+            </div>
+          </div>
+          <div class="column">
+            <p><strong>Решение 1: Библиотека django-cleanup</strong></p>
+            <p>Самый простой и надежный способ — поставить сторонний пакет, который сам отслеживает удаление файлов:</p>
+            <pre><code class="language-bash">pip install django-cleanup</code></pre>
+            <p>Добавить в <code>INSTALLED_APPS</code>:</p>
+            <pre><code class="language-python">INSTALLED_APPS = [
+    ...
+    'django_cleanup.apps.CleanupConfig',
+]</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 16: Резюме и план практики -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и план практического занятия</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h4 style="color: var(--brand-color)">Основные правила загрузки файлов:</h4>
+            <ul>
+              <li>Настройки: <code>MEDIA_ROOT</code> и <code>MEDIA_URL</code>.</li>
+              <li>Раздавать через Django urls только в режиме отладки <code>DEBUG=True</code>.</li>
+              <li>Для форм указывать <code>enctype="multipart/form-data"</code>.</li>
+              <li>Передавать <code>request.FILES</code> в форму.</li>
+              <li><strong>Всегда</strong> валидировать размер и тип файлов на бэкенде.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--brand-color)">Сегодня на практике мы реализуем:</h4>
+            <ol>
+              <li>Настройку хранения медиа в проекте.</li>
+              <li>Формы с валидацией размера и типа файлов.</li>
+              <li>Кастомные функции генерации имен файлов.</li>
+              <li>Обработку файлов без привязки к моделям.</li>
+              <li>Безопасную валидацию MIME-типов.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Навигация и прогресс-бар -->
+    <div class="slide-counter" id="slide-counter">1 / 16</div>
+    
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">← Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед →</button>
+    </div>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

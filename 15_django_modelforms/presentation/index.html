@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 15: Django ModelForms | ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="presentation-container">
+
+  <!-- Слайд 1: Титульный -->
+  <div class="slide active">
+    <div class="slide-header">
+      <h2>Django ModelForms</h2>
+    </div>
+    <div class="slide-body" style="text-align: center;">
+      <p style="font-size: 1.8rem; font-weight: bold; color: var(--primary-color); margin-bottom: 20px;">
+        Урок 15: Связываем модели и HTML-формы воедино
+      </p>
+      <p style="font-size: 1.3rem; margin-bottom: 40px; color: #7f8c8d;">
+        Летняя физико-математическая школа "Квант"<br>
+        2 июля • 11:30 - 12:50
+      </p>
+      <div class="highlight-box" style="display: inline-block; max-width: 700px; margin: 0 auto; text-align: left;">
+        <strong>Сегодня на уроке:</strong>
+        <ul style="margin-top: 10px; margin-bottom: 0;">
+          <li>Проблема повторения кода: DRY при работе с формами.</li>
+          <li>Класс <code>ModelForm</code>: автоматическое создание формы из модели.</li>
+          <li>Класс <code>Meta</code>: настройка полей, виджетов, ярлыков и ошибок.</li>
+          <li>Создание и обновление объектов с помощью <code>form.save()</code>.</li>
+          <li>Паттерн <code>save(commit=False)</code>: программное обогащение данных.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 2: Проблема DRY -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Повторение кода: Нарушение принципа DRY</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p>Представим, что у нас есть модель задачи <code>Task</code> в БД:</p>
+          <pre style="font-size: 0.85rem; margin-top: 10px;"><code># models.py
+class Task(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    is_completed = models.BooleanField(default=False)</code></pre>
+          <p style="margin-top: 10px;">Если писать обычную форму:</p>
+          <pre style="font-size: 0.85rem; margin-top: 10px;"><code># forms.py
+class TaskForm(forms.Form):
+    title = forms.CharField(max_length=100)
+    description = forms.CharField(widget=forms.Textarea)
+    is_completed = forms.BooleanField(required=False)</code></pre>
+        </div>
+        <div class="column">
+          <div class="highlight-box warning" style="height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: center;">
+            <strong>Минусы обычных <code>forms.Form</code>:</strong>
+            <ul style="margin-top: 10px; font-size: 1.05rem;">
+              <li><strong>Дублирование кода:</strong> Мы дважды пишем типы полей, ограничения длины и валидаторы.</li>
+              <li><strong>Ручной перенос данных:</strong> Приходится вручную вытаскивать данные из <code>cleaned_data</code> и передавать их в модель.</li>
+              <li><strong>Сложность поддержки:</strong> Добавили поле в модель? Надо не забыть обновить форму и вьюху.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 3: Решение: ModelForm -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Решение: Django ModelForm</h2>
+    </div>
+    <div class="slide-body">
+      <p>Django предоставляет специальный класс <strong><code>ModelForm</code></strong>, который автоматически решает все эти проблемы.</p>
+      <div class="highlight-box success" style="margin: 20px 0;">
+        <strong><code>ModelForm</code></strong> — это класс формы в Django, который привязан к конкретной модели базы данных. Он сам считывает поля модели и генерирует соответствующие HTML-поля формы с их правилами валидации, а также умеет автоматически сохранять данные в БД.
+      </div>
+      <div class="columns" style="margin-top: 15px;">
+        <div class="column">
+          <p><strong>Преимущества:</strong></p>
+          <ul>
+            <li><strong>DRY (Don't Repeat Yourself):</strong> Описание структуры данных хранится в одном месте (в модели).</li>
+            <li><strong>Автоматическая валидация:</strong> Ограничения модели (например, <code>max_length</code>) проверяются автоматически.</li>
+            <li><strong>Интеграция с БД:</strong> Метод <code>save()</code> создаёт или обновляет объект в БД за один вызов.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 4: Базовый синтаксис -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Базовый синтаксис ModelForm</h2>
+    </div>
+    <div class="slide-body">
+      <p>Чтобы создать форму на основе модели, наследуемся от <code>forms.ModelForm</code> и описываем вложенный класс <code>Meta</code>:</p>
+      <pre style="font-size: 0.95rem; margin: 15px 0;"><code>from django import forms
+from .models import Task
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task               # С какой моделью работаем
+        fields = ['title', 'description', 'is_completed']  # Какие поля выводим в форму</code></pre>
+      <div class="highlight-box">
+        <strong>Класс Meta:</strong> Это служебный класс, в котором задаются конфигурационные параметры формы. Самыми важными являются <code>model</code> (ссылка на класс модели) и <code>fields</code> (список отображаемых полей).
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 5: Meta опции: fields и exclude -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Опции Meta: Выбор полей (fields)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Вы можете явно указать список отображаемых полей или использовать специальное ключевое слово:</p>
+      <ul>
+        <li><code>fields = ['title', 'description']</code> — отображаются <strong>только</strong> перечисленные поля (самый безопасный подход).</li>
+        <li><code>fields = '__all__'</code> — автоматически отображаются <strong>все</strong> поля модели.</li>
+      </ul>
+      <div class="highlight-box warning">
+        <strong>Опасайтесь <code>fields = '__all__'</code>!</strong><br>
+        Если вы добавите в модель конфиденциальное или служебное поле (например, <code>is_admin</code> или <code>user_balance</code>), оно автоматически попадет в форму и его сможет изменить злоумышленник (уязвимость <em>Mass Assignment</em>). Используйте явный список!
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 6: Опция exclude -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Опции Meta: Исключение полей (exclude)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Иногда нужно отобразить почти все поля модели, за исключением пары штук. Для этого используется опция <code>exclude</code>:</p>
+      <pre style="font-size: 0.95rem; margin: 15px 0;"><code>class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        exclude = ['is_completed'] # Выведет 'title' и 'description'</code></pre>
+      <p><strong>Важное правило:</strong></p>
+      <ul>
+        <li>В классе <code>Meta</code> обязательно должен присутствовать <strong>хотя бы один</strong> из параметров: <code>fields</code> или <code>exclude</code>.</li>
+        <li>Нельзя использовать оба параметра одновременно. Рекомендуется отдавать предпочтение <code>fields</code> для явного контроля безопасности.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Слайд 7: Генерация полей под капотом -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Как поля модели превращаются в поля форм?</h2>
+    </div>
+    <div class="slide-body">
+      <p>Django автоматически сопоставляет типы полей моделей с типами полей форм и HTML-виджетами:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Поле в Model (БД)</th>
+            <th>Поле в Form</th>
+            <th>Стандартный HTML Widget</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>CharField(max_length=...)</code></td>
+            <td><code>CharField</code></td>
+            <td><code>&lt;input type="text"&gt;</code></td>
+          </tr>
+          <tr>
+            <td><code>TextField()</code></td>
+            <td><code>CharField</code></td>
+            <td><code>&lt;textarea&gt;&lt;/textarea&gt;</code></td>
+          </tr>
+          <tr>
+            <td><code>BooleanField()</code></td>
+            <td><code>BooleanField</code></td>
+            <td><code>&lt;input type="checkbox"&gt;</code></td>
+          </tr>
+          <tr>
+            <td><code>ForeignKey(to=...)</code></td>
+            <td><code>ModelChoiceField</code></td>
+            <td><code>&lt;select&gt;</code> (выпадающий список)</td>
+          </tr>
+          <tr>
+            <td><code>ManyToManyField(to=...)</code></td>
+            <td><code>ModelMultipleChoiceField</code></td>
+            <td><code>&lt;select multiple&gt;</code> (множественный выбор)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Слайд 8: Кастомизация: labels и help_texts -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Кастомизация: Ярлыки (labels) и подсказки (help_texts)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Если вы хотите изменить названия полей (подписи/лейблы) или добавить к ним подсказки на форме без редактирования модели, сделайте это в <code>Meta</code>:</p>
+      <pre style="font-size: 0.9rem; margin: 15px 0;"><code>class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'description']
+        labels = {
+            'title': 'Название задачи',
+            'description': 'Детальное описание',
+        }
+        help_texts = {
+            'title': 'Кратко сформулируйте суть задачи.',
+        }</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 9: Кастомизация: error_messages -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Кастомизация: Сообщения об ошибках</h2>
+    </div>
+    <div class="slide-body">
+      <p>Вы можете переопределить тексты стандартных валидационных ошибок через параметр <code>error_messages</code>:</p>
+      <pre style="font-size: 0.9rem; margin: 10px 0;"><code>class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title']
+        error_messages = {
+            'title': {
+                'required': 'Это поле обязательно для заполнения!',
+                'max_length': 'Заголовок не может быть длиннее 100 символов.',
+            }
+        }</code></pre>
+      <div class="highlight-box success">
+        Такой подход позволяет локализовать или детализировать сообщения об ошибках для конечного пользователя, делая интерфейс более дружелюбным.
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 10: Кастомизация виджетов: widgets -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Кастомизация виджетов: опция widgets</h2>
+    </div>
+    <div class="slide-body">
+      <p>Наиболее частая задача — стилизовать поля (например, добавить Bootstrap-класс <code>form-control</code> или <code>placeholder</code>). Для этого используется опция <code>widgets</code>:</p>
+      <pre style="font-size: 0.85rem; margin: 10px 0;"><code>from django import forms
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'description']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите заголовок задачи...'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Опишите задачу подробнее...'
+            }),
+        }</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 11: Переопределение полей формы -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Альтернатива: переопределение полей класса</h2>
+    </div>
+    <div class="slide-body">
+      <p>Если настройки виджетов в <code>Meta</code> недостаточно, вы можете явно объявить поле прямо в классе формы. Это перекроет автоматически сгенерированное поле:</p>
+      <pre style="font-size: 0.85rem; margin: 10px 0;"><code>class TaskForm(forms.ModelForm):
+    # Явно объявленное поле переопределяет настройки из Meta
+    title = forms.CharField(
+        max_length=50, # Сузили лимит в форме (в БД остался 100)
+        label="Суперзадача",
+        widget=forms.TextInput(attrs={'class': 'custom-input'})
+    )
+
+    class Meta:
+        model = Task
+        fields = ['title', 'description']</code></pre>
+      <div class="highlight-box warning">
+        <strong>Внимание:</strong> Если вы переопределяете поле вручную, убедитесь, что вы не ослабили ограничения модели (например, указав в форме <code>max_length=200</code>, когда в БД лимит <code>100</code>). Иначе при сохранении возникнет ошибка базы данных.
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 12: Использование в View (Создание) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Использование в View: Создание объекта</h2>
+    </div>
+    <div class="slide-body">
+      <p>Для создания объекта передаем <code>request.POST</code> в форму для связывания (binding), проверяем валидность и сохраняем:</p>
+      <pre style="font-size: 0.8rem; margin: 10px 0;"><code>from django.shortcuts import render, redirect
+from .forms import TaskForm
+
+def task_create_view(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST) # Связываем форму с данными из POST
+        if form.is_valid():
+            task = form.save()        # Автоматически сохраняем в БД!
+            return redirect('task_list')
+    else:
+        form = TaskForm()             # Пустая форма для GET-запроса
+        
+    return render(request, 'task_form.html', {'form': form})</code></pre>
+      <div class="highlight-box success" style="padding: 10px;">
+        Обратите внимание на <strong><code>form.save()</code></strong>: он сам создаёт экземпляр модели <code>Task</code>, заполняет его валидными данными и делает INSERT в базу данных!
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 13: Использование в View: Обновление (Update) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Использование в View: Обновление (Update)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Чтобы отредактировать существующую запись, нужно передать объект в аргумент <strong><code>instance</code></strong> формы:</p>
+      <pre style="font-size: 0.8rem; margin: 10px 0;"><code>from django.shortcuts import get_object_or_400
+from .models import Task
+
+def task_update_view(request, pk):
+    task = get_object_or_404(Task, pk=pk) # Достаем объект из БД
+    
+    if request.method == 'POST':
+        # Передаем и POST-данные, и сам редактируемый объект:
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save() # Делает UPDATE в БД вместо INSERT!
+            return redirect('task_list')
+    else:
+        form = TaskForm(instance=task) # Форма предзаполняется данными объекта
+        
+    return render(request, 'task_form.html', {'form': form})</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 14: Паттерн save(commit=False) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Паттерн save(commit=False)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Что делать, если в форме нет полей, которые <strong>обязательны</strong> в модели для записи в БД? (например, автора задачи/текущего юзера или даты публикации).</p>
+      <div class="highlight-box warning" style="margin: 10px 0;">
+        Вызов <code>form.save()</code> напрямую выдаст ошибку <code>IntegrityError</code> (ошибка целостности БД), так как некоторые поля останутся пустыми.
+      </div>
+      <p><strong>Решение:</strong> вызвать <code>form.save(commit=False)</code>.</p>
+      <ul>
+        <li>Создает экземпляр модели в оперативной памяти (в Python).</li>
+        <li><strong>НЕ</strong> записывает его в базу данных сразу.</li>
+        <li>Позволяет вручную заполнить недостающие атрибуты объекта.</li>
+        <li>После этого вызывается ручной метод <code>.save()</code> на объекте.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Слайд 15: Как работает commit=False (Код) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Как работает commit=False (Код)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Рассмотрим пример, где задача должна быть связана с вошедшим пользователем:</p>
+      <pre style="font-size: 0.85rem; margin: 10px 0;"><code>def task_create_view(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            # 1. Получаем объект модели, но не сохраняем в БД:
+            task = form.save(commit=False)
+            # 2. Добавляем автора (которого не было в полях формы):
+            task.author = request.user
+            # 3. Физически сохраняем в базу данных:
+            task.save()
+            return redirect('task_list')</code></pre>
+      <div class="highlight-box success">
+        Этот паттерн чрезвычайно полезен и используется повсеместно для автоматического заполнения полей аудита (создатель, дата, статус по умолчанию).
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 16: commit=False и связи Many-to-Many -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Сохранение Many-to-Many при commit=False</h2>
+    </div>
+    <div class="slide-body">
+      <p>Когда вы вызываете <code>form.save(commit=False)</code>, Django не может сохранить отношения "многие-ко-многим" (M2M) в промежуточную таблицу БД, так как у главного объекта еще нет первичного ключа (id).</p>
+      <pre style="font-size: 0.85rem; margin: 10px 0;"><code># Если у задачи есть теги (ManyToMany связь):
+if form.is_valid():
+    task = form.save(commit=False)
+    task.author = request.user
+    task.save()           # Теперь у объекта появился ID в БД
+    form.save_m2m()       # Обязательно! Сохраняем связи Many-to-Many</code></pre>
+      <div class="highlight-box warning">
+        Если в форме есть поля Many-to-Many (например, мультивыбор тегов) и вы используете <code>commit=False</code>, вы <strong>обязаны</strong> явно вызвать метод <strong><code>form.save_m2m()</code></strong> сразу после сохранения основного объекта! Иначе теги не сохранятся.
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 17: Шаблоны (Templates) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Отображение формы в HTML шаблоне</h2>
+    </div>
+    <div class="slide-body">
+      <p>Вывод формы в HTML остался таким же простым, как и для обычных форм. Не забываем про тег <code>csrf_token</code>:</p>
+      <pre style="font-size: 0.9rem; margin: 10px 0;"><code>&lt;form method="post"&gt;
+    {% csrf_token %}
+    
+    <!-- В Django 5 рекомендуется использовать as_div вместо as_p -->
+    {{ form.as_div }}
+    
+    &lt;button type="submit" class="btn btn-primary"&gt;Сохранить&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      <div class="highlight-box">
+        <strong>Новинка Django 5.0+:</strong> Метод <code>form.as_div()</code> выводит каждое поле внутри блочного контейнера <code>&lt;div&gt;</code>, что считается более современным стандартом верстки, чем <code>as_p()</code> или <code>as_table()</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 18: Итоги и Чек-лист -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Итоги урока: Сравнение Form и ModelForm</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p><strong>Используйте <code>forms.Form</code>, если:</strong></p>
+          <ul>
+            <li>Форма не связана напрямую с таблицей БД (например: форма обратной связи, калькулятор, отправка email).</li>
+          </ul>
+          <p style="margin-top: 15px;"><strong>Используйте <code>forms.ModelForm</code>, если:</strong></p>
+          <ul>
+            <li>Форма предназначена для создания, редактирования или удаления записей в БД (CRUD).</li>
+          </ul>
+        </div>
+        <div class="column">
+          <div class="highlight-box success" style="height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: center;">
+            <strong>Чек-лист создания:</strong>
+            <ol style="margin-top: 10px; font-size: 1.05rem;">
+              <li>Создать класс в <code>forms.py</code> наследуя от <code>forms.ModelForm</code>.</li>
+              <li>В <code>Meta</code> привязать модель и указать список полей <code>fields</code>.</li>
+              <li>Кастомизировать виджеты, ярлыки, ошибки при необходимости.</li>
+              <li>Во вьюхе связать форму с POST-данными (и <code>instance</code> при редактировании).</li>
+              <li>Проверить <code>form.is_valid()</code> и сохранить через <code>form.save()</code>.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Элементы управления презентацией -->
+<div class="slide-counter" id="slide-counter">1 / 18</div>
+<div class="controls">
+  <button class="control-btn" id="prev-btn">&larr; Назад</button>
+  <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+  <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+</div>
+<div class="progress-container">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

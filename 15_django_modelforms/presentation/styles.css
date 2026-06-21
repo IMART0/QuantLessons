@@ -1,0 +1,274 @@
+/* CSS для презентации - ЛФМШ "Квант" */
+
+:root {
+  --bg-color: #f7f9fa;
+  --slide-bg: #ffffff;
+  --text-color: #2c3e50;
+  --primary-color: #2980b9;
+  --secondary-color: #27ae60;
+  --accent-color: #e74c3c;
+  --border-color: #e2e8f0;
+  --code-bg: #f8f9fa;
+  --code-text: #c7254e;
+  --shadow: 0 10px 30px rgba(0,0,0,0.05);
+  --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Слайд-контейнер */
+.presentation-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Слайд */
+.slide {
+  position: absolute;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 675px; /* 16:9 соотношение */
+  background: var(--slide-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+  border: 1px solid var(--border-color);
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+/* Сетка контента */
+.slide-header {
+  margin-bottom: 25px;
+  border-bottom: 3px solid var(--primary-color);
+  padding-bottom: 10px;
+}
+
+.slide-header h2 {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.slide-body {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Разметка колонок */
+.columns {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+}
+
+.column {
+  flex: 1;
+}
+
+/* Списки */
+ul, ol {
+  margin-left: 30px;
+  margin-bottom: 15px;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+li strong {
+  color: var(--primary-color);
+}
+
+/* Выделение кода */
+pre {
+  background-color: var(--code-bg);
+  border-left: 4px solid var(--primary-color);
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 15px 0;
+  text-align: left;
+}
+
+code {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  background-color: var(--code-bg);
+  color: var(--code-text);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+
+pre code {
+  color: inherit;
+  background-color: transparent;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Кнопки управления */
+.controls {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.control-btn {
+  background: var(--slide-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.control-btn:hover {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+/* Номер слайда */
+.slide-counter {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  font-weight: 500;
+  z-index: 100;
+}
+
+/* Прогресс-бар */
+.progress-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  z-index: 100;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+/* Дополнительные стили для презентационных элементов */
+.highlight-box {
+  background-color: #ebf5fb;
+  border-left: 4px solid var(--primary-color);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-size: 1.15rem;
+}
+
+.highlight-box.success {
+  background-color: #e8f8f5;
+  border-left-color: var(--secondary-color);
+}
+
+.highlight-box.warning {
+  background-color: #fdf2e9;
+  border-left-color: var(--accent-color);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 4px;
+  color: #fff;
+  margin-right: 5px;
+}
+
+.badge-primary { background-color: var(--primary-color); }
+.badge-secondary { background-color: var(--secondary-color); }
+.badge-accent { background-color: var(--accent-color); }
+
+/* Таблицы */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 1.1rem;
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f8f9fa;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+/* Адаптация под проектор */
+@media screen and (max-height: 700px) {
+  .slide {
+    height: 90%;
+    padding: 20px 40px;
+  }
+  .slide-header h2 {
+    font-size: 1.8rem;
+  }
+  .slide-body {
+    font-size: 1.1rem;
+  }
+}

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 20: API, JSON, REST — ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="presentation-container">
+
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          API, JSON, REST:<br>Создание HTTP API на Django
+        </h1>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Курс «Веб-разработка на Python (Django)»</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Урок 20 • 5 июля, 10:00 - 11:20</p>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Что такое API? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое API?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>API (Application Programming Interface)</strong> — это интерфейс программирования приложений, контракт, позволяющий одной программе взаимодействовать с другой.</p>
+            <ul>
+              <li><strong>Обычный интерфейс (UI):</strong> для человека (кнопки, формы, страницы).</li>
+              <li><strong>API-интерфейс:</strong> для программ и кода (функции, запросы, структуры данных).</li>
+            </ul>
+            <p style="margin-top: 15px;">В веб-разработке под API обычно понимают <strong>Web API</strong> — набор URL-адресов, по которым программы обмениваются данными по протоколу HTTP.</p>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Аналогия: Ресторан</h3>
+              <p>Вы — <strong>Клиент</strong> (браузер). Меню ресторана — это <strong>API</strong> (список доступных запросов). Официант — это <strong>HTTP-запрос</strong>, который несёт ваш заказ на кухню. Кухня — это <strong>Сервер</strong>, который готовит блюдо (данные) и отправляет его обратно.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Зачем веб-сайтам API? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Зачем веб-сайтам нужно API?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>Разделение Frontend и Backend:</strong> сервер занимается только логикой и данными (Django), а интерфейс (React, Vue, iOS/Android) отрисовывается на клиенте.</li>
+              <li><strong>Одно Backend-приложение для всех:</strong> один сервер обслуживает и сайт, и мобильное приложение, и умные часы.</li>
+              <li><strong>Интеграция сторонних сервисов:</strong> получение погоды, оплата картой, авторизация через Telegram/VK.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">Эволюция веб-приложений</h3>
+              <p>Раньше: Django рендерил HTML-шаблон и отправлял его целиком (MVT).<br>
+              Сейчас: Django принимает JSON, обрабатывает его и возвращает JSON. Клиент сам решает, как отобразить эти данные.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: REST — архитектурный стиль -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>REST — архитектурный стиль</h2>
+      </div>
+      <div class="slide-body">
+        <p><strong>REST (Representational State Transfer)</strong> — это стиль архитектуры программного обеспечения для распределенных систем, созданный Роем Филдингом в 2000 году.</p>
+        <p style="margin-top: 10px;">API, разработанное с соблюдением принципов REST, называется <strong>RESTful API</strong>.</p>
+        <div class="highlight-box success" style="margin-top: 15px;">
+          <h3 style="color: var(--secondary-color); margin-bottom: 5px;">Главная концепция: Ресурс (Resource)</h3>
+          <p>В REST всё является ресурсом (пользователь, статья, бронирование). Каждый ресурс имеет уникальный адрес (URI).
+          Например: <code>/api/students/</code> (коллекция студентов) или <code>/api/students/5/</code> (конкретный студент с ID = 5).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: 6 ограничений REST -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>6 архитектурных ограничений REST</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem;">
+        <ol>
+          <li><strong>Клиент-Сервер (Client-Server):</strong> чёткое разделение интерфейса (клиент) и хранения данных (сервер).</li>
+          <li><strong>Отсутствие состояния (Stateless):</strong> сервер не хранит контекст о сессии клиента. Каждый запрос должен содержать ВСЮ информацию для его выполнения.</li>
+          <li><strong>Кэширование (Cacheable):</strong> ответы сервера должны иметь пометку, можно ли их кэшировать, для снижения нагрузки.</li>
+          <li><strong>Единообразие интерфейса (Uniform Interface):</strong> одинаковый формат адресов, использование стандартных HTTP-методов (GET, POST и др.) и JSON.</li>
+          <li><strong>Слоистая система (Layered System):</strong> клиент не должен знать, общается он напрямую с сервером или через промежуточные узлы (прокси, балансировщики).</li>
+          <li><strong>Код по запросу (Code on Demand - необязательно):</strong> сервер может отправлять клиенту исполняемый код (например, JS-скрипты).</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Формат JSON -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Формат JSON</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>JSON (JavaScript Object Notation)</strong> — текстовый формат обмена данными, основанный на подмножестве синтаксиса JavaScript.</p>
+            <ul>
+              <li>Легко читается людьми и программами.</li>
+              <li>Является языконезависимым (поддерживается всеми современными языками).</li>
+              <li>Практически вытеснил старый формат XML в веб-разработке.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <pre><code>{
+  "name": "Иван Сидоров",
+  "age": 15,
+  "is_active": true,
+  "hobbies": ["робототехника", "физика"],
+  "project": null
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Типы данных JSON vs Python -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Типы данных: JSON и Python</h2>
+      </div>
+      <div class="slide-body">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 1.15rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary-color);">
+              <th style="padding: 10px;">Тип данных в JSON</th>
+              <th style="padding: 10px;">Пример JSON</th>
+              <th style="padding: 10px;">Тип в Python</th>
+              <th style="padding: 10px;">Пример Python</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;">Строка (String)</td>
+              <td style="padding: 10px;"><code>"Привет"</code> (только double quotes!)</td>
+              <td style="padding: 10px;"><code>str</code></td>
+              <td style="padding: 10px;"><code>'Привет'</code> / <code>"Привет"</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;">Число (Number)</td>
+              <td style="padding: 10px;"><code>42</code>, <code>3.14</code></td>
+              <td style="padding: 10px;"><code>int</code>, <code>float</code></td>
+              <td style="padding: 10px;"><code>42</code>, <code>3.14</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;">Объект (Object)</td>
+              <td style="padding: 10px;"><code>{"key": "value"}</code></td>
+              <td style="padding: 10px;"><code>dict</code></td>
+              <td style="padding: 10px;"><code>{"key": "value"}</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;">Массив (Array)</td>
+              <td style="padding: 10px;"><code>[1, "two", false]</code></td>
+              <td style="padding: 10px;"><code>list</code></td>
+              <td style="padding: 10px;"><code>[1, 'two', False]</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;">Логический (Boolean)</td>
+              <td style="padding: 10px;"><code>true</code>, <code>false</code></td>
+              <td style="padding: 10px;"><code>bool</code></td>
+              <td style="padding: 10px;"><code>True</code>, <code>False</code></td>
+            </tr>
+            <tr>
+              <td style="padding: 10px;">Пустота (Null)</td>
+              <td style="padding: 10px;"><code>null</code></td>
+              <td style="padding: 10px;"><code>NoneType</code></td>
+              <td style="padding: 10px;"><code>None</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Сериализация и десериализация -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Сериализация и десериализация в Python</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>Сериализация (Serialization):</strong> перевод структуры данных из памяти программы (переменные, словари, объекты) в текстовую строку JSON для отправки по сети.</li>
+          <li><strong>Десериализация (Deserialization):</strong> восстановление структуры данных из текстовой строки JSON в объекты языка (словари, списки, числа).</li>
+        </ul>
+        <pre><code class="language-python">import json
+
+# Сериализация (dict -> str)
+data = {"name": "Анна", "grade": 9}
+json_string = json.dumps(data, ensure_ascii=False)  # '{"name": "Анна", "grade": 9}'
+
+# Десериализация (str -> dict)
+parsed_data = json.loads(json_string)  # {"name": "Анна", "grade": 9}</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Django JsonResponse -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Django и JSON: класс JsonResponse</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для возврата JSON-ответов Django предоставляет класс <code>JsonResponse</code> (наследник <code>HttpResponse</code>):</p>
+        <pre><code class="language-python">from django.http import JsonResponse
+
+def info_view(request):
+    data = {
+        "camp_name": "Квант",
+        "lesson": 20,
+        "topics": ["API", "JSON", "REST"]
+    }
+    return JsonResponse(data)</code></pre>
+        <div class="highlight-box success">
+          <p><strong>Что происходит под капотом:</strong> <code>JsonResponse</code> автоматически сериализует переданный словарь в JSON-строку с помощью встроенного модуля <code>json</code> и устанавливает HTTP-заголовок <code>Content-Type: application/json</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Параметр safe в JsonResponse -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Возврат списков и параметр safe</h2>
+      </div>
+      <div class="slide-body">
+        <p>По умолчанию <code>JsonResponse</code> ожидает на вход <strong>словарь (dict)</strong>. Это сделано из соображений безопасности (старая уязвимость ECMAScript 5, связанная с перезаписью конструктора массива).</p>
+        <p>Если вы хотите передать список (например, массив объектов) или другой сериализуемый объект верхнего уровня, установите параметр <code>safe=False</code>:</p>
+        <pre><code class="language-python">from django.http import JsonResponse
+
+def student_list_api(request):
+    students = ["Миша", "Лена", "Саша"]
+    # Без safe=False будет ошибка TypeError!
+    return JsonResponse(students, safe=False)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Сериализация Django моделей вручную -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Сериализация моделей Django вручную</h2>
+      </div>
+      <div class="slide-body">
+        <p>Напрямую передать объект модели Django (например, из QuerySet) в <code>JsonResponse</code> нельзя, так как python-модуль <code>json</code> не знает, как преобразовывать сложные классы баз данных в текст. Мы должны перевести их в словари вручную:</p>
+        <pre><code class="language-python">from django.http import JsonResponse
+from .models import Participant
+
+def participant_list_api(request):
+    participants = Participant.objects.all()
+    # Преобразуем QuerySet в список словарей
+    data = []
+    for p in participants:
+        data.append({
+            "id": p.id,
+            "name": p.name,
+            "age": p.age,
+            "project_title": p.project_title
+        })
+    return JsonResponse(data, safe=False)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 12: REST HTTP Методы (CRUD) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>CRUD и HTTP-методы в REST API</h2>
+      </div>
+      <div class="slide-body">
+        <p>В REST API действия над ресурсами определяются HTTP-методом запроса:</p>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left; font-size: 1.15rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary-color);">
+              <th style="padding: 8px;">Действие (CRUD)</th>
+              <th style="padding: 8px;">HTTP-метод</th>
+              <th style="padding: 8px;">Маршрут (URI)</th>
+              <th style="padding: 8px;">Ожидаемый статус ответа</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td><strong>C</strong>reate (Создать)</td>
+              <td><span class="badge badge-secondary">POST</span></td>
+              <td><code>/api/students/</code></td>
+              <td><code>201 Created</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td><strong>R</strong>ead (Прочитать список)</td>
+              <td><span class="badge badge-primary">GET</span></td>
+              <td><code>/api/students/</code></td>
+              <td><code>200 OK</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td><strong>R</strong>ead (Прочитать один)</td>
+              <td><span class="badge badge-primary">GET</span></td>
+              <td><code>/api/students/&lt;int:pk&gt;/</code></td>
+              <td><code>200 OK</code> / <code>404 Not Found</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td><strong>U</strong>pdate (Обновить)</td>
+              <td><span class="badge badge-primary" style="background-color: #f1c40f;">PUT</span> / <span class="badge badge-primary" style="background-color: #e67e22;">PATCH</span></td>
+              <td><code>/api/students/&lt;int:pk&gt;/</code></td>
+              <td><code>200 OK</code> / <code>400 Bad Request</code></td>
+            </tr>
+            <tr>
+              <td><strong>D</strong>elete (Удалить)</td>
+              <td><span class="badge badge-accent">DELETE</span></td>
+              <td><code>/api/students/&lt;int:pk&gt;/</code></td>
+              <td><code>204 No Content</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 13: GET Эндпоинт и фильтрация -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>GET: Чтение и фильтрация параметров</h2>
+      </div>
+      <div class="slide-body">
+        <p>Мы можем фильтровать результаты GET-запросов с помощью query-параметров (строки запроса): <code>/api/participants/?age=15</code></p>
+        <pre><code class="language-python">def participant_list_api(request):
+    queryset = Participant.objects.all()
+    
+    # Извлекаем query-параметр ?age= из URL
+    age_filter = request.GET.get('age')
+    if age_filter:
+        queryset = queryset.filter(age=age_filter)
+        
+    data = [{"id": p.id, "name": p.name, "age": p.age} for p in queryset]
+    return JsonResponse(data, safe=False)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Прием JSON в POST-запросах -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Прием JSON-данных в POST-запросе</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для создания объектов клиент присылает JSON-данные в теле запроса (Request Body). Чтобы их прочитать в Django, нам нужно получить сырые байты из <code>request.body</code> и десериализовать их:</p>
+        <pre><code class="language-python">import json
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt  # Отключаем CSRF-защиту для API-запросов
+def create_participant_api(request):
+    if request.method == 'POST':
+        # Десериализуем байты тела запроса в словарь Python
+        data = json.loads(request.body)
+        
+        name = data.get('name')
+        age = data.get('age')
+        
+        # ... создание объекта в БД ...</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Валидация входных данных -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Валидация данных в REST API</h2>
+      </div>
+      <div class="slide-body">
+        <p>API должно строго проверять входные данные и возвращать понятные ошибки в формате JSON со статусом <code>400 Bad Request</code>:</p>
+        <pre><code class="language-python">        # Валидация
+        errors = {}
+        if not name:
+            errors['name'] = 'Это поле обязательно.'
+        if age is None or not isinstance(age, int) or age <= 0:
+            errors['age'] = 'Возраст должен быть положительным числом.'
+            
+        if errors:
+            return JsonResponse({"errors": errors}, status=400)
+            
+        # Если всё верно, сохраняем в БД
+        participant = Participant.objects.create(name=name, age=age)
+        return JsonResponse({"id": participant.id, "name": participant.name}, status=201)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 16: PUT/PATCH: Обновление данных -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>PUT и PATCH: Обновление данных</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>PUT:</strong> полная замена ресурса (клиент должен прислать все поля).</li>
+          <li><strong>PATCH:</strong> частичное обновление (клиент присылает только те поля, которые хочет изменить).</li>
+        </ul>
+        <pre><code class="language-python"># Фрагмент PATCH-запроса
+data = json.loads(request.body)
+participant = Participant.objects.filter(pk=pk).first()
+
+if 'name' in data:
+    participant.name = data['name']
+if 'age' in data:
+    participant.age = data['age']
+    
+participant.save()
+return JsonResponse({"id": participant.id, "name": participant.name, "age": participant.age})</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 17: DELETE: Удаление ресурса -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>DELETE: Удаление ресурса</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для удаления ресурса отправляется HTTP-запрос DELETE на URI конкретного объекта. При успешном удалении REST-конвенция предписывает возвращать пустой ответ со статус-кодом <code>204 No Content</code>:</p>
+        <pre><code class="language-python">@csrf_exempt
+def delete_participant_api(request, pk):
+    if request.method == 'DELETE':
+        participant = Participant.objects.filter(pk=pk).first()
+        if not participant:
+            return JsonResponse({"error": "Участник не найден"}, status=404)
+            
+        participant.delete()
+        # Возвращаем пустой ответ (status=204)
+        return HttpResponse(status=204)</code></pre>
+        <p style="margin-top: 15px; font-size: 1.1rem; color: #7f8c8d;">*Примечание: <code>HttpResponse(status=204)</code> возвращает пустой HTTP-пакет без тела, так как контент отсутствует.</p>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Полный CRUD на FBV -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Объединение CRUD в одной View</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem;">
+        <p>Обычно в Django при ручном написании API маршруты разделяют на два типа:</p>
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box">
+              <h4 style="margin-bottom: 5px;">1. Работа со списком (Collection)</h4>
+              <p>URL: <code>/api/participants/</code></p>
+              <ul>
+                <li><code>GET</code> — список всех объектов.</li>
+                <li><code>POST</code> — создание нового объекта.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h4 style="margin-bottom: 5px;">2. Работа с элементом (Item)</h4>
+              <p>URL: <code>/api/participants/&lt;int:pk&gt;/</code></p>
+              <ul>
+                <li><code>GET</code> — детальная информация.</li>
+                <li><code>PUT/PATCH</code> — обновление.</li>
+                <li><code>DELETE</code> — удаление.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top: 10px;">Внутри View мы просто делаем ветвление по <code>if request.method == '...'</code>.</p>
+      </div>
+    </div>
+
+    <!-- Слайд 19: Ошибки при создании API -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Частые ошибки при написании API</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>Ошибка 403 Forbidden (CSRF Failed):</strong> Django по умолчанию блокирует POST/PUT/DELETE запросы без CSRF-токена. Для API-представлений необходимо отключать эту проверку через декоратор <code>@csrf_exempt</code>.</li>
+          <li><strong>json.decoder.JSONDecodeError:</strong> возникает, если клиент прислал пустое тело запроса или невалидный JSON (например, забыл закрыть скобку). Код должен оборачивать <code>json.loads()</code> в блок <code>try/except</code>.</li>
+          <li><strong>Игнорирование safe=False:</strong> попытка вернуть список через <code>JsonResponse([...])</code> без указания именованного аргумента <code>safe=False</code> приводит к <code>TypeError</code>.</li>
+          <li><strong>Неправильные статус-коды:</strong> возвращение <code>200 OK</code> при ошибках валидации вместо <code>400 Bad Request</code>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Резюме и план практики -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и план практики</h2>
+      </div>
+      <div class="slide-body">
+        <div class="highlight-box success">
+          <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Чему мы научились:</h3>
+          <ul>
+            <li>Понимать архитектуру REST API и принципы клиент-серверного обмена JSON-данными.</li>
+            <li>Применять <code>JsonResponse</code> для быстрой отправки структурированных ответов.</li>
+            <li>Парсить входящий JSON из <code>request.body</code> и валидировать его поля.</li>
+            <li>Реализовывать полноценные CRUD-операции на Function-Based Views (FBV).</li>
+          </ul>
+        </div>
+        <p style="text-align: center; font-size: 1.4rem; font-weight: bold; margin-top: 15px; color: var(--primary-color);">Переходим к выполнению практических заданий!</p>
+      </div>
+    </div>
+
+    <!-- Счётчик слайдов и контролы -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="controls">
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Прогресс-бар -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>

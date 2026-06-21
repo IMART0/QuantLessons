@@ -1,0 +1,275 @@
+/* CSS для презентации - ЛФМШ "Квант" - Урок 22 */
+
+:root {
+  --bg-color: #f7f9fa;
+  --slide-bg: #ffffff;
+  --text-color: #2c3e50;
+  --primary-color: #34495e; /* Темный оттенок для академичного и рефлексивного тона */
+  --secondary-color: #27ae60; /* Зеленый - для Glad / Start */
+  --accent-color: #c0392b; /* Красный - для Mad / Stop */
+  --warning-color: #f39c12; /* Оранжевый - для Sad / Continue */
+  --blue-color: #2980b9; /* Голубой - для Pitching/General */
+  --border-color: #e2e8f0;
+  --code-bg: #f8f9fa;
+  --code-text: #c7254e;
+  --shadow: 0 10px 30px rgba(0,0,0,0.05);
+  --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Слайд-контейнер */
+.presentation-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Слайд */
+.slide {
+  position: absolute;
+  width: 90%;
+  max-width: 1200px;
+  height: 80%;
+  max-height: 675px; /* 16:9 соотношение */
+  background: var(--slide-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+  border: 1px solid var(--border-color);
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+/* Сетка контента */
+.slide-header {
+  margin-bottom: 25px;
+  border-bottom: 3px solid var(--blue-color);
+  padding-bottom: 10px;
+}
+
+.slide-header h2 {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.slide-body {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Разметка колонок */
+.columns {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+}
+
+.column {
+  flex: 1;
+}
+
+/* Списки */
+ul, ol {
+  margin-left: 30px;
+  margin-bottom: 15px;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+li strong {
+  color: var(--blue-color);
+}
+
+/* Выделение блоков */
+.highlight-box {
+  background-color: #ebf5fb;
+  border-left: 4px solid var(--blue-color);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 4px;
+}
+
+.highlight-box.success {
+  background-color: #e8f8f5;
+  border-left-color: var(--secondary-color);
+}
+
+.highlight-box.warning {
+  background-color: #fdf2e9;
+  border-left-color: var(--warning-color);
+}
+
+.highlight-box.danger {
+  background-color: #fdedec;
+  border-left-color: var(--accent-color);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 4px;
+  color: #fff;
+  margin-right: 5px;
+}
+
+.badge-primary { background-color: var(--primary-color); }
+.badge-secondary { background-color: var(--secondary-color); }
+.badge-accent { background-color: var(--accent-color); }
+.badge-warning { background-color: var(--warning-color); }
+.badge-blue { background-color: var(--blue-color); }
+
+/* Ретроспективные карточки/столбцы */
+.retro-board {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+  width: 100%;
+  height: 250px;
+}
+
+.retro-column {
+  flex: 1;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.retro-column.mad { background-color: var(--accent-color); }
+.retro-column.sad { background-color: var(--warning-color); }
+.retro-column.glad { background-color: var(--secondary-color); }
+
+.retro-column.start { background-color: var(--secondary-color); }
+.retro-column.stop { background-color: var(--accent-color); }
+.retro-column.continue { background-color: var(--blue-color); }
+
+.retro-column h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  padding-bottom: 5px;
+  width: 100%;
+}
+
+.retro-column p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Кнопки управления */
+.controls {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.control-btn {
+  background: var(--slide-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.control-btn:hover {
+  background: var(--blue-color);
+  color: #fff;
+  border-color: var(--blue-color);
+}
+
+/* Номер слайда */
+.slide-counter {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  font-weight: 500;
+  z-index: 100;
+}
+
+/* Прогресс-бар */
+.progress-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  z-index: 100;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--blue-color);
+  transition: width 0.3s ease;
+}
+
+/* Адаптация под проектор */
+@media screen and (max-height: 700px) {
+  .slide {
+    height: 90%;
+    padding: 20px 40px;
+  }
+  .slide-header h2 {
+    font-size: 1.8rem;
+  }
+  .slide-body {
+    font-size: 1.1rem;
+  }
+  .retro-board {
+    height: 200px;
+  }
+}

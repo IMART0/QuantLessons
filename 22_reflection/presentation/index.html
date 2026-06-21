@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 22: Рефлексия, Agile-Ретроспектива и Питчинг — ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="presentation-container">
+
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <span class="badge badge-blue" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          Рефлексия, Agile-Ретроспектива<br>и Навыки Питчинга
+        </h1>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Как завершать спринт, делать выводы и презентовать продукт</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Урок 22 • 9 июля, 14:30 - 15:50</p>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Что такое рефлексия? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое рефлексия?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Рефлексия</strong> (от лат. <em>reflexio</em> — обращение назад) — это процесс самоанализа, осмысления собственных действий, полученного опыта и результатов работы.</p>
+            <ul style="margin-top: 15px;">
+              <li><strong>Анализ прошлого:</strong> Что именно произошло? Почему дела пошли так, а не иначе?</li>
+              <li><strong>Оценка настоящего:</strong> В каком состоянии мы и наш проект находимся прямо сейчас?</li>
+              <li><strong>Проектирование будущего:</strong> Как применить этот опыт на следующем шаге?</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box">
+              <h3 style="color: var(--blue-color); margin-bottom: 10px;">Взгляд программиста</h3>
+              <p>Написать код и запустить сайт — это только половина дела. Если мы не анализируем свои ошибки в коде, логике или организации работы, мы обречены повторять их. Рефлексия — это <strong>рефакторинг процессов</strong> нашей работы и мышления.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Культура Agile и Scrum -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Культура Agile и Scrum в IT</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Agile</strong> (гибкая разработка) — это семейство методологий разработки ПО, ставящее во главу угла сотрудничество людей и быструю реакцию на изменения.</p>
+            <p style="margin-top: 15px;"><strong>Scrum</strong> — фреймворк управления проектами в рамках Agile. Вся разработка делится на короткие циклы — <strong>Спринты</strong> (от 1 до 4 недель).</p>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">События (совещания) в Scrum:</h3>
+              <ol>
+                <li>Планирование спринта (Sprint Planning)</li>
+                <li>Ежедневный Scrum (Daily Standup)</li>
+                <li>Обзор спринта / демо (Sprint Review)</li>
+                <li><strong>Ретроспектива (Sprint Retrospective)</strong></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Зачем нужна ретроспектива? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Sprint Retrospective: Взгляд назад</h2>
+      </div>
+      <div class="slide-body">
+        <p><strong>Ретроспектива (Ретро)</strong> — финальная встреча команды в конце спринта, посвященная анализу <em>самого процесса работы</em>, а не технического функционала продукта.</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="column">
+            <ul>
+              <li><strong>Что анализируем:</strong> взаимоотношения в команде, коммуникации, инструменты разработки, рабочие процессы.</li>
+              <li><strong>Главная цель:</strong> найти узкие места и составить план конкретных действий по улучшению работы (Action Items) в следующем спринте.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h3 style="color: var(--warning-color); margin-bottom: 10px;">Ретро — это НЕ:</h3>
+              <p>Это не поиск и наказание виновных. Это не сеанс взаимных жалоб ради жалоб. Это командное исследование с фокусом на <strong>решении проблем</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Принципы безопасной ретроспективы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Безопасность и открытость на ретро</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="margin-bottom: 10px; color: var(--primary-color);">Первостепенная директива</h3>
+            <p style="font-style: italic; color: #555;">«Независимо от того, что мы обнаружим, мы должны верить, что каждый сделал все, что мог, учитывая его знания, навыки, доступные ресурсы и текущую ситуацию».</p>
+            <p style="font-size: 0.9rem; margin-top: 10px; color: #7f8c8d;">— Норм Керт, основатель практик ретроспективы</p>
+          </div>
+          <div class="column">
+            <div class="highlight-box danger">
+              <h3 style="color: var(--accent-color); margin-bottom: 10px;">Правило Вегаса (Vegas Rule)</h3>
+              <p>«Все, что происходит в Вегасе, остается в Вегасе».<br>
+              Все обсуждения, эмоции, признания ошибок внутри ретроспективы строго конфиденциальны и не должны обсуждаться с другими командами или кураторами вне встречи.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Метод ретроспективы: Mad, Sad, Glad -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Метод Mad, Sad, Glad (Злой, Грустный, Радостный)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Этот шаблон фокусируется на эмоциональном состоянии команды во время выполнения задач спринта.</p>
+        <div class="retro-board">
+          <div class="retro-column mad">
+            <h3>Mad (Злость)</h3>
+            <p>Что раздражало, бесило, мешало работать? (например, упавший Git, непонятные баги в Django, долгие согласования)</p>
+          </div>
+          <div class="retro-column sad">
+            <h3>Sad (Грусть)</h3>
+            <p>Что расстроило, пошло не так, вызывало разочарование? (например, не успели сделать фичу, мало общались)</p>
+          </div>
+          <div class="retro-column glad">
+            <h3>Glad (Радость)</h3>
+            <p>Что принесло удовольствие, порадовало? Кому хочется сказать спасибо? (например, разобрались с REST, помогли другу)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Метод ретроспективы: Start, Stop, Continue -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Метод Start, Stop, Continue</h2>
+      </div>
+      <div class="slide-body">
+        <p>Этот шаблон ориентирован на конкретные действия и изменение практик работы команды.</p>
+        <div class="retro-board">
+          <div class="retro-column start">
+            <h3>Start (Начать)</h3>
+            <p>Какие новые практики/инструменты нужно внедрить? (например, писать тесты, делать ежедневный созвон в Telegram)</p>
+          </div>
+          <div class="retro-column stop">
+            <h3>Stop (Прекратить)</h3>
+            <p>От каких неэффективных действий нужно отказаться? (например, коммитить в main без веток, кодить ночью перед дедлайном)</p>
+          </div>
+          <div class="retro-column continue">
+            <h3>Continue (Продолжить)</h3>
+            <p>Какие работающие практики нужно закрепить? (например, парное программирование, подробное описание коммитов)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Конструктивный фидбек и "Я-сообщения" -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как правильно давать фидбек</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--accent-color); margin-bottom: 10px;">Ты-сообщение (Обвинение)</h3>
+            <p style="background: #fdedec; padding: 10px; border-radius: 4px; font-size: 1.1rem; margin-bottom: 15px;">
+              «Ты постоянно опаздываешь на наши встречи и из-за тебя мы срываем план!»
+            </p>
+            <ul>
+              <li>Переход на личности</li>
+              <li>Вызывает защитную реакцию</li>
+              <li>Не решает проблему</li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Я-сообщение (Конструктив)</h3>
+            <p style="background: #e8f8f5; padding: 10px; border-radius: 4px; font-size: 1.1rem; margin-bottom: 15px;">
+              «Когда встречи начинаются позже, я переживаю, что мы не успеем сделать проект вовремя. Давай обсудим время?»
+            </p>
+            <ul>
+              <li>Фокус на фактах и чувствах автора</li>
+              <li>Приглашение к диалогу</li>
+              <li>Снижает уровень конфликтности</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: От слов к делу: Экшен-поинты (Action Items) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Фиксация экшен-поинтов (Action Items)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Ретроспектива бесполезна, если после неё команда просто расходится. Итогом обсуждения должен стать список <strong>Action Items</strong> (шагов по улучшению).</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Правильный экшен-поинт:</h3>
+              <ul>
+                <li><strong>Конкретный:</strong> «Настроить автоматический деплой на Render».</li>
+                <li><strong>Имеет ответственного:</strong> «Ответственный: Вася».</li>
+                <li><strong>Имеет дедлайн:</strong> «Срок: до пятницы, 12:00».</li>
+              </ul>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box danger">
+              <h3 style="color: var(--accent-color); margin-bottom: 10px;">Плохой экшен-поинт:</h3>
+              <ul>
+                <li>«Нам нужно лучше работать».</li>
+                <li>«Давайте больше общаться».</li>
+                <li>«Кто-нибудь настроит базу данных к презентации».</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Что такое питч (Pitch)? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Искусство питча (Pitching Skills)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Питч</strong> — это короткое лаконичное представление идеи, проекта или продукта перед инвесторами, жюри или пользователями с целью убедить их в его ценности.</p>
+            <h3 style="margin-top: 15px; margin-bottom: 5px; color: var(--blue-color);">Elevator Pitch (Питч в лифте)</h3>
+            <p>Презентация идеи за 30-60 секунд (время поездки в лифте). Должна содержать: кто мы, какую проблему решаем, как именно и почему мы крутые.</p>
+          </div>
+          <div class="column">
+            <div class="highlight-box">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">Ключевые вопросы питча:</h3>
+              <ol>
+                <li>Какую реальную боль пользователя мы лечим?</li>
+                <li>Как устроен наш продукт и его логика?</li>
+                <li>Почему наше решение лучше аналогов?</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Структура 3-минутного питча проекта -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Анатомия успешной защиты проекта</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem;">
+        <ol>
+          <li><strong>Введение и Проблема (0:00 - 0:40):</strong> Яркое начало. Какая боль существует у целевой аудитории?</li>
+          <li><strong>Решение и Продукт (0:40 - 1:20):</strong> Что представляет собой ваш Django-сервис? Как он решает проблему?</li>
+          <li><strong>Технологии и Стек (1:20 - 1:50):</strong> Архитектура проекта. Django, PostgreSQL, REST API, сторонние интеграции.</li>
+          <li><strong>Живая демонстрация (1:50 - 2:30):</strong> Быстрый показ работающего интерфейса (без слайдов, прямо в браузере!).</li>
+          <li><strong>Команда и Планы (2:30 - 3:00):</strong> Кто делал проект, какой вклад внес и куда проект будет развиваться дальше.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Ораторское мастерство при защите -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как говорить, чтобы вас слушали</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>Уверенность и темп:</strong> Говорите внятно, делайте паузы после ключевых мыслей. Не тараторьте.</li>
+              <li><strong>Контакт глаз:</strong> Смотрите на жюри и слушателей, а не в пол или на экран проектора.</li>
+              <li><strong>Командное взаимодействие:</strong> Заранее распределите роли. Передавайте слово гладко: <em>«А про базу данных расскажет наш тимлид...»</em></li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Ответы на каверзные вопросы</h3>
+              <p>Если вы не знаете ответ на вопрос жюри, <strong>не оправдывайтесь</strong> и не молчите. Скажите честно: <em>«Отличный вопрос! Сейчас в нашей архитектуре этого нет, но мы зафиксируем это как технический долг и реализуем в следующей версии»</em>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Типичные ошибки при питчинге -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Смертные грехи презентации проекта</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box danger">
+              <h3 style="color: var(--accent-color); margin-bottom: 5px;">Чего делать нельзя:</h3>
+              <ul>
+                <li><strong>Слайды-стены:</strong> Перегружать слайды мелким текстом или полотнами кода (никто не успеет прочесть).</li>
+                <li><strong>Чтение с листа:</strong> Бубнить текст с телефона или листа бумаги.</li>
+                <li><strong>Выход за тайминг:</strong> Не успеть показать демо из-за длинного вступления.</li>
+                <li><strong>Оправдания:</strong> <em>«У нас вчера всё упало, поэтому ничего не работает»</em>. Говорите о том, что РАБОТАЕТ.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 5px;">Как сделать круто:</h3>
+              <ul>
+                <li>Минимум текста на слайдах — только цифры, схемы, скриншоты.</li>
+                <li>Репетируйте выступление с секундомером 3-5 раз.</li>
+                <li>Держите резервную запись экрана (GIF/видео) на случай сбоя интернета при демо.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 14: План сегодняшней практики -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Практическая работа: Время рефлексии</h2>
+      </div>
+      <div class="slide-body">
+        <div class="highlight-box">
+          <h3 style="color: var(--blue-color); margin-bottom: 10px;">Сегодня на занятии мы выполним 6 практических этапов:</h3>
+          <ol style="font-size: 1.15rem; margin-left: 20px;">
+            <li><strong>Ретроспектива "Mad, Sad, Glad"</strong> — выявим эмоциональные точки спринта.</li>
+            <li><strong>Ретроспектива "Start, Stop, Continue"</strong> — определим изменения в процессах.</li>
+            <li><strong>Проектирование Action Items</strong> — зафиксируем SMART-задачи.</li>
+            <li><strong>Формирование Elevator Pitch</strong> — напишем минутную самопрезентацию.</li>
+            <li><strong>Сухая репетиция питча</strong> — отработаем 3-минутную структуру.</li>
+            <li><strong>Стресс-тестирование защит</strong> — научимся парировать каверзные вопросы жюри.</li>
+          </ol>
+        </div>
+        <p style="text-align: center; font-size: 1.3rem; font-weight: bold; color: var(--secondary-color); margin-top: 15px;">Переходим к командной работе!</p>
+      </div>
+    </div>
+
+    <!-- Счётчик слайдов и контролы -->
+    <div class="slide-counter" id="slide-counter">1 / 14</div>
+    <div class="controls">
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Прогресс-бар -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>

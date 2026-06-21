@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 23: WebSockets и асинхронный Django — ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="presentation-container">
+
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          WebSockets и асинхронный Django
+        </h1>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Создание интерактивных приложений реального времени</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Урок 23 • 10 июля, 10:00 - 11:20</p>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Ограничения HTTP -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ограничения протокола HTTP</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Стандартный протокол HTTP идеален для загрузки документов, но имеет ряд ограничений для интерактивных систем:</p>
+            <ul>
+              <li><strong>Request-Response:</strong> только клиент может инициировать обмен данными. Сервер не может отправить данные без запроса.</li>
+              <li><strong>Соединение закрывается:</strong> после ответа TCP-соединение закрывается (или держится временно в Keep-Alive), заголовки передаются заново при каждом запросе.</li>
+              <li><strong>Накладные расходы:</strong> отправка кук и заголовков (сотни байт) ради получения 2 байт данных.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h3 style="color: var(--accent-color); margin-bottom: 10px;">Костыли прошлого:</h3>
+              <ul>
+                <li><strong>Short Polling:</strong> клиент шлёт запросы каждые 2 секунды («Есть новые данные?»). 99% ответов — «Нет». Высокая нагрузка на CPU.</li>
+                <li><strong>Long Polling:</strong> сервер держит запрос открытым, пока не появятся данные. Сложно масштабируется, занимает потоки сервера.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Что такое WebSocket? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Протокол WebSocket</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>WebSocket</strong> — это протокол полнодуплексной (двунаправленной) связи поверх одного постоянного TCP-соединения.</p>
+            <ul>
+              <li>Схема адресации: <code>ws://</code> (незащищенный) и <code>wss://</code> (защищенный, аналог HTTPS).</li>
+              <li><strong>Соединение не закрывается:</strong> один раз установив связь, клиент и сервер могут слать друг другу сообщения в любой момент.</li>
+              <li><strong>Минимальный оверхед:</strong> после рукопожатия фреймы данных передаются с заголовком всего в 2–10 байт.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Как создаётся соединение?</h3>
+              <ol>
+                <li>Клиент шлёт обычный HTTP-запрос с заголовком <code>Upgrade: websocket</code>. Это называется <strong>Handshake</strong> (рукопожатие).</li>
+                <li>Сервер соглашается, отправляя статус <code>101 Switching Protocols</code>.</li>
+                <li>HTTP-соединение трансформируется в WebSocket.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Сравнение HTTP и WebSocket -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Сравнение HTTP и WebSocket</h2>
+      </div>
+      <div class="slide-body">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 1.1rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary-color);">
+              <th style="padding: 10px; width: 25%;">Характеристика</th>
+              <th style="padding: 10px; width: 37%;">HTTP (Hypertext Transfer Protocol)</th>
+              <th style="padding: 10px; width: 38%;">WebSocket (WS Protocol)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><strong>Тип связи</strong></td>
+              <td style="padding: 10px;">Полудуплекс (только запрос-ответ)</td>
+              <td style="padding: 10px;">Полнодуплекс (одновременная отправка)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><strong>Инициатор</strong></td>
+              <td style="padding: 10px;">Всегда только клиент</td>
+              <td style="padding: 10px;">И клиент, и сервер в любой момент</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><strong>Жизнь соединения</strong></td>
+              <td style="padding: 10px;">Короткая (запрос завершился — закрыли)</td>
+              <td style="padding: 10px;">Длинная (постоянное открытое соединение)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><strong>Нагрузка заголовков</strong></td>
+              <td style="padding: 10px;">Большая (каждый раз Cookie, User-Agent)</td>
+              <td style="padding: 10px;">Минимальная (только при первом рукопожатии)</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px;"><strong>Примеры использования</strong></td>
+              <td style="padding: 10px;">Просмотр статей, блогов, отправка форм</td>
+              <td style="padding: 10px;">Чаты, онлайн-игры, котировки, совместная работа</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Асинхронность в программировании -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Синхронность vs Асинхронность</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Синхронный подход (блокирующий)</h3>
+            <p>Код выполняется строго последовательно. Если программа совершает сетевой запрос или читает файл с диска, выполнение <strong>блокируется</strong>. Процессор простаивает в ожидании ответа.</p>
+            <p style="margin-top: 10px;">Чтобы обрабатывать параллельные запросы, приходится запускать много процессов или потоков ОС, что тратит оперативную память (каждый поток ~8 МБ).</p>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Асинхронный подход (неблокирующий)</h3>
+            <p>Если задача ожидает внешнее событие (I/O), управление временно передаётся другой задаче. Всё это работает на одном потоке в <strong>Event Loop</strong> (цикле событий).</p>
+            <p style="margin-top: 10px;">Один процесс может удерживать тысячи одновременных открытых соединений WebSocket, тратя минимум памяти.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Асинхронный Python: async/await -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Асинхронность в Python</h2>
+      </div>
+      <div class="slide-body">
+        <p>Начиная с версии 3.5, в Python встроена поддержка асинхронного программирования через модуль <code>asyncio</code>:</p>
+        <pre><code class="language-python">import asyncio
+
+async def fetch_data(task_id, delay):
+    print(f"Задача {task_id}: Начало ожидания...")
+    await asyncio.sleep(delay)  # Неблокирующая пауза
+    print(f"Задача {task_id}: Данные получены!")
+    return {"id": task_id}
+
+async def main():
+    # Запускаем две корутины параллельно
+    results = await asyncio.gather(fetch_data(1, 2.0), fetch_data(2, 1.0))
+    print(f"Все результаты: {results}")
+
+asyncio.run(main())</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Различия серверов: WSGI vs ASGI -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Интерфейсы серверов: WSGI vs ASGI</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 5px;">WSGI (Web Server Gateway Interface)</h3>
+            <p>Создан в 2003 году. Синхронный стандарт взаимодействия Python-приложений с веб-серверами (Gunicorn, uWSGI).</p>
+            <ul>
+              <li>Строгая схема: один запрос -> один ответ.</li>
+              <li>Не умеет работать с долгоживущими соединениями (WebSockets, Server-Sent Events).</li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--secondary-color); margin-bottom: 5px;">ASGI (Asynchronous Server Gateway Interface)</h3>
+            <p>Преемник WSGI. Позволяет асинхронным Python-приложениям работать со множеством протоколов.</p>
+            <ul>
+              <li>Поддержка HTTP и WebSockets.</li>
+              <li>Многократный обмен сообщениями за время жизни одного соединения.</li>
+              <li>Серверы: Daphne, Uvicorn, Hypercorn.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Введение в Django Channels -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое Django Channels?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>По умолчанию Django — это WSGI-фреймворк, ориентированный на синхронный HTTP. </p>
+            <p><strong>Django Channels</strong> расширяет возможности Django, превращая его в асинхронный проект с поддержкой WebSockets, чатов, фоновых задач и многого другого.</p>
+            <p style="margin-top: 10px;">Он заменяет стандартный запуск Django через WSGI на <strong>ASGI-режим</strong>.</p>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Составные части Channels:</h3>
+              <ul>
+                <li><strong>ASGI-сервер:</strong> (обычно Daphne или Uvicorn).</li>
+                <li><strong>Consumers (Потребители):</strong> асинхронные контроллеры событий (аналог Views в Django).</li>
+                <li><strong>Routing:</strong> маршрутизатор запросов по протоколам (HTTP/WS) и URL.</li>
+                <li><strong>Channel Layers:</strong> система межпроцессного взаимодействия (обычно через Redis).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Потребители (Consumers) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Потребители (Consumers) в Channels</h2>
+      </div>
+      <div class="slide-body">
+        <p><strong>Consumer (Потребитель)</strong> — базовый элемент Channels. Это класс, который обрабатывает события соединения (подключение, получение сообщения, отключение).</p>
+        <div class="columns" style="margin-top: 10px;">
+          <div class="column">
+            <h4 style="color: var(--primary-color);">Синхронный (WebsocketConsumer)</h4>
+            <ul>
+              <li>Код пишется в обычном стиле без <code>async/await</code>.</li>
+              <li>Удобно, если нужно часто обращаться к синхронной ORM Django.</li>
+              <li>Под капотом запускается в отдельных потоках.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--secondary-color);">Асинхронный (AsyncWebsocketConsumer)</h4>
+            <ul>
+              <li>Использует <code>async/await</code>.</li>
+              <li>Максимальная производительность и эффективная утилизация ресурсов.</li>
+              <li>Для работы с БД требуются асинхронные обёртки.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Жизненный цикл WebSocket в Consumer -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>События жизненного цикла WebSocket</h2>
+      </div>
+      <div class="slide-body">
+        <p>Потребитель реагирует на 3 основных события. В асинхронном классе это выглядит так:</p>
+        <ul>
+          <li><code>async def connect(self):</code> — вызывается при попытке клиента установить соединение. Здесь мы должны вызвать <code>await self.accept()</code>, чтобы подтвердить рукопожатие, либо <code>await self.close()</code> для отклонения.</li>
+          <li><code>async def receive(self, text_data=None, bytes_data=None):</code> — вызывается при получении сообщения от клиента. В <code>text_data</code> приходит строка (часто JSON).</li>
+          <li><code>async def disconnect(self, close_code):</code> — вызывается, когда клиент закрывает вкладку, соединение рвётся из-за сети или сервер прерывает связь.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Маршрутизация (Routing) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Маршрутизация запросов (Routing)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Вместо <code>urls.py</code> для WebSockets используется файл <code>routing.py</code>. Вместо <code>path()</code> используется <code>re_path()</code> или <code>path()</code> из Channels:</p>
+        <pre><code class="language-python"># chat/routing.py
+from django.urls import path
+from . import consumers
+
+websocket_urlpatterns = [
+    path("ws/chat/<str:room_name>/", consumers.ChatConsumer.as_asgi()),
+]</code></pre>
+        <div class="highlight-box">
+          <p>В отличие от WSGI, где мы получаем объект <code>request</code>, в Channels в потребитель передаётся словарь <strong><code>scope</code></strong> (область видимости), содержащий параметры запроса, сессию, пользователя и параметры URL (<code>self.scope['url_route']['kwargs']</code>).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Настройка ASGI в Django -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Настройка ASGI в проекте (asgi.py)</h2>
+      </div>
+      <div class="slide-body">
+        <pre style="font-size: 0.85rem;"><code class="language-python"># myproject/asgi.py
+import os
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
+import chat.routing
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(), # Обычные HTTP-запросы
+    "websocket": AuthMiddlewareStack( # Запросы WebSockets
+        URLRouter(
+            chat.routing.websocket_urlpatterns
+        )
+    ),
+})</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Channel Layers (Слой каналов) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Channel Layers: Каналы и Группы</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Channel Layer</strong> — это механизм, позволяющий разным инстансам потребителей (даже на разных серверах) общаться друг с другом.</p>
+            <ul>
+              <li><strong>Канал (Channel):</strong> индивидуальный почтовый ящик каждого потребителя (уникальное имя).</li>
+              <li><strong>Группа (Group):</strong> чат-комната. Потребители могут вступать в группу и выходить из неё. Сообщение, отправленное в группу, получат ВСЕ её участники.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Redis как бэкенд</h3>
+              <p>В продакшене для Channel Layers используется <strong>Redis</strong> — быстрое хранилище данных в памяти. Все запущенные процессы ASGI-сервера подключаются к Redis для мгновенной пересылки сообщений.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Простейший EchoConsumer -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Пример: Эхо-потребитель (EchoConsumer)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Этот потребитель принимает любое сообщение от клиента и мгновенно возвращает его обратно:</p>
+        <pre><code class="language-python"># chat/consumers.py
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+class EchoConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept() # Разрешаем соединение
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message = data.get("message", "")
+        
+        # Отправляем сообщение обратно клиенту
+        await self.send(text_data=json.dumps({
+            "response": f"Эхо: {message}"
+        }))
+
+    async def disconnect(self, close_code):
+        pass</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Чат-потребитель с Группами -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Реальный чат: ChatConsumer c Группами</h2>
+      </div>
+      <div class="slide-body">
+        <pre style="font-size: 0.85rem;"><code class="language-python">class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f"chat_{self.room_name}"
+
+        # Присоединяемся к группе комнаты
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        # Покидаем группу
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        # Отправляем сообщение во ВСЮ группу
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {"type": "chat.message", "message": data["message"]}
+        )
+
+    async def chat_message(self, event):
+        # Этот метод срабатывает на событие группы с типом 'chat.message'
+        await self.send(text_data=json.dumps({"message": event["message"]}))</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 16: WebSocket на стороне клиента -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>WebSocket на клиенте (JavaScript)</h2>
+      </div>
+      <div class="slide-body">
+        <p>В браузере встроен объект <code>WebSocket</code>. Нам не нужны сторонние библиотеки:</p>
+        <pre style="font-size: 0.9rem;"><code class="language-javascript">// Открываем соединение
+const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/kvant/');
+
+// Обрабатываем входящие сообщения
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    console.log("Новое сообщение:", data.message);
+    document.querySelector('#chat-log').value += (data.message + '\n');
+};
+
+// Отправляем сообщение на сервер
+function sendMessage(text) {
+    chatSocket.send(JSON.stringify({
+        'message': text
+    }));
+}
+
+// Отслеживаем закрытие
+chatSocket.onclose = function(e) { console.error('Соединение закрыто!'); };</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 17: Асинхронность и Django ORM -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Интеграция с Django ORM</h2>
+      </div>
+      <div class="slide-body">
+        <p>Django ORM по умолчанию является <strong>синхронной</strong>. Вызов методов вроде <code>MyModel.objects.create()</code> внутри асинхронного метода заблокирует Event Loop или вызовет ошибку <code>SynchronousOnlyOperation</code>.</p>
+        <div class="columns" style="margin-top: 10px;">
+          <div class="column">
+            <h4 style="color: var(--primary-color); margin-bottom: 5px;">Способ 1: Асинхронные методы (Django 4.x+)</h4>
+            <p>Используйте асинхронные аналоги методов ORM с приставкой <code>a</code>:</p>
+            <pre><code class="language-python"># Асинхронное создание записи
+msg = await Message.objects.acreate(
+    room=room,
+    text=text,
+    user=user
+)</code></pre>
+          </div>
+          <div class="column">
+            <h4 style="color: var(--secondary-color); margin-bottom: 5px;">Способ 2: database_sync_to_async</h4>
+            <p>Для сложных цепочек ORM или вызова методов моделей:</p>
+            <pre><code class="language-python">from channels.db import database_sync_to_async
+
+@database_sync_to_async
+def get_user_rooms(user):
+    # Обычный синхронный код ORM
+    return list(user.rooms.all())</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Масштабирование и Деплой -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Масштабирование и Деплой асинхронного Django</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem;">
+        <ul>
+          <li><strong>Разделение трафика:</strong> в продакшене HTTP-запросы обычно направляют на WSGI-сервер (Gunicorn), а WebSockets — на ASGI-сервер (Daphne/Uvicorn).</li>
+          <li><strong>Настройка Nginx:</strong> Nginx должен уметь «проксировать» WebSocket-запросы. Для этого нужно настроить заголовки <code>Upgrade</code> и <code>Connection</code>.</li>
+          <li><strong>Защита соединений (WSS):</strong> обязательно шифруйте трафик с помощью SSL-сертификатов (wss:// вместо ws://), иначе злоумышленники смогут перехватывать сообщения и красть сессии.</li>
+          <li><strong>Redis:</strong> убедитесь, что Redis настроен на работу с паролем и находится в защищенной внутренней сети.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 19: Частые ошибки разработчиков -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Частые ошибки при работе с Channels</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>Забыли вызвать <code>await self.accept()</code> в <code>connect()</code>:</strong> соединение будет бесконечно висеть в состоянии ожидания и сбросится клиентом по таймауту.</li>
+          <li><strong>Блокировка Event Loop:</strong> вызов тяжелых синхронных функций (например, <code>time.sleep()</code> или <code>requests.get()</code>) внутри асинхронного метода. Сервер «зависает» для ВСЕХ подключенных пользователей. Используйте <code>asyncio.sleep()</code> и <code>httpx</code>.</li>
+          <li><strong>Синхронный доступ к ORM:</strong> выполнение <code>user.username</code>, если объект <code>user</code> является ленивым (lazy-loaded). Это выбросит ошибку <code>SynchronousOnlyOperation</code>. Заранее подгружайте связанные сущности (select_related).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Резюме и план практики -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и план практики</h2>
+      </div>
+      <div class="slide-body">
+        <div class="highlight-box success">
+          <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Чему мы научились:</h3>
+          <ul>
+            <li>Понимать разницу между протоколами HTTP и WebSockets.</li>
+            <li>Использовать асинхронный синтаксис <code>async/await</code> в Python.</li>
+            <li>Понимать разницу между архитектурными спецификациями WSGI и ASGI.</li>
+            <li>Создавать потребители (Consumers) и настраивать маршрутизацию в Django Channels.</li>
+            <li>Организовывать групповое вещание сообщений (Channel Layers) для групповых чатов.</li>
+          </ul>
+        </div>
+        <p style="text-align: center; font-size: 1.4rem; font-weight: bold; margin-top: 15px; color: var(--primary-color);">Переходим к практическим заданиям по асинхронному коду и Channels!</p>
+      </div>
+    </div>
+
+    <!-- Счётчик слайдов и контролы -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="controls">
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Прогресс-бар -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>

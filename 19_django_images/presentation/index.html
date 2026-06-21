@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 19: Практика работы с изображениями в Django</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="presentation-container">
+    
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center; align-items: center; justify-content: center;">
+        <span class="badge badge-primary" style="font-size: 1.1rem; padding: 6px 14px; margin-bottom: 20px;">ЛФМШ «Квант» 2026</span>
+        <h1 style="font-size: 3rem; color: var(--brand-color); margin-bottom: 15px; font-weight: 800;">Практика работы с изображениями</h1>
+        <p style="font-size: 1.5rem; color: var(--text-color); max-width: 850px; line-height: 1.6; margin-bottom: 30px;">
+          Урок 19: Как настроить загрузку медиафайлов в Django, работать с Pillow, оптимизировать картинки на лету, конвертировать в WebP и делать кастомные валидаторы.
+        </p>
+        <div style="font-size: 1.1rem; color: #7f8c8d;">
+          <strong>Дата:</strong> 4 июля &nbsp;|&nbsp; <strong>Время:</strong> 11:30 - 12:50
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Зачем сайту изображения? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Зачем сайту изображения?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Практически любое современное веб-приложение работает с динамическими изображениями:</p>
+            <ul>
+              <li><strong>Аватары пользователей:</strong> персонализация профилей.</li>
+              <li><strong>Интернет-магазины:</strong> фотографии товаров в каталоге.</li>
+              <li><strong>Блоги и новости:</strong> обложки и иллюстрации к статьям.</li>
+              <li><strong>Социальные сети:</strong> публикации пользователей с галереями.</li>
+            </ul>
+            <div class="highlight-box success">
+              В отличие от стилей и скриптов, эти изображения загружаются <strong>пользователями</strong> в процессе работы сайта, а не разработчиками.
+            </div>
+          </div>
+          <div class="column">
+            <p><strong>Технические вызовы:</strong></p>
+            <ul>
+              <li>Где физически хранить файлы на сервере?</li>
+              <li>Как связать файл с записью в базе данных?</li>
+              <li>Как защитить сервер от загрузки вредоносных скриптов под видом картинок?</li>
+              <li>Как сжимать файлы, чтобы сайт не тормозил при загрузке картинок по 15 МБ?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Static vs Media -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Static vs Media: Принципиальное отличие</h2>
+      </div>
+      <div class="slide-body">
+        <p>В Django файлы разделяются на две независимые категории. Смешивать их — грубейшая ошибка архитектуры.</p>
+        <table style="width:100%; margin-top: 15px;">
+          <thead>
+            <tr>
+              <th>Критерий</th>
+              <th>Статические файлы (Static)</th>
+              <th>Медиафайлы (Media)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Что это?</strong></td>
+              <td>CSS, JS, иконки сайта, шрифты, фоновые картинки верстки.</td>
+              <td>Аватары, файлы документов, фотографии товаров, чеки.</td>
+            </tr>
+            <tr>
+              <td><strong>Кто создает?</strong></td>
+              <td>Разработчик (вместе с кодом проекта).</td>
+              <td>Пользователь (через формы на работающем сайте).</td>
+            </tr>
+            <tr>
+              <td><strong>Где хранятся?</strong></td>
+              <td>В папках приложений или общей <code>static/</code>. Под гитом.</td>
+              <td>В специальной папке <code>media/</code>. <strong>Никогда не под гитом!</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Изменяемость</strong></td>
+              <td>Не меняются во время работы приложения.</td>
+              <td>Постоянно загружаются, удаляются и перезаписываются.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Настройка Django settings.py -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Настройка Media в settings.py</h2>
+      </div>
+      <div class="slide-body">
+        <p>Чтобы Django понимал, куда сохранять загруженные файлы и по каким ссылкам их отдавать, нужно настроить две переменные:</p>
+        <pre><code class="language-python">import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 1. Физический путь на диске, куда будут сохраняться файлы
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 2. URL-префикс, по которому файлы будут доступны в браузере
+MEDIA_URL = '/media/'</code></pre>
+        <div class="highlight-box warning">
+          <strong>Важно:</strong> убедитесь, что папка <code>media/</code> добавлена в ваш файл <code>.gitignore</code>, чтобы пользовательские файлы случайно не улетели в репозиторий GitHub.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Маршрутизация в разработке -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раздача медиафайлов: urls.py</h2>
+      </div>
+      <div class="slide-body">
+        <p>В режиме разработки (когда <code>DEBUG = True</code>) встроенный сервер Django может раздавать медиафайлы. Для этого нужно модифицировать главный <code>urls.py</code>:</p>
+        <pre><code class="language-python">from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    # ... ваши основные маршруты ...
+]
+
+# Раздаем медиафайлы только во время разработки!
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)</code></pre>
+        <div class="highlight-box success">
+          <strong>Production-подсказка:</strong> При <code>DEBUG = False</code> функция <code>static()</code> вернет пустой список. На реальном сервере раздачей картинок занимается быстрый веб-сервер Nginx или облачное хранилище (S3).
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: models.ImageField и Pillow -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Поле модели: ImageField и библиотека Pillow</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Для работы с картинками Django предоставляет специальное поле — <code>models.ImageField</code>.</p>
+            <pre><code class="language-python">class Profile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE
+    )
+    avatar = models.ImageField(
+        upload_to='avatars/', 
+        blank=True, 
+        null=True
+    )</code></pre>
+            <ul>
+              <li><code>upload_to='avatars/'</code> — файлы будут складываться в <code>MEDIA_ROOT/avatars/</code>.</li>
+              <li>Можно использовать шаблон даты: <code>upload_to='avatars/%Y/%m/%d/'</code>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <strong>Внимание:</strong> <code>ImageField</code> не будет работать без библиотеки <strong>Pillow</strong>!
+            </div>
+            <p>Pillow — это стандартная библиотека Python для обработки изображений. Если вы попытаетесь применить миграцию с <code>ImageField</code> без неё, Django выдаст ошибку.</p>
+            <pre><code class="language-bash">pip install Pillow</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Как хранятся файлы? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как файлы хранятся в базе данных и на диске?</h2>
+      </div>
+      <div class="slide-body">
+        <p>Важно понимать разделение обязанностей между БД и файловой системой:</p>
+        <ul>
+          <li><strong>В базе данных</strong> хранится обычная <strong>строка</strong> с относительным путем к файлу (например, <code>"avatars/avatar_123.jpg"</code>).</li>
+          <li><strong>На жестком диске</strong> лежит сам файл по пути <code>MEDIA_ROOT + "avatars/avatar_123.jpg"</code>.</li>
+        </ul>
+        <p>При получении объекта из БД, поле <code>ImageField</code> оборачивается в объект <code>ImageFieldFile</code>, предоставляющий полезные свойства:</p>
+        <pre><code class="language-python">profile = Profile.objects.get(id=1)
+print(profile.avatar.name)  # 'avatars/avatar_123.jpg'
+print(profile.avatar.path)  # Абсолютный путь: '/home/user/project/media/avatars/avatar_123.jpg'
+print(profile.avatar.url)   # URL для браузера: '/media/avatars/avatar_123.jpg'
+print(profile.avatar.width) # Ширина в пикселях (например, 800)
+print(profile.avatar.height)# Высота в пикселях (например, 600)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Форма загрузки (HTML) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>HTML-форма для загрузки файлов</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для загрузки файлов на сервер HTML-форма должна соответствовать трем жестким правилам:</p>
+        <ol>
+          <li>Метод отправки должен быть только <strong>POST</strong>.</li>
+          <li>Обязательно должен присутствовать атрибут <strong><code>enctype="multipart/form-data"</code></strong>. Без него файлы просто не передадутся в теле запроса!</li>
+          <li>Поля выбора файлов имеют тип <code>type="file"</code>.</li>
+        </ol>
+        <pre><code class="language-html">&lt;!-- Шаблон: edit_profile.html --&gt;
+&lt;form method="post" enctype="multipart/form-data"&gt;
+    {% csrf_token %}
+    {{ form.as_p }}
+    &lt;button type="submit"&gt;Сохранить изменения&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="highlight-box warning">
+          Если вы забыли написать <code>enctype="multipart/form-data"</code>, то в <code>views.py</code> список файлов придет абсолютно пустым. Это самая частая ошибка новичков!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Обработка файлов во views.py -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Обработка файлов во views.py</h2>
+      </div>
+      <div class="slide-body">
+        <p>Обычные текстовые поля формы приходят в словаре <code>request.POST</code>. Файлы же приходят в отдельном словаре <strong><code>request.FILES</code></strong>. Форма должна инициализироваться обоими словарями:</p>
+        <pre><code class="language-python"># views.py
+def edit_profile(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        # Передаем request.POST и request.FILES!
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_detail')
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'edit_profile.html', {'form': form})</code></pre>
+        <div class="highlight-box success">
+          При вызове <code>form.save()</code> Django автоматически берет файл из временного хранилища, сохраняет его на диск в <code>MEDIA_ROOT/upload_to</code> и записывает путь к нему в базу данных.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Шаблоны и вывод картинок -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Отображение картинок в HTML-шаблонах</h2>
+      </div>
+      <div class="slide-body">
+        <p>При выводе изображений в шаблонах нужно всегда предусматривать случай, когда картинка не загружена (поле пустое/None), иначе сайт выдаст <code>ValueError</code> при обращении к <code>.url</code>.</p>
+        <pre><code class="language-html">&lt;!-- Шаблон профиля пользователя --&gt;
+&lt;div class="profile-card"&gt;
+    &lt;h3&gt;{{ profile.user.username }}&lt;/h3&gt;
+    
+    {% if profile.avatar %}
+        &lt;!-- Если аватар загружен --&gt;
+        &lt;img src="{{ profile.avatar.url }}" alt="Аватар" class="avatar"&gt;
+    {% else %}
+        &lt;!-- Если аватара нет — показываем заглушку из static --&gt;
+        &lt;img src="{% static 'images/default-avatar.png' %}" alt="Аватар по умолчанию" class="avatar"&gt;
+    {% endif %}
+&lt;/div&gt;</code></pre>
+        <div class="highlight-box warning">
+          Никогда не пишите <code>&lt;img src="{{ profile.avatar }}"&gt;</code>. Поле модели возвращает объект файла. Чтобы получить ссылку для атрибута <code>src</code>, нужно обязательно обратиться к свойству <strong><code>.url</code></strong>!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Проблема тяжелых картинок -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Проблема: тяжелые оригиналы файлов</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Современные смартфоны делают снимки с разрешением 4000х3000 пикселей весом от 8 до 15 МБ.</p>
+            <p><strong>Что будет, если сохранять их без изменений?</strong></p>
+            <ul>
+              <li><strong>Расход места:</strong> 1000 пользователей загрузят аватаров на 10 ГБ.</li>
+              <li><strong>Тормоза у клиентов:</strong> браузер будет скачивать 10 МБ картинку, чтобы показать кружочек 50x50 пикселей.</li>
+              <li><strong>Перегрузка сети:</strong> сервер быстро исчерпает лимит трафика.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <strong>Решение:</strong> перехватывать загружаемый файл в момент сохранения, пропорционально уменьшать его разрешение (например, до 400х400) и сжимать качество.
+            </div>
+            <p>В Django для этого переопределяют метод <code>save()</code> модели.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Переопределение метода save() -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Переопределение метода save(): Теория</h2>
+      </div>
+      <div class="slide-body">
+        <p>Каждая модель Django имеет метод <code>save()</code>, который отвечает за запись данных в БД. Мы можем встроиться в этот процесс:</p>
+        <pre><code class="language-python">class Profile(models.Model):
+    # ... поля ...
+    avatar = models.ImageField(upload_to='avatars/')
+
+    def save(self, *args, **kwargs):
+        # 1. Сначала выполняем логику обработки картинки (ресайз/сжатие)
+        if self.avatar:
+            self.resize_avatar()
+            
+        # 2. Вызываем оригинальный метод save() родительского класса models.Model
+        super().save(*args, **kwargs)</code></pre>
+        <div class="highlight-box success">
+          Это гарантирует, что изображение будет сжато при любом сохранении — будь то через форму на сайте, через Django-админку или через API!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Код save() с ресайзом Pillow -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ресайз изображения на лету с Pillow</h2>
+      </div>
+      <div class="slide-body" style="justify-content: flex-start;">
+        <p>Код переопределения <code>save()</code> с использованием библиотеки PIL (Pillow):</p>
+        <pre style="margin: 5px 0; font-size: 0.85rem; line-height: 1.3;"><code class="language-python">from django.core.files.base import ContentFile
+from PIL import Image
+import io
+
+class Profile(models.Model):
+    avatar = models.ImageField(upload_to='avatars/')
+
+    def save(self, *args, **kwargs):
+        if self.avatar:
+            # Открываем изображение из памяти
+            img = Image.open(self.avatar)
+            
+            # Если разрешение больше 300x300, уменьшаем с сохранением пропорций
+            if img.width > 300 or img.height > 300:
+                img.thumbnail((300, 300))
+                
+                # Сохраняем измененную картинку во временный буфер в памяти
+                buffer = io.BytesIO()
+                img.save(buffer, format=img.format)
+                
+                # Перезаписываем файл в поле модели перед сохранением в БД
+                self.avatar.save(self.avatar.name, ContentFile(buffer.getvalue()), save=False)
+                
+        super().save(*args, **kwargs)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Оптимизация: Конвертация в WebP -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Конвертация в современный формат WebP</h2>
+      </div>
+      <div class="slide-body" style="justify-content: flex-start;">
+        <p>WebP сжимает изображения на 30% лучше, чем JPEG, без потери качества. Сконвертируем файл прямо при загрузке:</p>
+        <pre style="margin: 5px 0; font-size: 0.85rem; line-height: 1.3;"><code class="language-python">def save(self, *args, **kwargs):
+    if self.avatar:
+        img = Image.open(self.avatar)
+        
+        # Конвертируем в RGB (WebP не поддерживает RGBA в некоторых JPEG-исходниках)
+        if img.mode in ('RGBA', 'LA'):
+            img = img.convert('RGB')
+            
+        # Уменьшаем размер
+        img.thumbnail((300, 300))
+        
+        # Меняем расширение файла в имени на .webp
+        name_without_ext = os.path.splitext(self.avatar.name)[0]
+        webp_name = f"{name_without_ext}.webp"
+        
+        # Записываем в WebP в буфер памяти
+        buffer = io.BytesIO()
+        img.save(buffer, format='WEBP', quality=85) # Сжатие 85% качества
+        
+        self.avatar.save(webp_name, ContentFile(buffer.getvalue()), save=False)
+        
+    super().save(*args, **kwargs)</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Валидация картинок на уровне формы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Валидаторы для картинок (размер и вес)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Иногда нужно запретить пользователю загружать слишком тяжелые файлы или картинки с неподходящим соотношением сторон еще на этапе проверки формы:</p>
+        <pre><code class="language-python">from django import forms
+from django.core.exceptions import ValidationError
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['avatar']
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+        if avatar:
+            # 1. Проверяем вес файла (в байтах). Ограничим 2 МБ.
+            if avatar.size > 2 * 1024 * 1024:
+                raise ValidationError("Размер файла не должен превышать 2 МБ!")
+            
+            # 2. Проверяем разрешение с помощью Pillow
+            img = Image.open(avatar)
+            if img.width < 150 or img.height < 150:
+                raise ValidationError("Разрешение картинки должно быть не меньше 150x150 px!")
+        return avatar</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 16: Настройка виджета формы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Кастомизация виджета загрузки файлов</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Стандартный HTML виджет <code>&lt;input type="file"&gt;</code> выглядит невзрачно. Django по умолчанию использует виджет <code>ClearableFileInput</code>, который выводит текущий файл и галочку «Очистить».</p>
+            <p>Мы можем стилизовать или заменить виджет в форме:</p>
+            <pre><code class="language-python">class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['avatar']
+        widgets = {
+            'avatar': forms.ClearableFileInput(attrs={
+                'class': 'form-control-file',
+                'accept': 'image/*' # только картинки
+            })
+        }</code></pre>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              Атрибут <code>accept="image/*"</code> открывает у пользователя окно выбора файлов, сразу отфильтрованное по изображениям, что повышает удобство работы!
+            </div>
+            <p>Для продвинутого UI можно написать кастомный виджет, который рендерит миниатюру картинки прямо рядом с кнопкой выбора файла.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 17: User Profile Avatar Scenario -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Полный цикл загрузки аватара</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem;">
+        <p>Давайте проследим путь картинки от клика пользователя до сохранения в базу:</p>
+        <ol>
+          <li>Пользователь выбирает файл <code>photo.jpg</code> на компьютере и нажимает «Отправить».</li>
+          <li>Браузер кодирует файл в multipart-формат и отправляет HTTP POST запрос на сервер.</li>
+          <li>Django принимает запрос, видит multipart-данные, парсит файлы и временно помещает их в память (или временную папку) в виде объекта <code>InMemoryUploadedFile</code> в <code>request.FILES</code>.</li>
+          <li>Вьюха передает <code>request.FILES['avatar']</code> в <code>ProfileForm</code>.</li>
+          <li>Метод <code>form.is_valid()</code> запускает валидаторы (проверяет вес файла и расширение).</li>
+          <li>При вызове <code>form.save()</code> срабатывает переопределенный <code>save()</code> в модели.</li>
+          <li>Pillow открывает файл из памяти, уменьшает его, конвертирует в WebP, сохраняет на диск в <code>media/avatars/photo.webp</code>.</li>
+          <li>В БД записывается путь: <code>"avatars/photo.webp"</code>. Пользователю рендерится страница с новым аватаром.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Безопасность при работе с медиафайлами -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Безопасность: как защитить сервер?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Загрузка файлов пользователями — одна из самых опасных зон веб-приложения. Злоумышленник может попытаться залить вредоносный PHP/Python скрипт под видом картинки.</p>
+            <div class="highlight-box warning">
+              <strong>Атака Pixel Flood (DOS-атака):</strong><br>
+              Злоумышленник загружает картинку размером 1х1 пиксель, но в заголовке файла указывает разрешение 100 000 х 100 000 пикселей. При попытке открыть её Pillow выделит гигабайты ОЗУ, и сервер упадет.
+            </div>
+          </div>
+          <div class="column">
+            <p><strong>Меры защиты:</strong></p>
+            <ul>
+              <li><strong>Не доверяйте расширениям:</strong> проверяйте реальное содержимое файла (Django ImageField делает это автоматически через Pillow, проверяя заголовки картинки).</li>
+              <li><strong>Запрет исполнения скриптов:</strong> на боевом сервере в Nginx запретите выполнение любых скриптов (.php, .py, .sh) в папке <code>media/</code>.</li>
+              <li><strong>Ограничивайте размер:</strong> проверяйте <code>file.size</code> в валидаторах формы.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 19: Типичные ошибки новичков -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Типичные ошибки при работе с изображениями</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>Забыт <code>enctype="multipart/form-data"</code> в HTML-форме:</strong> файлы просто не отправляются на сервер, <code>request.FILES</code> остается пустым.</li>
+          <li><strong>Отсутствует проверка на пустой файл в шаблоне:</strong> код <code>{{ profile.avatar.url }}</code> вызовет ошибку <code>ValueError: The 'avatar' attribute has no file associated with it.</code>, если пользователь не загрузил аватар. Пользуйтесь <code>{% if profile.avatar %}</code>!</li>
+          <li><strong>Попытка хранить файлы в Git:</strong> папка <code>media/</code> должна быть добавлена в <code>.gitignore</code>. Пользовательские файлы уникальны для каждого развернутого сервера.</li>
+          <li><strong>Забытый импорт Pillow:</strong> без установленного <code>Pillow</code> проект не запустится, ругаясь на <code>SystemCheckError</code>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Резюме и план практики -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и план практической работы</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li>Для медиафайлов используйте <code>MEDIA_ROOT</code> и <code>MEDIA_URL</code>.</li>
+              <li>Для картинок всегда используйте <code>models.ImageField</code> (требует Pillow).</li>
+              <li>Всегда сжимайте картинки и уменьшайте разрешение в методе <code>save()</code>.</li>
+              <li>Используйте современный формат WebP для ускорения загрузки сайта.</li>
+              <li>Проверяйте размер и разрешение файлов в формах через валидаторы.</li>
+            </ul>
+          </div>
+          <div class="column" style="display: flex; align-items: center; justify-content: center;">
+            <div class="highlight-box success" style="text-align: center; width: 100%;">
+              <h3 style="margin-bottom: 10px; color: var(--success-color);">Практическая часть</h3>
+              <p>Сегодня напишем систему профилей с аватарами: сделаем валидацию по весу и размеру, настроим авто-ресайз до 300х300px и конвертацию загруженных картинок в WebP на лету!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Панель управления -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед</button>
+    </div>
+    
+    <!-- Счетчик и прогресс-бар -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

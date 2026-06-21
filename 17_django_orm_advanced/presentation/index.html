@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 17: ORM связи, оптимизация запросов и агрегаты</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="presentation-container">
+    
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center; align-items: center; justify-content: center;">
+        <span class="badge badge-primary" style="font-size: 1.1rem; padding: 6px 14px; margin-bottom: 20px;">ЛФМШ «Квант» 2026</span>
+        <h1 style="font-size: 3rem; color: var(--brand-color); margin-bottom: 15px; font-weight: 800;">ORM связи, оптимизация и агрегаты</h1>
+        <p style="font-size: 1.5rem; color: var(--text-color); max-width: 800px; line-height: 1.6; margin-bottom: 30px;">
+          Урок 17: Как связать таблицы базы данных, решить проблему N+1 запросов и производить сложные вычисления с помощью Django ORM
+        </p>
+        <div style="font-size: 1.1rem; color: #7f8c8d;">
+          <strong>Дата:</strong> 3 июля &nbsp;|&nbsp; <strong>Время:</strong> 11:30 - 12:50
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Введение в реляционные связи -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Реляционные связи: зачем разделять данные?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>В реляционных СУБД данные не хранят «всё в одной куче». Процесс <strong>нормализации</strong> требует разделения информации по специализированным таблицам.</p>
+            <div class="highlight-box">
+              <strong>Почему дублирование — это зло?</strong><br>
+              Если в каждой строке книги хранить имя, биографию и email автора, то при изменении почты автора придётся обновить тысячи записей. Это ведёт к рассинхронизации данных и неэффективному использованию памяти.
+            </div>
+          </div>
+          <div class="column">
+            <p><strong>Типы связей в базах данных:</strong></p>
+            <ul>
+              <li><strong>Один-ко-многим (One-to-Many):</strong> У одного автора много книг.</li>
+              <li><strong>Многие-ко-многим (Many-to-Many):</strong> У книги может быть несколько авторов, а у автора — много книг.</li>
+              <li><strong>Один-к-одному (One-to-One):</strong> У одного пользователя ровно один профиль с настройками.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: ForeignKey (Один-ко-многим) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Связь один-ко-многим: ForeignKey</h2>
+      </div>
+      <div class="slide-body">
+        <p>Используется, когда одна запись в таблице А связана с несколькими записями в таблице Б. В Django объявляется в той модели, которая относится к стороне «много».</p>
+        <pre><code class="language-python">class Author(models.Model):
+    name = models.CharField(max_length=100)
+
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    # Связываем книгу с автором
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')</code></pre>
+        <p><strong>Параметр <code>on_delete</code> (поведение при удалении родительской записи):</strong></p>
+        <ul>
+          <li><code>models.CASCADE</code> — при удалении автора удаляются и все его книги.</li>
+          <li><code>models.SET_NULL</code> — книги остаются, поле <code>author</code> зануляется (требует <code>null=True</code>).</li>
+          <li><code>models.PROTECT</code> — запрещает удалять автора, пока на него ссылается хотя бы одна книга.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 4: ManyToManyField (Многие-ко-многим) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Связь многие-ко-многим: ManyToManyField</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Используется, когда запись из таблицы А может быть связана со многими записями из Б, и наоборот (например, Книги и Жанры).</p>
+            <p>На уровне базы данных для этого создаётся скрытая <strong>промежуточная (связующая) таблица</strong> с парами внешних ключей.</p>
+            <div class="highlight-box success">
+              Django полностью управляет промежуточной таблицей автоматически!
+            </div>
+          </div>
+          <div class="column">
+            <pre><code class="language-python">class Genre(models.Model):
+    name = models.CharField(max_length=50)
+
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    genres = models.ManyToManyField(
+        Genre, 
+        related_name='books'
+    )</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: OneToOneField (Один-к-одному) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Связь один-к-одному: OneToOneField</h2>
+      </div>
+      <div class="slide-body">
+        <p>Аналогично <code>ForeignKey</code>, но с ограничением уникальности (<code>unique=True</code>): запись в таблице А может соответствовать строго одной записи в таблице Б.</p>
+        <pre><code class="language-python">from django.contrib.auth.models import User
+
+class Profile(models.Model):
+    # Каждому пользователю — строго один профиль
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='profile'
+    )
+    avatar = models.ImageField(upload_to='avatars/')
+    bio = models.TextField()</code></pre>
+        <div class="highlight-box">
+          Обычно используется для расширения стандартной модели пользователей в Django пользовательскими полями без изменения исходного кода фреймворка.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Обратные связи и related_name -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Обратные связи и related_name</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Прямой запрос:</strong> от Книги к Автору.<br><code>book.author</code> — возвращает объект автора.</p>
+            <p><strong>Обратный запрос:</strong> от Автора к Книгам.</p>
+            <ul>
+              <li><strong>По умолчанию:</strong> Django создаёт менеджер с именем <code>[имя_модели]_set</code>.<br>
+              <code>author.book_set.all()</code></li>
+              <li><strong>С параметром <code>related_name='books'</code>:</strong><br>
+              <code>author.books.all()</code> (гораздо красивее и понятнее!).</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <strong>Важно:</strong> При определении связей всегда указывайте понятный <code>related_name</code>. Это стандарт профессиональной разработки!
+            </div>
+            <pre><code class="language-python"># Без related_name:
+a.book_set.filter(price__gt=500)
+
+# С related_name='books':
+a.books.filter(price__gt=500)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Запросы по связанным полям (Lookups) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Фильтрация по связанным полям</h2>
+      </div>
+      <div class="slide-body">
+        <p>Django ORM позволяет делать запросы сквозь связи с помощью синтаксиса двойного подчёркивания (<code>__</code>).</p>
+        <pre><code class="language-python"># 1. Поиск книг, у автора которых имя "Лев Толстой"
+books = Book.objects.filter(author__name='Лев Толстой')
+
+# 2. Поиск авторов, написавших книги со словом "Python" в названии (обратная связь)
+authors = Author.objects.filter(books__title__icontains='Python')
+
+# 3. Поиск книг, у которых есть жанры с названием "Фантастика"
+sci_fi_books = Book.objects.filter(genres__name='Фантастика')</code></pre>
+        <div class="highlight-box">
+          ORM автоматически преобразует двойное подчёркивание в соответствующие SQL-операторы <code>JOIN</code> «под капотом».
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Проблема N+1 запросов: Суть -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Проблема N+1 запросов</h2>
+      </div>
+      <div class="slide-body">
+        <p>Это одна из самых частых и опасных ошибок производительности при работе с ORM.</p>
+        <pre><code class="language-python"># Получаем список всех книг (1 запрос к БД)
+books = Book.objects.all()
+
+for book in books:
+    # Для каждой книги запрашиваем имя автора (еще N запросов к БД!)
+    print(f"Книга: {book.title}, Автор: {book.author.name}")</code></pre>
+        <div class="highlight-box warning">
+          Если в базе данных 100 книг, этот код совершит <strong>101 SQL-запрос</strong> (1 запрос на книги + 100 запросов на каждого автора отдельно). При высокой посещаемости сайта сервер базы данных просто откажет.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Почему N+1 возникает незаметно? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Почему ORM допускает это?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Django ORM работает по принципу <strong>«ленивой загрузки» (lazy loading)</strong>. Данные запрашиваются из БД только тогда, когда к ним непосредственно обращаются.</p>
+            <ul>
+              <li>При вызове <code>Book.objects.all()</code> Django берёт только данные о книгах.</li>
+              <li>Поля связей (например, внешние ключи) содержат только ID связанных записей.</li>
+              <li>При первом обращении к <code>book.author.name</code> ORM экстренно шлёт SQL-запрос: <code>SELECT * FROM author WHERE id = ...</code>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <strong>Решение:</strong> «Жадная загрузка» (eager loading). Нужно заставить ORM загрузить связанные данные сразу, в первом же запросе. Для этого в Django есть методы <strong><code>select_related</code></strong> и <strong><code>prefetch_related</code></strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Решение N+1: select_related -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Оптимизация с select_related</h2>
+      </div>
+      <div class="slide-body">
+        <p>Используется для связей <strong>ForeignKey</strong> и <strong>OneToOneField</strong> (одиночные связи на стороне «один»).</p>
+        <pre><code class="language-python"># Загружает книги и их авторов ОДНИМ запросом
+books = Book.objects.select_related('author').all()
+
+for book in books:
+    # Данные автора уже лежат в памяти! Новых запросов нет.
+    print(f"{book.title} — {book.author.name}")</code></pre>
+        <p><strong>Как это устроено внутри базы данных?</strong><br>
+        Django ORM генерирует SQL-запрос с оператором <code>INNER JOIN</code> или <code>LEFT OUTER JOIN</code>, склеивая таблицы прямо на стороне СУБД:</p>
+        <pre><code class="language-sql">SELECT book.id, book.title, author.id, author.name 
+FROM book 
+INNER JOIN author ON (book.author_id = author.id);</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Оптимизация с prefetch_related -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Оптимизация с prefetch_related</h2>
+      </div>
+      <div class="slide-body">
+        <p>Используется для связей <strong>ManyToManyField</strong> и <strong>обратных ForeignKey связей</strong> (где объектов может быть много).</p>
+        <pre><code class="language-python"># Загружает книги и связанные с ними жанры за 2 запроса!
+books = Book.objects.prefetch_related('genres').all()
+
+for book in books:
+    for genre in book.genres.all():  # Данные уже в памяти, запросов нет!
+        print(f"{book.title} — {genre.name}")</code></pre>
+        <p><strong>Как это работает?</strong></p>
+        <ol>
+          <li>Первый запрос выбирает все книги.</li>
+          <li>Второй запрос выбирает все жанры, которые привязаны к выбранным книгам (<code>WHERE book_id IN (...)</code>).</li>
+          <li>Django в оперативной памяти склеивает эти объекты.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Слайд 12: select_related vs prefetch_related -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>В чём разница? Сводная таблица</h2>
+      </div>
+      <div class="slide-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Характеристика</th>
+              <th>select_related</th>
+              <th>prefetch_related</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <strong>Подходящие связи</strong>
+              <td><code>ForeignKey</code>, <code>OneToOneField</code></td>
+              <td><code>ManyToManyField</code>, обратные <code>ForeignKey</code></td>
+            </tr>
+            <tr>
+              <strong>Механизм SQL</strong>
+              <td><code>JOIN</code> в одном SQL-запросе</td>
+              <td>Дополнительный запрос с <code>IN (...)</code></td>
+            </tr>
+            <tr>
+              <strong>Количество запросов</strong>
+              <td>Всегда 1 запрос</td>
+              <td>Обычно 2 запроса (1 + 1 на каждую связь)</td>
+            </tr>
+            <tr>
+              <strong>Где происходит сборка</strong>
+              <td>На сервере базы данных</td>
+              <td>В Python-коде на сервере приложения</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Агрегация данных: Метод aggregate() -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Агрегация данных: метод aggregate()</h2>
+      </div>
+      <div class="slide-body">
+        <p><strong>Агрегация</strong> — это вычисление какого-то итогового значения на основе всего набора данных (QuerySet).</p>
+        <div class="highlight-box">
+          Метод <code>aggregate()</code> «схлопывает» весь QuerySet в один обычный словарь Python. Получить объекты моделей после этого нельзя.
+        </div>
+        <p>Функции агрегации импортируются из <code>django.db.models</code>: <code>Count</code>, <code>Avg</code>, <code>Sum</code>, <code>Min</code>, <code>Max</code>.</p>
+        <pre><code class="language-python">from django.db.models import Avg, Sum, Max, Min, Count
+
+# Получим среднюю цену книг
+result = Book.objects.aggregate(Avg('price'))
+# Возвращает словарь: {'price__avg': 450.15}</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Кастомные имена и комбинирование агрегатов -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Кастомные ключи и множественные агрегаты</h2>
+      </div>
+      <div class="slide-body">
+        <p>Вы можете передавать свои имена ключей в словарь и вычислять несколько агрегатов одновременно:</p>
+        <pre><code class="language-python">stats = Book.objects.aggregate(
+    average_price=Avg('price'),
+    highest_price=Max('price'),
+    lowest_price=Min('price'),
+    total_books=Count('id')
+)
+
+print(f"Всего книг: {stats['total_books']}")
+print(f"Диапазон цен: от {stats['lowest_price']} до {stats['highest_price']}")
+# Выведет: {'average_price': 520.0, 'highest_price': 1200.0, ...}</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Аннотация данных: Метод annotate() -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Аннотация данных: метод annotate()</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Аннотация</strong> — это добавление вычисляемого виртуального поля к <em>каждому</em> объекту QuerySet.</p>
+            <p>В отличие от <code>aggregate()</code>, метод <code>annotate()</code> возвращает полноценный <strong>QuerySet</strong>, в котором к каждому объекту привязано новое свойство.</p>
+            <div class="highlight-box success">
+              Аналог в SQL — группировка строк (<code>GROUP BY</code>) с вычислением функций.
+            </div>
+          </div>
+          <div class="column">
+            <pre><code class="language-python"># Добавим каждому автору 
+# виртуальное поле books_count
+authors = Author.objects.annotate(
+    books_count=Count('books')
+)
+
+for author in authors:
+    # books_count — виртуальное поле, 
+    # вычисленное базой данных!
+    print(author.name, author.books_count)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 16: annotate() vs aggregate() -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2> annotate() против aggregate(): Различия</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--brand-color);">aggregate()</h3>
+            <ul>
+              <li><strong>Схлопывает</strong> QuerySet в словарь.</li>
+              <li>Служит для получения <strong>глобальных итогов</strong> (например, средняя цена всех товаров в магазине).</li>
+              <li>Результат: <code>{'price__avg': 500}</code>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--brand-color);">annotate()</h3>
+            <ul>
+              <li><strong>Сохраняет</strong> QuerySet и добавляет атрибут к каждой строке.</li>
+              <li>Служит для получения <strong>пообъектной статистики</strong> (например, количество товаров в каждой категории).</li>
+              <li>Результат: <code>&lt;QuerySet [Category1, Category2]&gt;</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 17: Сложные аннотации и фильтрация -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Сложные аннотации и фильтрация</h2>
+      </div>
+      <div class="slide-body">
+        <p>Результаты аннотации можно фильтровать с помощью метода <code>filter()</code> и сортировать через <code>order_by()</code>.</p>
+        <pre><code class="language-python"># Найдём авторов, у которых более 5 книг, и отсортируем по продуктивности
+prolific_authors = Author.objects.annotate(
+    books_count=Count('books')
+).filter(
+    books_count__gt=5
+).order_by(
+    '-books_count'
+)
+
+# Фильтр ДО аннотации отсекает исходные записи.
+# Фильтр ПОСЛЕ аннотации (как в примере) фильтрует сгруппированные результаты (HAVING в SQL).</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Отладка и просмотр SQL-запросов -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как увидеть реальный SQL-запрос?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Чтобы понять, сработала ли оптимизация <code>select_related</code> или нет, нужно заглянуть в сгенерированный SQL.</p>
+            <p><strong>1. Свойство <code>.query</code> у QuerySet:</strong></p>
+            <pre><code class="language-python">qs = Book.objects.all()
+print(qs.query)
+# Выведет сырой SQL-запрос в консоль</code></pre>
+          </div>
+          <div class="column">
+            <p><strong>2. Логирование через Django settings.py:</strong></p>
+            <pre><code class="language-python">LOGGING = {
+    'version': 1,
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 19: Типичные ошибки новичков -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Типичные ошибки при работе с ORM</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>Забытый select_related в циклах:</strong> приводит к падению сайта под нагрузкой из-за N+1 запросов.</li>
+          <li><strong>Опечатки в названиях связей:</strong> использование точки <code>.</code> вместо двойного подчёркивания <code>__</code> в фильтрах (правильно: <code>book__author__name</code>, а не <code>book.author.name</code>).</li>
+          <li><strong>Неверная группировка фильтров:</strong> фильтрация по аннотируемому значению до того, как сама аннотация была объявлена в цепочке методов (вызывает ошибку <code>FieldError</code>).</li>
+          <li><strong>Использование <code>len(queryset)</code> вместо <code>queryset.count()</code>:</strong> <code>len()</code> загружает ВСЕ объекты из базы данных в память, чтобы просто посчитать их число. <code>count()</code> выполняет быстрый <code>SELECT COUNT(*)</code>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Резюме и план практики -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и план практики</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li>Используйте <code>ForeignKey</code> для отношений «один-ко-многим» и <code>ManyToManyField</code> для «многие-ко-многим».</li>
+              <li>Всегда указывайте <code>related_name</code>.</li>
+              <li>Боритесь с проблемой N+1 с помощью <code>select_related</code> (для одиночных связей) и <code>prefetch_related</code> (для множественных связей).</li>
+              <li><code>aggregate()</code> — для одного числа по всей базе. <code>annotate()</code> — для добавления данных к каждому объекту.</li>
+            </ul>
+          </div>
+          <div class="column" style="display: flex; align-items: center; justify-content: center;">
+            <div class="highlight-box success" style="text-align: center; width: 100%;">
+              <h3 style="margin-bottom: 10px; color: var(--success-color);">Практическая часть</h3>
+              <p>Переходим к выполнению практических заданий. Будем решать задачи на связанные запросы, оптимизировать N+1 и писать сложные аннотации!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Панель управления -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед</button>
+    </div>
+    
+    <!-- Счетчик и прогресс-бар -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

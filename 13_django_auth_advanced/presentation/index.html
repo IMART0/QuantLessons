@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 13: Авторизация и права доступа | ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="presentation-container">
+
+  <!-- Слайд 1: Титульный -->
+  <div class="slide active">
+    <div class="slide-header">
+      <h2>Авторизация и права доступа</h2>
+    </div>
+    <div class="slide-body" style="text-align: center;">
+      <p style="font-size: 1.8rem; font-weight: bold; color: var(--primary-color); margin-bottom: 20px;">
+        Урок 13: Аутентификация, ограничение доступа и разграничение прав в Django
+      </p>
+      <p style="font-size: 1.3rem; margin-bottom: 40px; color: #7f8c8d;">
+        Летняя физико-математическая школа "Квант"<br>
+        1 июля • 11:30 - 12:50
+      </p>
+      <div class="highlight-box" style="display: inline-block; max-width: 700px; margin: 0 auto; text-align: left;">
+        <strong>Сегодня на уроке:</strong>
+        <ul style="margin-top: 10px; margin-bottom: 0;">
+          <li>Разница между Аутентификацией и Авторизацией</li>
+          <li>Встроенные инструменты Django: <code>django.contrib.auth</code></li>
+          <li>Вход, выход и регистрация пользователей с помощью встроенных Views</li>
+          <li>Ограничение доступа к страницам с помощью декораторов и Mixins</li>
+          <li>Система прав (Permissions) и групп пользователей</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 2: Аутентификация vs Авторизация -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Аутентификация vs Авторизация</h2>
+    </div>
+    <div class="slide-body">
+      <p style="margin-bottom: 15px;">В сфере безопасности веб-приложений эти два понятия часто путают, но они решают совершенно разные задачи:</p>
+      <div class="columns">
+        <div class="column">
+          <div class="highlight-box success">
+            <strong style="font-size: 1.25rem; color: var(--secondary-color);">Аутентификация (Authentication)</strong>
+            <p style="margin-top: 10px; font-size: 1.05rem;">
+              Отвечает на вопрос: <strong>"Кто ты?"</strong>.<br>
+              Процесс проверки подлинности пользователя. Обычно происходит при вводе логина и пароля, проверке SMS-кода или токена.
+            </p>
+            <p style="margin-top: 10px; font-size: 0.95rem; color: #555;">
+              <em>Аналогия:</em> Показ паспорта на паспортном контроле в аэропорту.
+            </p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="highlight-box">
+            <strong style="font-size: 1.25rem; color: var(--primary-color);">Авторизация (Authorization)</strong>
+            <p style="margin-top: 10px; font-size: 1.05rem;">
+              Отвечает на вопрос: <strong>"Что тебе разрешено?"</strong>.<br>
+              Процесс проверки прав доступа пользователя к конкретному ресурсу (странице, операции в БД, файлу).
+            </p>
+            <p style="margin-top: 10px; font-size: 0.95rem; color: #555;">
+              <em>Аналогия:</em> Посадочный талон, определяющий ваше место в самолете и доступ в бизнес-лаунж.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 3: Модуль django.contrib.auth -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Архитектура django.contrib.auth</h2>
+    </div>
+    <div class="slide-body">
+      <p>Django поставляется со встроенной надежной системой пользователей. Она включена по умолчанию в <code>settings.py</code>:</p>
+      <div class="columns">
+        <div class="column">
+          <pre><code class="language-python"># settings.py
+INSTALLED_APPS = [
+    ...
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    ...
+]</code></pre>
+          <p style="font-size: 1rem; margin-top: 10px;">
+            Система авторизации Django тесно связана с <strong>сессиями</strong> (sessions), которые позволяют серверу "помнить" вошедшего пользователя между запросами.
+          </p>
+        </div>
+        <div class="column">
+          <p><strong>Основные поля встроенной модели User:</strong></p>
+          <ul style="margin-top: 10px; font-size: 1.05rem;">
+            <li><code>username</code> — уникальное имя пользователя</li>
+            <li><code>email</code> — адрес электронной почты</li>
+            <li><code>password</code> — хэшированный пароль</li>
+            <li><code>is_staff</code> — разрешен ли доступ в админ-панель</li>
+            <li><code>is_active</code> — активен ли аккаунт (вместо удаления)</li>
+            <li><code>is_superuser</code> — имеет ли все права без исключения</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 4: Ручной вход: authenticate, login и logout -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Программная аутентификация в Django</h2>
+    </div>
+    <div class="slide-body">
+      <p>Если мы пишем вход вручную (например, в собственной View), мы используем три ключевые функции:</p>
+      <pre><code class="language-python">from django.contrib.auth import authenticate, login, logout
+
+# 1. Проверяем логин и пароль. Возвращает объект User или None
+user = authenticate(request, username='alex', password='secure_password_123')
+
+if user is not None:
+    # 2. Создаем сессию для пользователя (пользователь входит на сайт)
+    login(request, user)
+else:
+    # Ошибка: неверные учетные данные
+    pass
+
+# 3. Выход из системы (уничтожение текущей сессии)
+logout(request)</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 5: Встроенные Authentication Views -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Встроенные контроллеры (Views)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Вместо написания своего кода для входа, выхода и смены паролей, Django предлагает готовые Class-Based Views в модуле <code>django.contrib.auth.views</code>:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Класс View</th>
+            <th>Назначение</th>
+            <th>Шаблон по умолчанию</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>LoginView</code></td>
+            <td>Вход пользователя (форма + логика)</td>
+            <td><code>registration/login.html</code></td>
+          </tr>
+          <tr>
+            <td><code>LogoutView</code></td>
+            <td>Выход пользователя</td>
+            <td><code>registration/logged_out.html</code></td>
+          </tr>
+          <tr>
+            <td><code>PasswordChangeView</code></td>
+            <td>Смена пароля авторизованным пользователем</td>
+            <td><code>registration/password_change_form.html</code></td>
+          </tr>
+          <tr>
+            <td><code>PasswordChangeDoneView</code></td>
+            <td>Страница успешного изменения пароля</td>
+            <td><code>registration/password_change_done.html</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Слайд 6: Настройка LoginView -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Настройка входа: LoginView</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p>Шаг 1: Подключаем View в <code>urls.py</code>:</p>
+          <pre><code class="language-python">from django.contrib.auth import views as auth_views
+from django.urls import path
+
+urlpatterns = [
+    path('login/', auth_views.LoginView.as_view(), 
+         name='login'),
+]</code></pre>
+          <div class="highlight-box success" style="font-size: 0.95rem; margin-top: 10px;">
+            По умолчанию Django ищет шаблон по пути <code>templates/registration/login.html</code>.
+          </div>
+        </div>
+        <div class="column">
+          <p>Шаг 2: Создаем шаблон <code>login.html</code>:</p>
+          <pre><code class="language-html">&lt;!-- templates/registration/login.html --&gt;
+&lt;h2&gt;Вход на сайт&lt;/h2&gt;
+&lt;form method="post"&gt;
+    {% csrf_token %}
+    {{ form.as_p }}
+    &lt;button type="submit"&gt;Войти&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+          <p style="font-size: 0.95rem; color: #666; margin-top: 5px;">
+            Django автоматически генерирует форму входа с полями username и password и передает ее в контекст как <code>form</code>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 7: LogoutView в Django 5+ -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Выход из системы: LogoutView</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p>Подключение в <code>urls.py</code> аналогично:</p>
+          <pre><code class="language-python">urlpatterns = [
+    path('logout/', auth_views.LogoutView.as_view(), 
+         name='logout'),
+]</code></pre>
+          <div class="highlight-box warning" style="font-size: 0.95rem; margin-top: 15px;">
+            <strong>Важное изменение в Django 5.0+:</strong><br>
+            Вход по GET-запросу на URL выхода больше не работает. Выход должен осуществляться строго через <strong>POST-запрос</strong> с целью защиты от несанкционированного разлогинивания сторонними сайтами.
+          </div>
+        </div>
+        <div class="column">
+          <p>Правильный способ реализации кнопки выхода в шаблоне:</p>
+          <pre><code class="language-html">&lt;form action="{% url 'logout' %}" method="post"&gt;
+    {% csrf_token %}
+    &lt;button type="submit"&gt;Выйти из аккаунта&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+          <p style="font-size: 0.95rem; margin-top: 10px;">
+            Если нужно перенаправить пользователя после выхода, укажите в <code>settings.py</code>:<br>
+            <code>LOGOUT_REDIRECT_URL = 'home'</code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 8: Регистрация пользователей -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Регистрация пользователей</h2>
+    </div>
+    <div class="slide-body">
+      <p>В Django нет встроенной View для регистрации, но есть готовая форма <code>UserCreationForm</code>. Нам нужно написать контроллер самостоятельно:</p>
+      <div class="columns">
+        <div class="column">
+          <pre style="font-size: 0.9rem; padding: 10px;"><code class="language-python"># views.py
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+
+class SignUpView(CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/signup.html'</code></pre>
+        </div>
+        <div class="column">
+          <pre style="font-size: 0.9rem; padding: 10px;"><code class="language-python"># urls.py
+from .views import SignUpView
+
+urlpatterns = [
+    path('signup/', SignUpView.as_view(), 
+         name='signup'),
+]</code></pre>
+          <div class="highlight-box success" style="font-size: 0.9rem; margin-top: 10px;">
+            <code>UserCreationForm</code> автоматически проверяет сложность пароля, совпадение паролей и уникальность имени пользователя.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 9: Ограничение доступа к FBV -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Ограничение доступа: @login_required</h2>
+    </div>
+    <div class="slide-body">
+      <p>Как сделать страницу доступной только для авторизованных пользователей? Для <strong>Function-Based Views (FBV)</strong> используем декоратор:</p>
+      <pre><code class="language-python">from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+@login_required
+def profile_view(request):
+    # Если пользователь не вошел, он автоматически перенаправляется на страницу входа
+    return render(request, 'profile.html', {'user': request.user})</code></pre>
+      <div class="columns" style="margin-top: 15px;">
+        <div class="column">
+          <p style="font-size: 0.95rem;">
+            В <code>settings.py</code> нужно настроить путь к странице авторизации:<br>
+            <code>LOGIN_URL = 'login'</code>
+          </p>
+        </div>
+        <div class="column">
+          <p style="font-size: 0.95rem;">
+            Django автоматически добавляет GET-параметр <code>?next=/profile/</code> в URL входа, чтобы перенаправить пользователя обратно после авторизации.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 10: Ограничение доступа к CBV -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Ограничение доступа: LoginRequiredMixin</h2>
+    </div>
+    <div class="slide-body">
+      <p>Для <strong>Class-Based Views (CBV)</strong> декораторы использовать неудобно. Вместо этого применяется класс-примесь <code>LoginRequiredMixin</code>:</p>
+      <pre><code class="language-python">from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'profile.html'
+    
+    # Можно переопределить адрес страницы входа прямо в классе:
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'</code></pre>
+      <div class="highlight-box warning" style="margin-top: 15px;">
+        <strong>Правило наследования:</strong> <code>LoginRequiredMixin</code> всегда должен наследоваться <strong>первым</strong> (слева направо) перед другими базовыми классами View (например, TemplateView, ListView и т.д.).
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 11: Права доступа (Permissions) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Права доступа (Permissions)</h2>
+    </div>
+    <div class="slide-body">
+      <p><strong>Права доступа (Permissions)</strong> определяют возможность выполнения действий. Для каждой модели Django автоматически создает 4 права:</p>
+      <ul>
+        <li><code>add</code> (добавление): например, <code>blog.add_post</code></li>
+        <li><code>change</code> (редактирование): например, <code>blog.change_post</code></li>
+        <li><code>delete</code> (удаление): например, <code>blog.delete_post</code></li>
+        <li><code>view</code> (просмотр): например, <code>blog.view_post</code></li>
+      </ul>
+      <div class="highlight-box" style="margin-top: 10px;">
+        Системное имя права состоит из: <code>&lt;имя_приложения&gt;.&lt;действие&gt;_&lt;имя_модели&gt;</code>.
+        Например: если в приложении <code>store</code> есть модель <code>Product</code>, то право на изменение будет <code>store.change_product</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 12: Проверка прав доступа в Views -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Проверка прав доступа в коде</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p><strong>Для FBV: декоратор <code>@permission_required</code></strong></p>
+          <pre><code class="language-python">from django.contrib.auth.decorators import \
+    permission_required
+
+@permission_required('blog.add_post', 
+                     raise_exception=True)
+def create_post(request):
+    # Только пользователи с правом add_post
+    return render(request, 'create.html')</code></pre>
+        </div>
+        <div class="column">
+          <p><strong>Для CBV: миксин <code>PermissionRequiredMixin</code></strong></p>
+          <pre><code class="language-python">from django.contrib.auth.mixins import \
+    PermissionRequiredMixin
+
+class PostCreateView(PermissionRequiredMixin, 
+                     CreateView):
+    permission_required = 'blog.add_post'
+    # При отсутствии прав вызовет 403 Forbidden:
+    raise_exception = True
+    ...</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 13: Права доступа в шаблонах -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Права доступа в шаблонах</h2>
+    </div>
+    <div class="slide-body">
+      <p>Django автоматически передает переменную <code>perms</code> в контекст всех шаблонов. Мы можем проверять права прямо при рендере HTML:</p>
+      <pre><code class="language-html">&lt;!-- templates/post_detail.html --&gt;
+&lt;h1&gt;{{ post.title }}&lt;/h1&gt;
+&lt;p&gt;{{ post.content }}&lt;/p&gt;
+
+{% if perms.blog.change_post %}
+    &lt;a href="{% url 'post_edit' post.id %}"&gt;Редактировать статью&lt;/a&gt;
+{% endif %}
+
+{% if perms.blog.delete_post %}
+    &lt;a href="{% url 'post_delete' post.id %}" style="color:red;"&gt;Удалить&lt;/a&gt;
+{% endif %}</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 14: Группы пользователей (Groups) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Группы пользователей (Groups)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Назначать права каждому пользователю отдельно неудобно и долго. Для этого существуют <strong>Группы</strong>.</p>
+      <div class="columns">
+        <div class="column">
+          <div class="highlight-box success">
+            <strong>Группа</strong> — это набор разрешений (прав). Любой пользователь, добавленный в группу, автоматически наследует все ее права.
+          </div>
+          <p style="font-size: 1rem;">
+            Обычно группы создаются в панели администратора Django (например, "Редакторы", "Модераторы", "Менеджеры"), там же им назначаются соответствующие права на модели.
+          </p>
+        </div>
+        <div class="column">
+          <p><strong>Работа с группами в коде Python:</strong></p>
+          <pre><code class="language-python">from django.contrib.auth.models import Group
+
+# Найти или создать группу
+editors, created = Group.objects.get_or_create(
+    name='Editors'
+)
+
+# Добавить пользователя в группу
+user.groups.add(editors)
+
+# Проверить, состоит ли пользователь в группе
+is_editor = user.groups.filter(name='Editors').exists()</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 15: Смена и сброс паролей -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Смена и сброс пароля</h2>
+    </div>
+    <div class="slide-body">
+      <p>Django предоставляет полноценный рабочий цикл смены и сброса паролей из коробки. Достаточно подключить URLs:</p>
+      <div class="columns">
+        <div class="column" style="flex: 1.2;">
+          <pre style="font-size: 0.85rem; padding: 8px;"><code class="language-python"># urls.py
+urlpatterns = [
+    # Смена пароля (для авторизованных)
+    path('password-change/', 
+         auth_views.PasswordChangeView.as_view(), 
+         name='password_change'),
+    path('password-change/done/', 
+         auth_views.PasswordChangeDoneView.as_view(), 
+         name='password_change_done'),
+]</code></pre>
+          <p style="font-size: 0.95rem; margin-top: 10px;">
+            Для сброса забытого пароля используются: <code>PasswordResetView</code>, <code>PasswordResetDoneView</code>, <code>PasswordResetConfirmView</code>, <code>PasswordResetCompleteView</code>.
+          </p>
+        </div>
+        <div class="column">
+          <div class="highlight-box success" style="font-size: 0.95rem;">
+            <strong>Сброс пароля по Email:</strong><br>
+            Django генерирует временную одноразовую защищенную ссылку и отправляет ее пользователю на почту. Для тестирования этого процесса можно отправлять письма прямо в консоль, прописав в <code>settings.py</code>:<br>
+            <code>EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 16: Хэширование паролей -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Хранение паролей и Безопасность</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p><strong>Почему нельзя хранить пароли в чистом виде?</strong></p>
+          <p style="font-size: 1rem; margin-top: 10px;">
+            В случае утечки базы данных злоумышленники получат доступ ко всем аккаунтам. Более того, многие используют одинаковые пароли на разных сайтах.
+          </p>
+          <div class="highlight-box warning" style="font-size: 1rem; margin-top: 15px;">
+            Django <strong>никогда</strong> не хранит пароли в открытом виде. Он сохраняет только криптографический <strong>хэш</strong> пароля.
+          </div>
+        </div>
+        <div class="column">
+          <p>Как выглядит сохраненный пароль в БД Django:</p>
+          <pre style="font-size: 0.85rem;"><code class="language-text">pbkdf2_sha256$870000$pG7yXq...$A9xB3c...</code></pre>
+          <p style="font-size: 0.95rem; margin-top: 10px;">
+            <strong>Компоненты хэша:</strong>
+          </p>
+          <ol style="font-size: 0.95rem; margin-left: 20px;">
+            <li><strong>Алгоритм:</strong> PBKDF2 c SHA256.</li>
+            <li><strong>Итерации:</strong> 870 000 повторений хэширования (защита от брутфорса).</li>
+            <li><strong>Соль (Salt):</strong> случайная строка для защиты от радужных таблиц.</li>
+            <li><strong>Сам хэш:</strong> результат вычисления.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 17: Настройки перенаправления -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Конфигурация редиректов в settings.py</h2>
+    </div>
+    <div class="slide-body">
+      <p>Чтобы встроенные Views знали, куда перенаправлять пользователя после успешного действия, используются следующие переменные настроек:</p>
+      <pre><code class="language-python"># settings.py
+
+# URL, на который перенаправляются неавторизованные пользователи (для @login_required)
+LOGIN_URL = 'login'
+
+# URL, куда перенаправляется пользователь ПОСЛЕ успешного входа на сайт
+LOGIN_REDIRECT_URL = 'profile'
+
+# URL, куда перенаправляется пользователь ПОСЛЕ выхода из системы
+LOGOUT_REDIRECT_URL = 'login'</code></pre>
+      <p style="font-size: 1.05rem; margin-top: 15px;">
+        В качестве значений можно указывать как относительные пути (<code>'/accounts/login/'</code>), так и <strong>имена именованных URL-маршрутов</strong> (<code>'login'</code>, <code>'profile'</code>). Второй способ предпочтительнее!
+      </p>
+    </div>
+  </div>
+
+  <!-- Слайд 18: Проверка сложности паролей -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Валидация паролей в Django</h2>
+    </div>
+    <div class="slide-body">
+      <p>По умолчанию Django проверяет создаваемые пароли на надежность. Список правил задается в <code>AUTH_PASSWORD_VALIDATORS</code>:</p>
+      <pre style="font-size: 0.85rem; margin: 10px 0;"><code class="language-python"># settings.py
+AUTH_PASSWORD_VALIDATORS = [
+    # 1. Проверка на сходство с личными данными (username, email, etc.)
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    # 2. Проверка на минимальную длину (по умолчанию 8 символов)
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    # 3. Проверка на распространенные пароли (в базе 20 000 популярных паролей)
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    # 4. Проверка на чисто числовой пароль
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]</code></pre>
+      <div class="highlight-box success" style="font-size: 1rem; margin-top: 5px; padding: 10px;">
+        При локальной разработке валидаторы можно закомментировать, чтобы вводить простые пароли вроде "123". Но на сервере они <strong>обязаны</strong> быть включены!
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 19: Чек-лист: Настройка авторизации -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Чек-лист: Подключение авторизации</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <ol style="margin-left: 20px; font-size: 1.1rem;">
+            <li>Убедиться, что <code>django.contrib.auth</code> подключен в <code>INSTALLED_APPS</code>.</li>
+            <li>Подключить <code>LoginView</code> и <code>LogoutView</code> в файле <code>urls.py</code> проекта.</li>
+            <li>Создать директорию <code>templates/registration/</code>.</li>
+            <li>Создать шаблон <code>login.html</code> с формой POST и токеном CSRF.</li>
+            <li>Добавить настройки редиректов в <code>settings.py</code>.</li>
+          </ol>
+        </div>
+        <div class="column">
+          <div class="highlight-box success">
+            <strong>Готово!</strong>
+            <p style="margin-top: 10px; font-size: 1rem;">После выполнения этих шагов ваш сайт будет иметь полноценную защищенную авторизацию сессий, форму входа с проверками и безопасный выход.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 20: Практическая работа -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Практическое задание</h2>
+    </div>
+    <div class="slide-body">
+      <p style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">Сегодня мы создадим закрытый клуб любителей физики и математики:</p>
+      <div class="highlight-box success">
+        <strong>Задачи на практику:</strong>
+        <ol style="margin-top: 10px; margin-bottom: 0; font-size: 1.05rem;">
+          <li>Создать форму регистрации новых участников клуба на основе <code>UserCreationForm</code>.</li>
+          <li>Настроить закрытый раздел сайта, куда могут входить только авторизованные пользователи.</li>
+          <li>Создать закрытый раздел "Панель куратора", доступ к которому имеют только члены группы "Кураторы" или пользователи с правом <code>can_edit_tasks</code>.</li>
+          <li>Реализовать форму смены пароля для авторизованных пользователей с красивым перенаправлением.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Элементы управления презентацией -->
+<div class="slide-counter" id="slide-counter">1 / 20</div>
+<div class="controls">
+  <button class="control-btn" id="prev-btn">&larr; Назад</button>
+  <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+  <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+</div>
+<div class="progress-container">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

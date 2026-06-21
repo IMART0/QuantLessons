@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 4: HTML5 — Язык разметки веб-страниц</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="presentation-container">
+    
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center; justify-content: center; align-items: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1rem; padding: 6px 12px;">Урок 4</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800;">HTML5</h1>
+        <p style="font-size: 1.8rem; font-weight: 500; margin-bottom: 30px;">Язык разметки веб-страниц и веб-формы</p>
+        <div style="border-top: 2px solid var(--border-color); width: 60%; margin: 20px 0; padding-top: 20px;">
+          <p style="color: #7f8c8d; font-size: 1.1rem;">ЛФМШ &laquo;Квант&raquo; &bull; Летняя физико-математическая школа</p>
+          <p style="color: #7f8c8d; font-size: 1.1rem;">Курс: &laquo;Веб-разработка на Python (Django)&raquo; &bull; 27 июня</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Что такое HTML? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое HTML?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="margin-bottom: 15px;"><strong>HTML (HyperText Markup Language)</strong> — это язык гипертекстовой разметки документов. Он сообщает браузеру, как именно нужно отображать контент (текст, картинки, кнопки).</p>
+            <div class="highlight-box">
+              <strong>Важно:</strong> HTML — это <em>не</em> язык программирования! В нем нет переменных, циклов или логических условий. Это язык разметки структуры данных.
+            </div>
+            <p>Аналогия с домом:</p>
+            <ul>
+              <li><strong>HTML</strong> — бетонные блоки, балки, стены (каркас).</li>
+              <li><strong>CSS</strong> — обои, краска, освещение (стиль).</li>
+              <li><strong>JavaScript</strong> — лифт, водопровод, умный дом (поведение).</li>
+            </ul>
+          </div>
+          <div class="column" style="display: flex; align-items: center; justify-content: center;">
+            <div style="background: #f8f9fa; border: 1px dashed var(--primary-color); padding: 25px; border-radius: 8px; width: 100%; text-align: center;">
+              <span style="font-size: 5rem;">🧱</span>
+              <h3 style="color: var(--primary-color); margin-top: 15px;">Каркас веб-страницы</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Базовая структура HTML-документа -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Базовая структура HTML-документа</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column" style="flex: 1.2;">
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ru"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Моя первая страница&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Привет, Квант!&lt;/h1&gt;
+    &lt;p&gt;Мы изучаем HTML5.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </div>
+          <div class="column" style="flex: 0.8; font-size: 1.15rem;">
+            <ul>
+              <li><code>&lt;!DOCTYPE html&gt;</code> — объявление стандарта HTML5.</li>
+              <li><code>&lt;html&gt;</code> — корневой элемент страницы.</li>
+              <li><code>&lt;head&gt;</code> — метаданные (кодировка, заголовок вкладки, подключение стилей).</li>
+              <li><code>&lt;body&gt;</code> — видимый контент страницы.</li>
+              <li><code>&lt;meta charset="UTF-8"&gt;</code> — поддержка кириллицы.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Анатомия тега и атрибуты -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Анатомия тега и атрибуты</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 20px;">Элемент состоит из <strong>открывающего тега</strong>, <strong>закрывающего тега</strong> и <strong>содержимого</strong> между ними:</p>
+        
+        <div style="text-align: center; margin: 20px 0; background: var(--code-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); font-family: monospace; font-size: 1.4rem;">
+          &lt;<span style="color: var(--accent-color);">p</span> <span style="color: var(--primary-color);">class</span>="<span style="color: var(--secondary-color);">lead</span>"&gt;Привет, мир!&lt;/<span style="color: var(--accent-color);">p</span>&gt;
+        </div>
+
+        <ul>
+          <li><strong>Тег (Tag)</strong> — ключевое слово в угловых скобках (<code>&lt;p&gt;</code>).</li>
+          <li><strong>Атрибут (Attribute)</strong> — дополнительные настройки тега в формате <code>имя="значение"</code> (<code>class="lead"</code>). Пишется только в открывающем теге.</li>
+          <li><strong>Одиночные теги</strong> — не требуют закрывающего тега и не имеют содержимого:
+            <ul>
+              <li><code>&lt;img src="pic.jpg" alt="Котик"&gt;</code> — изображение</li>
+              <li><code>&lt;input type="text"&gt;</code> — поле ввода</li>
+              <li><code>&lt;br&gt;</code> — перенос строки</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Вложенность тегов и DOM-дерево -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Вложенность тегов и DOM-дерево</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Теги могут быть вложены друг в друга, образуя иерархическую структуру дерева (DOM — Document Object Model):</p>
+            <pre><code>&lt;div class="container"&gt;
+    &lt;h2&gt;Наши контакты&lt;/h2&gt;
+    &lt;p&gt;Напишите нам в &lt;a href="#"&gt;Telegram&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+            <div class="highlight-box warning">
+              <strong>Правило матрёшки:</strong> Вложенные теги должны закрываться строго в обратном порядке.
+              <br>❌ <code>&lt;p&gt;Привет &lt;strong&gt;Квант!&lt;/p&gt;&lt;/strong&gt;</code>
+              <br>✅ <code>&lt;p&gt;Привет &lt;strong&gt;Квант!&lt;/strong&gt;&lt;/p&gt;</code>
+            </div>
+          </div>
+          <div class="column">
+            <p><strong>Виды элементов:</strong></p>
+            <ul>
+              <li><strong>Блочные (Block)</strong> — занимают всю ширину родителя, начинаются с новой строки. Примеры: <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>-<code>&lt;h6&gt;</code>, <code>&lt;form&gt;</code>.</li>
+              <li><strong>Строчные (Inline)</strong> — занимают ширину только своего содержимого, не переносят строку. Примеры: <code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;input&gt;</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Базовые текстовые теги -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Базовые текстовые теги</h2>
+      </div>
+      <div class="slide-body">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 1.1rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary-color); text-align: left;">
+              <th style="padding: 10px;">Тег</th>
+              <th style="padding: 10px;">Назначение</th>
+              <th style="padding: 10px;">Пример кода</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code></td>
+              <td style="padding: 10px;">Заголовки уровней 1 (главный) – 6 (подподзаголовок)</td>
+              <td style="padding: 10px;"><code>&lt;h2&gt;О лагере&lt;/h2&gt;</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><code>&lt;p&gt;</code></td>
+              <td style="padding: 10px;">Абзац текста (блочный элемент)</td>
+              <td style="padding: 10px;"><code>&lt;p&gt;Ура, лето пришло!&lt;/p&gt;</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><code>&lt;strong&gt;</code></td>
+              <td style="padding: 10px;">Важный текст (обычно отображается <strong>жирным</strong>)</td>
+              <td style="padding: 10px;"><code>&lt;strong&gt;Внимание!&lt;/strong&gt;</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><code>&lt;em&gt;</code></td>
+              <td style="padding: 10px;">Логический акцент (курсив)</td>
+              <td style="padding: 10px;"><code>&lt;em&gt;обязательно&lt;/em&gt;</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px;"><code>&lt;code&gt;</code></td>
+              <td style="padding: 10px;">Внутристрочный код (моноширинный шрифт)</td>
+              <td style="padding: 10px;"><code>&lt;code&gt;print()&lt;/code&gt;</code></td>
+            </tr>
+            <tr>
+              <td style="padding: 10px;"><code>&lt;pre&gt;</code></td>
+              <td style="padding: 10px;">Предварительно форматированный блок текста</td>
+              <td style="padding: 10px;">Сохраняет пробелы и переносы строк</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Ссылки и изображения -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ссылки и изображения</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Ссылки <code>&lt;a&gt;</code></h3>
+            <p>Позволяют переходить на другие ресурсы или страницы. Обязателен атрибут <code>href</code>.</p>
+            <pre style="margin-top: 5px;"><code>&lt;!-- Внешняя ссылка --&gt;
+&lt;a href="https://kvant.ru" target="_blank"&gt;
+    Сайт Кванта
+&lt;/a&gt;
+
+&lt;!-- Ссылка на внутренний файл --&gt;
+&lt;a href="about.html"&gt;О нас&lt;/a&gt;</code></pre>
+            <p style="font-size: 1rem;">Атрибут <code>target="_blank"</code> открывает ссылку в новой вкладке.</p>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Изображения <code>&lt;img&gt;</code></h3>
+            <p>Одиночный тег. Требует атрибуты <code>src</code> (путь) и <code>alt</code> (текст при сбое загрузки).</p>
+            <pre style="margin-top: 5px;"><code>&lt;img src="images/logo.png" 
+     alt="Логотип Кванта" 
+     width="200"&gt;</code></pre>
+            <div class="highlight-box success" style="font-size: 1rem; padding: 10px;">
+              <strong>Лайфхак:</strong> Всегда указывайте <code>alt</code>. Это важно для роботов Google/Yandex и для незрячих пользователей.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Списки: нумерованные и маркированные -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Списки в HTML</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Маркированный список <code>&lt;ul&gt;</code></h3>
+            <p>Используется, когда порядок пунктов не важен. Элемент списка — <code>&lt;li&gt;</code>.</p>
+            <pre><code>&lt;ul&gt;
+    &lt;li&gt;Ноутбук&lt;/li&gt;
+    &lt;li&gt;Тетрадь&lt;/li&gt;
+    &lt;li&gt;Ручка&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Нумерованный список <code>&lt;ol&gt;</code></h3>
+            <p>Используется для алгоритмов, шагов или топов. Порядковые номера проставляются автоматически.</p>
+            <pre><code>&lt;ol&gt;
+    &lt;li&gt;Встать&lt;/li&gt;
+    &lt;li&gt;Умыться&lt;/li&gt;
+    &lt;li&gt;Идти на лекцию&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Семантическая разметка HTML5 -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Семантическая разметка HTML5</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column" style="flex: 1.1;">
+            <p>Раньше всю структуру верстали тегами <code>&lt;div&gt;</code> с классами вроде <code>class="header"</code>. Получался «div-суп», непонятный поисковикам.</p>
+            <p><strong>HTML5 вводит семантические теги</strong>, которые сообщают браузеру и поисковым роботам <em>смысловую роль</em> каждого блока страницы.</p>
+            <div class="highlight-box success">
+              <strong>Зачем это нужно:</strong>
+              <ul>
+                <li><strong>SEO:</strong> Поисковые системы лучше индексируют сайт.</li>
+                <li><strong>Доступность:</strong> Экранные дикторы (screen readers) зачитывают контент правильно.</li>
+                <li><strong>Читаемость:</strong> Разработчик сразу видит структуру.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="column" style="flex: 0.9;">
+            <div style="background: #fdf2e9; border: 2px solid #e2e8f0; border-radius: 8px; font-family: monospace; font-size: 0.95rem; padding: 15px;">
+              <div style="border: 1px solid #7f8c8d; text-align: center; margin-bottom: 5px; padding: 5px;">&lt;header&gt; (Шапка)</div>
+              <div style="border: 1px solid #7f8c8d; text-align: center; margin-bottom: 5px; padding: 5px;">&lt;nav&gt; (Навигация)</div>
+              <div style="display: flex; gap: 5px; margin-bottom: 5px; height: 100px;">
+                <div style="border: 1px solid #7f8c8d; flex: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 5px;">
+                  &lt;main&gt; (Основное)
+                  <span style="font-size: 0.75rem; border: 1px dashed #7f8c8d; padding: 2px; margin-top: 5px;">&lt;section&gt;</span>
+                </div>
+                <div style="border: 1px solid #7f8c8d; flex: 1; text-align: center; padding: 5px;">&lt;aside&gt; (Сайдбар)</div>
+              </div>
+              <div style="border: 1px solid #7f8c8d; text-align: center; padding: 5px;">&lt;footer&gt; (Подвал)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Основные семантические теги -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Основные семантические элементы</h2>
+      </div>
+      <div class="slide-body">
+        <ul style="font-size: 1.15rem; margin-left: 20px;">
+          <li><code>&lt;header&gt;</code> — вводный раздел страницы (логотип, название, профиль пользователя).</li>
+          <li><code>&lt;nav&gt;</code> — блок навигационных ссылок (меню сайта).</li>
+          <li><code>&lt;main&gt;</code> — основное уникальное содержимое страницы. На странице должен быть только один!</li>
+          <li><code>&lt;section&gt;</code> — тематический раздел документа (например, блок «Схема проезда» или «Наши преподаватели»). Обычно содержит заголовок.</li>
+          <li><code>&lt;article&gt;</code> — независимая, завершенная статья или новость, которую можно вырезать и вставить на другой сайт.</li>
+          <li><code>&lt;aside&gt;</code> — косвенный контент (боковая панель, реклама, ссылки на другие статьи).</li>
+          <li><code>&lt;footer&gt;</code> — подвал сайта (контакты, копирайты, ссылки на соцсети).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Введение в веб-формы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Введение в веб-формы: Тег &lt;form&gt;</h2>
+      </div>
+      <div class="slide-body">
+        <p><strong>Формы</strong> нужны для отправки пользовательских данных на сервер (регистрация, отправка сообщений, опросы).</p>
+        <pre><code>&lt;form action="/submit-form/" method="POST"&gt;
+    &lt;!-- Поля ввода находятся здесь --&gt;
+    &lt;button type="submit"&gt;Отправить&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <p>Ключевые атрибуты тега <code>&lt;form&gt;</code>:</p>
+        <ul>
+          <li><strong><code>action</code></strong> — URL-адрес сервера (в будущем — Django view), куда отправятся данные формы.</li>
+          <li><strong><code>method</code></strong> — HTTP-метод передачи данных:
+            <ul>
+              <li><code>GET</code> — параметры добавляются в адресную строку (для поиска).</li>
+              <li><code>POST</code> — данные упаковываются в тело запроса (для паролей и личных данных).</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Поле ввода &lt;input&gt; и текстовые типы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Поле ввода &lt;input&gt;: Текстовые типы</h2>
+      </div>
+      <div class="slide-body">
+        <p>Тег <code>&lt;input&gt;</code> является универсальным элементом ввода. Тип поля определяется атрибутом <code>type</code>.</p>
+        <div class="columns">
+          <div class="column">
+            <pre><code>&lt;!-- Обычный текст --&gt;
+&lt;input type="text" name="username"&gt;
+
+&lt;!-- Пароль (скрытые символы) --&gt;
+&lt;input type="password" name="pwd"&gt;
+
+&lt;!-- Валидация почты --&gt;
+&lt;input type="email" name="user_email"&gt;
+
+&lt;!-- Номер телефона --&gt;
+&lt;input type="tel" name="phone"&gt;</code></pre>
+          </div>
+          <div class="column">
+            <div class="highlight-box">
+              <strong>Зачем указывать правильный тип?</strong>
+              <ul>
+                <li>Браузер автоматически проверяет валидность (например, есть ли символ <code>@</code> в email).</li>
+                <li>На мобильных устройствах подменяется клавиатура (для <code>type="tel"</code> вылезут только цифры).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Числовые и интерактивные типы input -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Числовые и интерактивные типы input</h2>
+      </div>
+      <div class="slide-body">
+        <table style="width: 100%; border-collapse: collapse; font-size: 1.1rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary-color); text-align: left;">
+              <th style="padding: 8px;">Тип</th>
+              <th style="padding: 8px;">Пример кода</th>
+              <th style="padding: 8px;">Дополнительные атрибуты</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 8px;"><code>number</code> (число)</td>
+              <td style="padding: 8px;"><code>&lt;input type="number" name="age"&gt;</code></td>
+              <td style="padding: 8px;"><code>min</code>, <code>max</code>, <code>step</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 8px;"><code>range</code> (ползунок)</td>
+              <td style="padding: 8px;"><code>&lt;input type="range" name="rating"&gt;</code></td>
+              <td style="padding: 8px;"><code>min="1" max="10" value="5"</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 8px;"><code>date</code> (календарь)</td>
+              <td style="padding: 8px;"><code>&lt;input type="date" name="birthday"&gt;</code></td>
+              <td style="padding: 8px;">Полноценный выбор даты</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 8px;"><code>color</code> (палитра)</td>
+              <td style="padding: 8px;"><code>&lt;input type="color" name="theme"&gt;</code></td>
+              <td style="padding: 8px;">Передает HEX-код цвета (например, #ff0000)</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;"><code>file</code> (загрузка)</td>
+              <td style="padding: 8px;"><code>&lt;input type="file" name="avatar"&gt;</code></td>
+              <td style="padding: 8px;"><code>accept="image/*"</code> (фильтр по типу)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Выбор вариантов: Checkbox и Radio -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Выбор вариантов: Checkbox и Radio</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Флажки (Checkbox)</h3>
+            <p style="font-size: 1.1rem; margin-bottom: 10px;">Позволяют выбрать несколько вариантов независимо друг от друга.</p>
+            <pre style="margin-top: 5px;"><code>&lt;input type="checkbox" name="hobbies" 
+       value="coding" id="cb1"&gt;
+&lt;label for="cb1"&gt;Программирование&lt;/label&gt;
+
+&lt;input type="checkbox" name="hobbies" 
+       value="sports" id="cb2"&gt;
+&lt;label for="cb2"&gt;Спорт&lt;/label&gt;</code></pre>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Переключатели (Radio)</h3>
+            <p style="font-size: 1.1rem; margin-bottom: 10px;">Позволяют выбрать только ОДИН вариант из группы. Группа определяется общим атрибутом <code>name</code>.</p>
+            <pre style="margin-top: 5px;"><code>&lt;input type="radio" name="gender" 
+       value="male" id="r1" checked&gt;
+&lt;label for="r1"&gt;Мужской&lt;/label&gt;
+
+&lt;input type="radio" name="gender" 
+       value="female" id="r2"&gt;
+&lt;label for="r2"&gt;Женский&lt;/label&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 15: textarea и выпадающий список select -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Многострочный ввод и выпадающие списки</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Поле ввода текста: <code>&lt;textarea&gt;</code></h3>
+            <p style="font-size: 1.1rem;">Используется для длинных сообщений, отзывов, комментариев.</p>
+            <pre><code>&lt;textarea name="comment" 
+          rows="4" 
+          cols="40"&gt;
+Стартовый текст...
+&lt;/textarea&gt;</code></pre>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Выпадающий список: <code>&lt;select&gt;</code></h3>
+            <p style="font-size: 1.1rem;">Компактный выбор из фиксированного перечня вариантов <code>&lt;option&gt;</code>.</p>
+            <pre><code>&lt;select name="camp_unit"&gt;
+    &lt;option value="1"&gt;1-й отряд&lt;/option&gt;
+    &lt;option value="2" selected&gt;
+        2-й отряд
+    &lt;/option&gt;
+    &lt;option value="3"&gt;3-й отряд&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 16: Атрибуты управления и валидации -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Атрибуты управления и валидации</h2>
+      </div>
+      <div class="slide-body">
+        <ul style="font-size: 1.2rem; margin-left: 20px;">
+          <li><strong><code>placeholder</code></strong> — полупрозрачная подсказка, исчезающая при начале ввода.
+            <br><code>&lt;input type="text" placeholder="Введите имя..."&gt;</code>
+          </li>
+          <li><strong><code>required</code></strong> — делает поле обязательным. Браузер не отправит форму без его заполнения.
+            <br><code>&lt;input type="email" required&gt;</code>
+          </li>
+          <li><strong><code>value</code></strong> — задает начальное значение поля.
+            <br><code>&lt;input type="text" value="Иван"&gt;</code>
+          </li>
+          <li><strong><code>disabled</code></strong> — отключает поле (пользователь не может вводить и отправлять данные).
+            <br><code>&lt;input type="text" disabled value="Заблокировано"&gt;</code>
+          </li>
+          <li><strong><code>readonly</code></strong> — поле только для чтения (редактировать нельзя, но данные отправляются).
+            <br><code>&lt;input type="text" readonly value="Только читать"&gt;</code>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 17: Кнопки в формах -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Кнопки в формах</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Для создания кнопок в HTML используются теги <code>&lt;button&gt;</code> или <code>&lt;input&gt;</code>.</p>
+            <p>У тега <code>&lt;button&gt;</code> есть три основных типа (атрибут <code>type</code>):</p>
+            <ol>
+              <li><strong><code>type="submit"</code></strong> — <em>(по умолчанию в формах)</em> собирает данные и отправляет форму.</li>
+              <li><strong><code>type="reset"</code></strong> — очищает все поля формы до их первоначального состояния.</li>
+              <li><strong><code>type="button"</code></strong> — просто кнопка. По нажатию ничего не происходит. Нужна для запуска JS скриптов.</li>
+            </ol>
+          </div>
+          <div class="column">
+            <pre><code>&lt;!-- Рекомендуемый подход --&gt;
+&lt;button type="submit" class="btn"&gt;
+    &lt;img src="check.png" width="16"&gt;
+    Зарегистрироваться
+&lt;/button&gt;
+
+&lt;!-- Альтернативный подход --&gt;
+&lt;input type="submit" 
+       value="Отправить"&gt;</code></pre>
+            <div class="highlight-box" style="font-size: 1rem;">
+              <strong>Разница:</strong> Тег <code>&lt;button&gt;</code> может содержать внутри себя теги (изображения, жирный текст), а <code>&lt;input type="submit"&gt;</code> — нет.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Атрибуты Name и ID. Связь с Label -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Атрибуты Name и ID. Связь с Label</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Атрибут <code>name</code></strong> — это имя переменной, с которым значение инпута улетает на бэкенд. <strong>Без него Django не увидит данные!</strong></p>
+            <p><strong>Атрибут <code>id</code></strong> — это уникальный идентификатор элемента на текущей странице (нужен для стилей, JS и связи с подписью).</p>
+            <p><strong>Связь через <code>&lt;label&gt;</code>:</strong> клик по тексту подписи ставит фокус в поле ввода.</p>
+          </div>
+          <div class="column">
+            <pre><code>&lt;!-- Правильная связь (через id) --&gt;
+&lt;label for="user-age"&gt;Возраст:&lt;/label&gt;
+&lt;input type="number" 
+       id="user-age" 
+       name="age"&gt;
+
+&lt;!-- Альтернативная вложенность --&gt;
+&lt;label&gt;
+    Возраст:
+    &lt;input type="number" name="age"&gt;
+&lt;/label&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 19: Пример: Полная семантическая форма -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Пример: Полная семантическая форма</h2>
+      </div>
+      <div class="slide-body">
+        <pre style="font-size: 0.85rem; margin: 0; line-height: 1.25;"><code>&lt;form action="/camp/register/" method="POST"&gt;
+    &lt;fieldset&gt;
+        &lt;legend&gt;Личные данные участника ЛФМШ &laquo;Квант&raquo;&lt;/legend&gt;
+        
+        &lt;label for="fio"&gt;ФИО:&lt;/label&gt;
+        &lt;input type="text" id="fio" name="fullname" required placeholder="Иванов Иван"&gt;
+
+        &lt;label for="spec"&gt;Направление:&lt;/label&gt;
+        &lt;select id="spec" name="track"&gt;
+            &lt;option value="math"&gt;Математика&lt;/option&gt;
+            &lt;option value="phys"&gt;Физика&lt;/option&gt;
+            &lt;option value="code" selected&gt;Программирование (Django)&lt;/option&gt;
+        &lt;/select&gt;
+
+        &lt;button type="submit"&gt;Подать заявку&lt;/button&gt;
+    &lt;/fieldset&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Резюме -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и переход к практике!</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>HTML5</strong> организует разметку с помощью тегов, задающих структуру веб-документа.</li>
+              <li><strong>Семантика</strong> (<code>&lt;main&gt;</code>, <code>&lt;section&gt;</code> и т.д.) делает код понятным для поисковиков и скринридеров.</li>
+              <li><strong>Формы</strong> передают данные на бэкенд по протоколам <code>GET</code> и <code>POST</code>.</li>
+              <li>Атрибут <strong><code>name</code></strong> критически важен — это ключ данных при обработке сервером.</li>
+            </ul>
+          </div>
+          <div class="column" style="display: flex; justify-content: center; align-items: center;">
+            <div class="highlight-box success" style="text-align: center; padding: 25px; border-radius: 8px;">
+              <span style="font-size: 3rem;">💻</span>
+              <h3 style="color: var(--secondary-color); margin-top: 15px;">Время кодить!</h3>
+              <p style="font-size: 1rem; margin-top: 10px;">Переходим к разметке страницы лагеря</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Управление -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Счетчик слайдов -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+
+    <!-- Прогресс-бар -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

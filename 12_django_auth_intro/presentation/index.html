@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 12: Cookies, Sessions, Auth | ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="presentation-container">
+
+  <!-- Слайд 1: Титульный -->
+  <div class="slide active">
+    <div class="slide-header">
+      <h2>Cookies, Sessions, Auth в Django</h2>
+    </div>
+    <div class="slide-body" style="text-align: center;">
+      <p style="font-size: 1.8rem; font-weight: bold; color: var(--primary-color); margin-bottom: 20px;">
+        Урок 12: Состояние, сессии и основы аутентификации пользователей
+      </p>
+      <p style="font-size: 1.3rem; margin-bottom: 40px; color: #7f8c8d;">
+        Летняя физико-математическая школа "Квант"<br>
+        1 июля • 10:00 - 11:20
+      </p>
+      <div class="highlight-box" style="display: inline-block; max-width: 650px; margin: 0 auto; text-align: left;">
+        <strong>Сегодня на уроке:</strong>
+        <ul style="margin-top: 10px; margin-bottom: 0;">
+          <li>Проблема Stateless HTTP: почему сервер нас забывает?</li>
+          <li>Cookies (Куки) и их структура: хранение данных в браузере.</li>
+          <li>Сессии (Sessions): безопасный механизм идентификации клиентов.</li>
+          <li>Django User: встроенная модель пользователя и PBKDF2-хэширование паролей.</li>
+          <li>Middleware: как перехватывать запросы и писать свои фильтры.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 2: Проблема: Stateless HTTP -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Проблема: Stateless HTTP</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p>Протокол <strong>HTTP</strong>, на котором держится весь веб, является <strong>stateless</strong> (без сохранения состояния).</p>
+          <ul style="margin-top: 15px;">
+            <li>Каждый запрос от браузера к серверу обрабатывается «с чистого листа».</li>
+            <li>Сервер не помнит предыдущие запросы того же клиента.</li>
+            <li><strong>Проблема:</strong> без дополнительных костылей мы бы разлогинивались после каждого перехода по ссылке, а корзина интернет-магазина обнулялась при обновлении страницы.</li>
+          </ul>
+        </div>
+        <div class="column">
+          <div class="highlight-box warning">
+            <strong>Аналогия:</strong>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Представьте врача с амнезией. Каждый раз, когда вы заходите в кабинет (делаете запрос), он видит вас впервые. Чтобы он вспомнил вас, вы должны каждый раз показывать ему медицинскую карту (передавать идентификатор).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 3: Что такое Cookies? -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Что такое Cookies (Куки)?</h2>
+    </div>
+    <div class="slide-body">
+      <p><strong>Cookies</strong> — это небольшие текстовые фрагменты данных, которые сервер отправляет в браузер клиента, а браузер сохраняет их локально и автоматически отправляет обратно с каждым последующим запросом к этому же серверу.</p>
+      <div class="highlight-box success" style="margin: 20px 0;">
+        <strong>Схема работы:</strong>
+        <ol style="margin-top: 10px; font-size: 1.1rem; margin-left: 20px;">
+          <li>Браузер делает запрос: <code>GET /index.html</code></li>
+          <li>Сервер присылает ответ со специальным заголовком: <code>Set-Cookie: user=Alex</code></li>
+          <li>Браузер сохраняет этот файл у себя на диске.</li>
+          <li>При следующем запросе браузер сам добавляет заголовок: <code>Cookie: user=Alex</code>. Теперь сервер знает, кто пришёл!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 4: Структура Cookie -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Структура Cookie и её атрибуты</h2>
+    </div>
+    <div class="slide-body">
+      <p>Cookie — это не просто пара «ключ-значение». У неё есть важные служебные атрибуты:</p>
+      <ul style="margin-top: 15px;">
+        <li><strong>Expires / Max-Age:</strong> время жизни куки. Без него кука удалится при закрытии браузера (сессионная кука).</li>
+        <li><strong>Domain & Path:</strong> определяют, для каких сайтов и папок на сервере кука активна.</li>
+        <li><strong>Secure:</strong> если включено, кука передается только по зашифрованному протоколу HTTPS.</li>
+        <li><strong>HttpOnly:</strong> запрещает доступ к куке из JavaScript (защита от XSS-атак).</li>
+        <li><strong>SameSite:</strong> управляет отправкой кук при переходах со сторонних сайтов (защита от CSRF-атак).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Слайд 5: Cookies в Django: Чтение и запись -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Cookies в Django: Чтение и запись</h2>
+    </div>
+    <div class="slide-body">
+      <p>В Django чтение кук происходит через объект запроса, а запись — через объект ответа:</p>
+      <pre><code># Чтение куки во View
+def read_cookie_view(request):
+    username = request.COOKIES.get('username', 'Гость')
+    return HttpResponse(f"Привет, {username}!")
+
+# Запись куки во View
+def set_cookie_view(request):
+    response = HttpResponse("Кука установлена!")
+    response.set_cookie('username', 'Alex', max_age=3600, httponly=True)
+    return response</code></pre>
+      <p style="font-size: 1.1rem; margin-top: 10px;">
+        Обратите внимание: мы сначала создаем объект <code>response</code>, вызываем у него метод <code>set_cookie()</code> и только потом возвращаем.
+      </p>
+    </div>
+  </div>
+
+  <!-- Слайд 6: Ограничения Cookies -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Ограничения и недостатки Cookies</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <ul style="margin-top: 15px;">
+            <li><strong>Лимит размера:</strong> один файл куки не может превышать 4 КБ. Навешать много данных не получится.</li>
+            <li><strong>Уязвимость:</strong> данные кук хранятся на компьютере клиента. Пользователь может легко открыть консоль разработчика и вручную поменять значение (например, с <code>role=user</code> на <code>role=admin</code>).</li>
+            <li><strong>Лишний трафик:</strong> куки летают туда-обратно с каждым HTTP-запросом (включая картинки, CSS, JS), засоряя сетевой канал.</li>
+          </ul>
+        </div>
+        <div class="column">
+          <div class="highlight-box warning">
+            <strong>Важное правило безопасности:</strong>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Никогда не храните в обычных куках важные, секретные или легко подделываемые данные (пароли, баланс кошелька, права доступа)!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 7: Сессии (Sessions) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Сессии (Sessions) — безопасное решение</h2>
+    </div>
+    <div class="slide-body">
+      <p>Чтобы обойти ограничения кук, используют <strong>сессии</strong>. Идея проста: хранить все данные пользователя на стороне сервера, а клиенту отдавать лишь случайный уникальный ключ.</p>
+      <div class="highlight-box success" style="margin: 20px 0;">
+        <strong>Принцип работы сессий:</strong>
+        <ol style="margin-top: 10px; font-size: 1.1rem; margin-left: 20px;">
+          <li>Пользователь логинится. Django генерирует длинную случайную строку (например, <code>"abc123xyz"</code>) — <strong>Session Key</strong>.</li>
+          <li>Django создает в своей базе данных запись, где ключ — <code>"abc123xyz"</code>, а значение — JSON-словарь со всеми данными пользователя.</li>
+          <li>Сервер отправляет клиенту куку с именем <code>sessionid</code> и значением <code>"abc123xyz"</code>.</li>
+          <li>При следующем запросе браузер присылает эту куку. Django находит в БД словарь по ключу <code>"abc123xyz"</code> и загружает его в память.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 8: Сессии в Django -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Сессии в Django под капотом</h2>
+    </div>
+    <div class="slide-body">
+      <p>В Django механизм сессий включен по умолчанию через класс-посредник (middleware).</p>
+      <ul style="margin-top: 15px;">
+        <li>Сессионные данные по умолчанию хранятся в таблице базы данных <code>django_session</code>.</li>
+        <li>Имя куки, в которой хранится ключ сессии: <code>sessionid</code>.</li>
+        <li>Сами данные в БД хранятся в закодированном виде (Base64 + подпись), чтобы их нельзя было легко прочесть в сыром виде из базы данных.</li>
+      </ul>
+      <div class="highlight-box" style="margin-top: 15px;">
+        <strong>Где еще можно хранить сессии?</strong> (меняется в <code>settings.py</code>):<br>
+        В БД (по умолчанию), в кэше (Redis / Memcached), в файлах или непосредственно в зашифрованных куках на клиенте.
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 9: Работа с сессиями во View -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Работа с сессиями во View</h2>
+    </div>
+    <div class="slide-body">
+      <p>В Django доступ к сессии осуществляется через словарь-подобный объект <code>request.session</code>:</p>
+      <pre><code>def cart_add(request, item_id):
+    # Получаем корзину из сессии или создаем пустой список, если её нет
+    cart = request.session.get('cart', [])
+    cart.append(item_id)
+    
+    # Сохраняем обратно в сессию
+    request.session['cart'] = cart
+    
+    # Важно: если мы изменяем изменяемый объект (список, словарь) внутри сессии,
+    # нужно явно сообщить Django о необходимости сохранения в БД:
+    request.session.modified = True
+    return HttpResponse("Товар добавлен!")</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 10: Сравнение Cookies и Sessions -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Сравнение Cookies и Sessions</h2>
+    </div>
+    <div class="slide-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Характеристика</th>
+            <th>Cookies (Куки)</th>
+            <th>Sessions (Сессии)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Где хранятся данные?</strong></td>
+            <td>На устройстве клиента (браузер)</td>
+            <td>На сервере (БД, кэш или файлы)</td>
+          </tr>
+          <tr>
+            <td><strong>Объем данных</strong></td>
+            <td>Ограничен (до 4 КБ на одну куку)</td>
+            <td>Практически неограничен</td>
+          </tr>
+          <tr>
+            <td><strong>Безопасность</strong></td>
+            <td>Низкая (клиент может подделать)</td>
+            <td>Высокая (клиент видит только ключ)</td>
+          </tr>
+          <tr>
+            <td><strong>Скорость работы</strong></td>
+            <td>Очень быстрая (нет обращений к БД)</td>
+            <td>Зависит от хранилища (нужен запрос в БД)</td>
+          </tr>
+          <tr>
+            <td><strong>Нагрузка на сеть</strong></td>
+            <td>Передаются целиком при каждом запросе</td>
+            <td>Передается только короткий ID сессии</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Слайд 11: Введение в Аутентификацию -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Идентификация, Аутентификация, Авторизация</h2>
+    </div>
+    <div class="slide-body">
+      <p>Эти три термина часто путают, но они обозначают разные этапы входа в систему:</p>
+      <ul style="margin-top: 15px;">
+        <li><strong>Идентификация</strong> — это заявление пользователя о том, кто он такой. Например, ввод логина или email: <em>«Я пользователь с ником <code>alex_99</code>»</em>.</li>
+        <li><strong>Аутентификация</strong> — это подтверждение личности. Пользователь доказывает, что он тот, за кого себя выдает (вводит пароль, код из SMS или прикладывает палец): <em>«Вот мой пароль, проверьте»</em>.</li>
+        <li><strong>Авторизация</strong> — это проверка прав доступа. Определение того, что именно этому пользователю разрешено делать на сайте: <em>«У пользователя <code>alex_99</code> есть права администратора, пустить его в админку»</em>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Слайд 12: Встроенная модель User в Django -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Встроенная модель User в Django</h2>
+    </div>
+    <div class="slide-body">
+      <p>В Django есть мощная готовая система пользователей (приложение <code>django.contrib.auth</code>). Модель <code>User</code> содержит следующие стандартные поля:</p>
+      <div class="columns">
+        <div class="column">
+          <ul>
+            <li><code>username</code> — уникальное имя пользователя (логин).</li>
+            <li><code>email</code> — адрес электронной почты.</li>
+            <li><code>password</code> — хэшированное значение пароля.</li>
+            <li><code>first_name</code> / <code>last_name</code> — имя и фамилия.</li>
+          </ul>
+        </div>
+        <div class="column">
+          <ul>
+            <li><code>is_active</code> — активен ли аккаунт (вместо удаления лучше делать False).</li>
+            <li><code>is_staff</code> — разрешен ли доступ в панель администратора.</li>
+            <li><code>is_superuser</code> — обладает ли всеми правами.</li>
+            <li><code>date_joined</code> — дата регистрации.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 13: Безопасность паролей и Хэширование -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Безопасность паролей и Хэширование</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p><strong>Золотое правило веб-разработки:</strong> никогда не храните пароли пользователей в открытом (чистом) виде в базе данных!</p>
+          <p style="margin-top: 10px;">Если злоумышленник получит доступ к базе данных, он украдет пароли всех пользователей.</p>
+          <p style="margin-top: 10px;">Для безопасности пароли прогоняют через <strong>односторонние криптографические хэш-функции</strong>. Обратно восстановить пароль из хэша невозможно.</p>
+        </div>
+        <div class="column">
+          <div class="highlight-box warning">
+            <strong>Принцип хэша:</strong>
+            <pre style="margin: 5px 0; font-size: 0.85rem;">Пароль: "qwerty" 
+Hash: "sha256$53f2c...8a2b"</pre>
+            <p style="font-size: 0.95rem;">При авторизации сервер хэширует введенный пользователем пароль и сравнивает хэши. Если они совпали — пароль верный.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 14: Хэширование в Django: PBKDF2 -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>PBKDF2 Hashing в Django</h2>
+    </div>
+    <div class="slide-body">
+      <p>Django использует продвинутый алгоритм хэширования <strong>PBKDF2</strong> (по умолчанию с SHA-256).</p>
+      <ul style="margin-top: 15px;">
+        <li><strong>Соль (Salt):</strong> случайная уникальная строка, которая добавляется к каждому паролю перед хэшированием. Это защищает от взлома по готовым таблицам хэшей (радужным таблицам).</li>
+        <li><strong>Итерации:</strong> алгоритм выполняет хэширование сотни тысяч раз (в Django 5.0+ по умолчанию 600,000 итераций). Это делает процесс хэширования намеренно медленным, защищая от перебора паролей (брутфорса) на видеокартах.</li>
+      </ul>
+      <pre style="font-size: 0.85rem; padding: 10px;">Формат хранения в БД:
+&lt;algorithm&gt;$&lt;iterations&gt;$&lt;salt&gt;$&lt;hash&gt;
+pbkdf2_sha256$600000$AbCdEf123$xYz987...2B4c</pre>
+    </div>
+  </div>
+
+  <!-- Слайд 15: Создание пользователей в коде -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Создание пользователей в коде</h2>
+    </div>
+    <div class="slide-body">
+      <p>Для правильного хэширования паролей при создании пользователей ВСЕГДА используйте специальный метод <code>create_user()</code> менеджера модели:</p>
+      <pre><code>from django.contrib.auth.models import User
+
+# ПРАВИЛЬНО: пароль автоматически захэшируется
+user = User.objects.create_user(
+    username='ivan',
+    email='ivan@mail.ru',
+    password='SuperSafePassword123'
+)
+
+# НЕПРАВИЛЬНО: пароль запишется в БД в открытом виде, 
+# и пользователь не сможет войти в аккаунт!
+user = User.objects.create(username='ivan', password='plain_password')</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 16: Что такое Middleware? -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Что такое Middleware?</h2>
+    </div>
+    <div class="slide-body">
+      <p><strong>Middleware</strong> (файлы-посредники) — это механизм фильтров, который встраивается в процесс обработки запроса и ответа в Django. Они выполняются последовательно для каждого входящего HTTP-запроса и исходящего HTTP-ответа.</p>
+      <div class="highlight-box success" style="margin: 15px 0;">
+        <strong>Схема прохождения запроса:</strong><br>
+        <code>Запрос от клиента &rarr; SecurityMiddleware &rarr; SessionMiddleware &rarr; AuthenticationMiddleware &rarr; Твоя View &rarr; (и обратно)</code>
+      </div>
+      <p>Через Middleware Django автоматически подтягивает сессии (<code>request.session</code>) и текущего пользователя (<code>request.user</code>) к каждому запросу до того, как запрос попадет во View.</p>
+    </div>
+  </div>
+
+  <!-- Слайд 17: Пример кастомного Middleware -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Пример кастомного Middleware</h2>
+    </div>
+    <div class="slide-body">
+      <p>Мы можем написать класс, который будет логировать каждый запрос в консоль:</p>
+      <pre style="font-size: 0.9rem; padding: 10px;"><code>class RequestLogMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Код, выполняемый ДО того, как View обработает запрос
+        print(f"[LOG] Запрос {request.method} на адрес {request.path}")
+        
+        response = self.get_response(request)
+        
+        # Код, выполняемый ПОСЛЕ того, как View вернула ответ
+        print(f"[LOG] Статус ответа: {response.status_code}")
+        return response</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 18: Резюме и план практики -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Резюме и план практики</h2>
+    </div>
+    <div class="slide-body">
+      <div class="columns">
+        <div class="column">
+          <p><strong>Ключевые выводы:</strong></p>
+          <ol style="margin-top: 10px;">
+            <li>Куки хранятся у клиента, сессии — на сервере (связаны через куку <code>sessionid</code>).</li>
+            <li>Модель <code>User</code> хранит хэш пароля с солью с помощью алгоритма <code>PBKDF2</code>.</li>
+            <li>Никогда не используйте <code>User.objects.create()</code> для пользователей. Только <code>create_user()</code>!</li>
+          </ol>
+        </div>
+        <div class="column">
+          <div class="highlight-box success">
+            <strong>Что делаем сегодня на практике:</strong>
+            <p style="margin-top: 10px; font-size: 1.1rem;">
+              1. Научимся сохранять в Cookies любимую цветовую тему пользователя.<br>
+              2. Создадим корзину покупок с помощью Django Sessions.<br>
+              3. Будем работать с пользователями в Django Shell.<br>
+              4. Напишем Middleware для подсчета общего количества просмотров страниц.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Элементы управления презентацией -->
+<div class="slide-counter" id="slide-counter">1 / 18</div>
+<div class="controls">
+  <button class="control-btn" id="prev-btn">&larr; Назад</button>
+  <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+  <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+</div>
+<div class="progress-container">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

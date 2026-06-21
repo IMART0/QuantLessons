@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Квиз по веб-разработке - ЛФМШ Квант</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="presentation-container">
+    
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <h1 style="font-size: 3.5rem; color: var(--primary-color); margin-bottom: 20px;">Квиз по веб-разработке</h1>
+        <p style="font-size: 1.8rem; color: #7f8c8d; margin-bottom: 40px;">Проверка знаний: HTML, CSS, Python, Django и веб-технологии</p>
+        <div class="highlight-box success" style="max-width: 600px; margin: 0 auto; font-size: 1.3rem;">
+          Летняя физико-математическая школа «Квант»<br>
+          <strong>10 июля, 14:30 - 15:50</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Rules -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Правила игры</h2>
+      </div>
+      <div class="slide-body">
+        <ul style="font-size: 1.35rem; line-height: 1.8;">
+          <li><strong>Командная работа:</strong> Делимся на команды по 4-6 человек.</li>
+          <li><strong>Раунды:</strong> Всего 5 основных раундов по 5 вопросов и 1 финальный раунд (тай-брейк).</li>
+          <li><strong>Сдача ответов:</strong> После каждого раунда команды записывают ответы в бланки и сдают их жюри.</li>
+          <li><strong>Время:</strong> На обсуждение вопросов раунда дается 4-5 минут во время показа слайдов.</li>
+          <li><strong>Начисление баллов:</strong> 1 балл за каждый правильный ответ. В раунде тай-брейка баллы могут решить исход ничьей!</li>
+          <li><strong>Честная игра:</strong> Использование телефонов, ноутбуков и шпаргалок запрещено.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide 3: Round 1 Intro -->
+    <div class="slide">
+      <div class="slide-body" style="text-align: center;">
+        <div class="badge badge-primary" style="font-size: 1.5rem; padding: 10px 20px; margin-bottom: 20px;">Раунд 1</div>
+        <h1 class="round-title">HTML & CSS</h1>
+        <p class="round-subtitle">Специфичность, блочная модель, семантика и флексы</p>
+      </div>
+    </div>
+
+    <!-- Slide 4: Round 1 Questions (1-3) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 1: HTML & CSS (Вопросы 1-3)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block">
+          <div class="question-text">Вопрос 1 (Специфичность): Какой цвет примет текст в блоке?</div>
+          <div class="columns">
+            <div class="column" style="flex: 1.2;">
+              <pre style="margin: 5px 0; font-size: 0.85rem;"><code class="html">&lt;div id="card" class="item primary" style="color: blue;"&gt;Текст&lt;/div&gt;</code></pre>
+              <pre style="margin: 5px 0; font-size: 0.85rem;"><code class="css">div { color: red; }
+#card { color: green; }
+.item.primary { color: yellow; }
+div.item { color: orange !important; }</code></pre>
+            </div>
+            <div class="column" style="flex: 0.8; font-size: 1rem;">
+              <strong>Варианты:</strong> А) Синий | Б) Красный | В) Зеленый | Г) Оранжевый
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-block">
+          <div class="question-text">Вопрос 2 (Блочная модель): Чему равна полная ширина элемента (без margin)?</div>
+          <div class="columns">
+            <div class="column" style="flex: 1.2;">
+              <pre style="margin: 5px 0; font-size: 0.85rem;"><code class="css">.box {
+  width: 300px; padding: 20px;
+  border: 5px solid black; margin: 15px;
+  box-sizing: content-box;
+}</code></pre>
+            </div>
+            <div class="column" style="flex: 0.8; font-size: 1rem;">
+              <strong>Варианты:</strong> А) 300px | Б) 340px | В) 350px | Г) 380px
+            </div>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 3 (Семантика): Какой тег лучше всего подходит для независимого блока статьи или поста блога?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px;">
+            <strong>Варианты:</strong> А) &lt;section&gt; | Б) &lt;article&gt; | В) &lt;div&gt; | Г) &lt;aside&gt;
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Round 1 Questions (4-5) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 1: HTML & CSS (Вопросы 4-5)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block" style="margin-bottom: 30px;">
+          <div class="question-text">Вопрос 4 (Flexbox): Какое значение свойства <code>flex-shrink</code> применяется к флекс-элементам по умолчанию?</div>
+          <div style="font-size: 1.2rem; margin-top: 10px; margin-left: 10px;">
+            <strong>Варианты:</strong> А) 0 | Б) 1 | В) auto | Г) none
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 5 (Селекторы): Какие элементы будут выбраны селектором <code>ul > li + li</code>?</div>
+          <div style="font-size: 1.15rem; margin-top: 10px; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> Все элементы списка li внутри ul.<br>
+            <strong>Б)</strong> Только самый первый элемент списка li в ul.<br>
+            <strong>В)</strong> Все элементы списка li, кроме первого.<br>
+            <strong>Г)</strong> Только те элементы списка, которые содержат вложенные списки.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Round 1 Answers -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ответы: Раунд 1 (HTML & CSS)</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem; line-height: 1.5;">
+        <p><strong>1. Г) Оранжевый</strong>. Правило <code>!important</code> перебивает любые другие уровни специфичности, включая инлайновые стили (<code>style="..."</code>).</p>
+        <p><strong>2. В) 350px</strong>. При <code>box-sizing: content-box</code> полная ширина = <code>width</code> (300) + <code>padding-left/right</code> (20+20) + <code>border-left/right</code> (5+5) = 350px. <code>margin</code> не входит в ширину самого элемента.</p>
+        <p><strong>3. Б) &lt;article&gt;</strong>. Предназначен для автономного, самодостаточного контента, который можно переиспользовать независимо.</p>
+        <p><strong>4. Б) 1</strong>. По умолчанию все флекс-элементы могут сжиматься, если контейнер слишком мал (<code>flex-shrink: 1</code>).</p>
+        <p><strong>5. В) Все li, кроме первого</strong>. <code>></code> выбирает прямых потомков, а соседний селектор <code>+</code> выбирает элемент <code>li</code>, идущий сразу за другим <code>li</code>. Самый первый <code>li</code> не идет после другого <code>li</code>, поэтому он отсекается.</p>
+      </div>
+    </div>
+
+    <!-- Slide 7: Round 2 Intro -->
+    <div class="slide">
+      <div class="slide-body" style="text-align: center;">
+        <div class="badge badge-primary" style="font-size: 1.5rem; padding: 10px 20px; margin-bottom: 20px;">Раунд 2</div>
+        <h1 class="round-title">Python & Web-протоколы</h1>
+        <p class="round-subtitle">HTTP-методы, коды состояния, декораторы, сессии и cookie</p>
+      </div>
+    </div>
+
+    <!-- Slide 8: Round 2 Questions (1-3) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 2: Python & Web-протоколы (Вопросы 1-3)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block">
+          <div class="question-text">Вопрос 1 (HTTP методы): Какой из методов HTTP НЕ является идемпотентным согласно спецификации RFC 7231?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px;">
+            <strong>Варианты:</strong> А) GET | Б) PUT | В) POST | Г) DELETE
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 2 (Коды HTTP): Что означает статус-код <code>304 Not Modified</code>?</div>
+          <div style="font-size: 1.05rem; margin-left: 10px; line-height: 1.4;">
+            <strong>А)</strong> Запрос был перенаправлен на несуществующую страницу.<br>
+            <strong>Б)</strong> Ресурс не изменялся с момента последнего запроса, браузер может взять его из кэша.<br>
+            <strong>В)</strong> У клиента нет прав на изменение этого ресурса.<br>
+            <strong>Г)</strong> Сервер успешно внес изменения в базу данных.
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 3 (Декораторы): Что выведет этот код?</div>
+          <div class="columns">
+            <div class="column" style="flex: 1.3;">
+              <pre style="margin: 5px 0; font-size: 0.85rem;"><code class="python">def decor(func):
+    def wrapper():
+        return func() + 2
+    return wrapper
+
+@decor
+def get_num():
+    return 5
+
+print(get_num() * 2)</code></pre>
+            </div>
+            <div class="column" style="flex: 0.7; font-size: 1.1rem; display: flex; align-items: center;">
+              <strong>Варианты:</strong><br>
+              А) 14<br> Б) 12<br> В) 10<br> Г) TypeError
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Round 2 Questions (4-5) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 2: Python & Web-протоколы (Вопросы 4-5)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block" style="margin-bottom: 25px;">
+          <div class="question-text">Вопрос 4 (Cookie & Session): Где по умолчанию хранятся данные сессии в Django?</div>
+          <div style="font-size: 1.15rem; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> В локальном хранилище (LocalStorage) браузера пользователя.<br>
+            <strong>Б)</strong> В куках (Cookies), отправляемых в браузер в зашифрованном виде.<br>
+            <strong>В)</strong> В базе данных на сервере (таблица django_session).<br>
+            <strong>Г)</strong> В оперативной памяти веб-сервера Gunicorn.
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 5 (Kwargs в URL): Каким будет словарь <code>kwargs</code> в Django-view при запросе к <code>path('post/&lt;int:pk&gt;/', views.my_view)</code> по пути <code>/post/42/</code>?</div>
+          <div style="font-size: 1.15rem; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> <code>{'pk': 42}</code><br>
+            <strong>Б)</strong> <code>(42,)</code><br>
+            <strong>В)</strong> <code>{'request': request, 'pk': 42}</code><br>
+            <strong>Г)</strong> Словарь будет пустым, а число попадет в <code>args</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Round 2 Answers -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ответы: Раунд 2 (Python & Web-протоколы)</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem; line-height: 1.5;">
+        <p><strong>1. В) POST</strong>. Идемпотентный метод при многократном повторении дает один и тот же результат. GET, PUT, DELETE — идемпотентны. Повторный POST создает новые записи (неидемпотентен).</p>
+        <p><strong>2. Б) Ресурс не изменялся, берем из кэша</strong>. Это основа оптимизации трафика: сервер сообщает браузеру, что контент тот же, экономя время и трафик.</p>
+        <p><strong>3. А) 14</strong>. Декоратор оборачивает функцию <code>get_num</code>, подменяя её на <code>wrapper</code>, который возвращает <code>5 + 2 = 7</code>. При умножении на 2 получаем 14.</p>
+        <p><strong>4. В) В базе данных на сервере (таблица django_session)</strong>. В куках хранится только <code>sessionid</code> (уникальный ключ), по которому Django находит данные в БД.</p>
+        <p><strong>5. А) {'pk': 42}</strong>. Все именованные параметры из пути URL передаются во view как именованные аргументы (keyword arguments / kwargs).</p>
+      </div>
+    </div>
+
+    <!-- Slide 11: Round 3 Intro -->
+    <div class="slide">
+      <div class="slide-body" style="text-align: center;">
+        <div class="badge badge-primary" style="font-size: 1.5rem; padding: 10px 20px; margin-bottom: 20px;">Раунд 3</div>
+        <h1 class="round-title">Ядро Django: Views, URLs, Templates</h1>
+        <p class="round-subtitle">Архитектура MVT, CBV, контекстные процессоры и шаблоны</p>
+      </div>
+    </div>
+
+    <!-- Slide 12: Round 3 Questions (1-3) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 3: Ядро Django (Вопросы 1-3)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block">
+          <div class="question-text">Вопрос 1 (Архитектура MVT): Какая часть MVT-паттерна Django отвечает за обработку HTTP-запроса, извлечение данных и бизнес-логику?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px;">
+            <strong>Варианты:</strong> А) Model | Б) View | В) Template | Г) Controller
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 2 (URL роутинг): Какое правило совпадет с запросом <code>/user/ivan/</code>, но НЕ совпадет с <code>/user/ivan/profile/</code>?</div>
+          <div style="font-size: 1.05rem; margin-left: 10px; line-height: 1.4;">
+            <strong>А)</strong> <code>path('user/&lt;str:username&gt;/profile/', views.profile)</code><br>
+            <strong>Б)</strong> <code>path('user/&lt;str:username&gt;', views.profile)</code><br>
+            <strong>В)</strong> <code>path('user/&lt;str:username&gt;/', views.profile)</code><br>
+            <strong>Г)</strong> <code>re_path(r'^user/(?P&lt;username&gt;\w+)', views.profile)</code>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 3 (Контекстные процессоры): В чем главная задача Context Processors в Django?</div>
+          <div style="font-size: 1.05rem; margin-left: 10px; line-height: 1.4;">
+            <strong>А)</strong> Очищать и валидировать данные пользователя перед обработкой во view.<br>
+            <strong>Б)</strong> Добавлять определенные переменные во все шаблоны по умолчанию.<br>
+            <strong>В)</strong> Собирать и компилировать статические файлы во время рендеринга.<br>
+            <strong>Г)</strong> Оптимизировать SQL-запросы внутри шаблонов.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 13: Round 3 Questions (4-5) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 3: Ядро Django (Вопросы 4-5)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block" style="margin-bottom: 25px;">
+          <div class="question-text">Вопрос 4 (Шаблоны и экранирование): В Django-шаблоне выводится переменная <code>{{ code }}</code>. Что отобразится в браузере, если <code>code = "&lt;h1&gt;Привет&lt;/h1&gt;"</code>?</div>
+          <div style="font-size: 1.15rem; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> Крупный заголовок первого уровня со словом "Привет".<br>
+            <strong>Б)</strong> Текст <code>&lt;h1&gt;Привет&lt;/h1&gt;</code> (теги отобразятся на экране как обычный текст).<br>
+            <strong>В)</strong> Ошибка компиляции шаблона <code>TemplateSyntaxError</code>.<br>
+            <strong>Г)</strong> Пустая строка (Django полностью удалит HTML-теги в целях безопасности).
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 5 (Теги и фильтры): В чем разница между тегами и фильтрами в шаблонах Django?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> Фильтры обрабатывают данные из БД, а теги отвечают за стили CSS.<br>
+            <strong>Б)</strong> Фильтры модифицируют вывод переменных (<code>{{ var|filter }}</code>), а теги реализуют логику (<code>{% tag %}</code>).<br>
+            <strong>В)</strong> Фильтры выполняются в браузере с помощью JS, а теги — на сервере с помощью Python.<br>
+            <strong>Г)</strong> Разницы нет, это синонимы для обозначения функций шаблонизатора.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 14: Round 3 Answers -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ответы: Раунд 3 (Ядро Django)</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem; line-height: 1.5;">
+        <p><strong>1. Б) View (Представление)</strong>. Вопреки классическому MVC, где логику ведет Controller, в Django именно View принимает запросы и обрабатывает бизнес-логику (а роль контроллера выполняет сам фреймворк).</p>
+        <p><strong>2. В) path('user/&lt;str:username&gt;/', ...)</strong>. Метод <code>path</code> ищет точное совпадение строки с путями (с учетом слэшей). Вариант Г совпал бы с обоими адресами, так как не имеет символа конца строки <code>$</code>.</p>
+        <p><strong>3. Б) Добавлять переменные во все шаблоны</strong>. Например, так в шаблонах всегда доступны <code>request</code> или <code>user</code> без явной передачи из views.</p>
+        <p><strong>4. Б) Текст &lt;h1&gt;Привет&lt;/h1&gt;</strong>. Django автоматически экранирует HTML, чтобы предотвратить XSS-атаки (выполнение вредоносного JS). Для рендера тегов нужен фильтр <code>safe</code>.</p>
+        <p><strong>5. Б) Фильтры модифицируют переменные, теги реализуют логику</strong>. Фильтры пишутся через вертикальную черту, теги — в фигурных скобках с процентами.</p>
+      </div>
+    </div>
+
+    <!-- Slide 15: Round 4 Intro -->
+    <div class="slide">
+      <div class="slide-body" style="text-align: center;">
+        <div class="badge badge-primary" style="font-size: 1.5rem; padding: 10px 20px; margin-bottom: 20px;">Раунд 4</div>
+        <h1 class="round-title">Django Models & ORM</h1>
+        <p class="round-subtitle">Связи, ленивые запросы, миграции и оптимизации базы данных</p>
+      </div>
+    </div>
+
+    <!-- Slide 16: Round 4 Questions (1-3) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 4: Django Models & ORM (Вопросы 1-3)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block">
+          <div class="question-text">Вопрос 1 (Проблема N+1): В модели <code>Book</code> есть связь <code>ForeignKey</code> с моделью <code>Author</code>. Какая оптимизация спасет от N+1 запросов при рендере списка книг с авторами?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px;">
+            <strong>Варианты:</strong> А) prefetch_related | Б) select_related | В) defer | Г) filter(author__isnull=False)
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 2 (Связи): Что произойдет с книгами автора при его удалении, если поле модели описано как <code>author = models.ForeignKey(Author, on_delete=models.PROTECT)</code>?</div>
+          <div style="font-size: 1.05rem; margin-left: 10px; line-height: 1.4;">
+            <strong>А)</strong> Книги этого автора будут удалены автоматически.<br>
+            <strong>Б)</strong> Поле <code>author</code> в книгах этого автора занулится (примет значение NULL).<br>
+            <strong>В)</strong> Django выбросит ошибку <code>ProtectedError</code> и заблокирует удаление автора, пока у него есть книги.<br>
+            <strong>Г)</strong> Автор удалится, а книги останутся с недействительной ссылкой.
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 3 (Миграции): Где Django хранит информацию о том, какие файлы миграций уже были запущены на базе данных?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px;">
+            <strong>Варианты:</strong> А) В settings.py | Б) В файлах кэша .pyc | В) В таблице БД django_migrations | Г) В файле .django_history
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 17: Round 4 Questions (4-5) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 4: Django Models & ORM (Вопросы 4-5)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block" style="margin-bottom: 25px;">
+          <div class="question-text">Вопрос 4 (Ленивые QuerySet): Сколько запросов к БД будет сделано при выполнении этого кода?</div>
+          <div class="columns">
+            <div class="column" style="flex: 1.4;">
+              <pre style="margin: 5px 0; font-size: 0.85rem;"><code class="python">books = Book.objects.filter(year__gt=2020)
+active_books = books.filter(status='active')
+first_book = active_books[0]</code></pre>
+            </div>
+            <div class="column" style="flex: 0.6; font-size: 1.15rem; display: flex; align-items: center;">
+              <strong>Варианты:</strong><br>
+              А) 3 запроса<br> Б) 2 запроса<br> В) 1 запрос<br> Г) 0 запросов
+            </div>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 5 (Агрегация): Что вернет вызов <code>Book.objects.aggregate(avg=Avg('rating'))</code>?</div>
+          <div style="font-size: 1.15rem; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> QuerySet объектов Book с добавленным полем avg.<br>
+            <strong>Б)</strong> Словарь Python вида <code>{'avg': 4.5}</code>.<br>
+            <strong>В)</strong> Одно число с плавающей точкой (например, 4.5).<br>
+            <strong>Г)</strong> Список авторов и их средних оценок.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 18: Round 4 Answers -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ответы: Раунд 4 (Django Models & ORM)</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem; line-height: 1.5;">
+        <p><strong>1. Б) select_related</strong>. Для связей «один-ко-многим» (ForeignKey) используется <code>select_related</code>, делающий SQL JOIN. <code>prefetch_related</code> используется для ManyToMany и обратных связей (делает отдельный SQL-запрос).</p>
+        <p><strong>2. В) Заблокирует удаление автора (ProtectedError)</strong>. Это защищает базу от потери логической целостности (не дает оставить книги без автора).</p>
+        <p><strong>3. В) В специальной таблице django_migrations</strong> в самой базе данных. Django проверяет эту таблицу при запуске <code>migrate</code>.</p>
+        <p><strong>4. В) 1 запрос</strong>. QuerySet в Django ленивы. Первые две строки только строят SQL-запрос. Запрос улетает в БД только на третьей строке при индексации (слайсинге <code>[0]</code>, транслируемом в <code>LIMIT 1</code>).</p>
+        <p><strong>5. Б) Словарь Python вида {'avg': 4.5}</strong>. В отличие от <code>annotate()</code>, которая дополняет каждый объект QuerySet, <code>aggregate()</code> сжимает весь QuerySet в одну строку данных и возвращает словарь.</p>
+      </div>
+    </div>
+
+    <!-- Slide 19: Round 5 Intro -->
+    <div class="slide">
+      <div class="slide-body" style="text-align: center;">
+        <div class="badge badge-primary" style="font-size: 1.5rem; padding: 10px 20px; margin-bottom: 20px;">Раунд 5</div>
+        <h1 class="round-title">Архитектура, безопасность & деплой</h1>
+        <p class="round-subtitle">Middleware, CSRF, SQL-инъекции, CORS и статика в продакшене</p>
+      </div>
+    </div>
+
+    <!-- Slide 20: Round 5 Questions (1-3) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 5: Безопасность & Деплой (Вопросы 1-3)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block">
+          <div class="question-text">Вопрос 1 (Middleware): В каком порядке Django обрабатывает список <code>MIDDLEWARE</code> при входящем запросе (Request)?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px;">
+            <strong>Варианты:</strong> А) Сверху вниз (от первого к последнему) | Б) Снизу вверх | В) В алфавитном порядке | Г) Одновременно
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 2 (CSRF защита): Как Django проверяет POST-запросы на защиту от CSRF-атак?</div>
+          <div style="font-size: 1.05rem; margin-left: 10px; line-height: 1.4;">
+            <strong>А)</strong> Сравнивает IP-адрес отправителя со списком доверенных хостов.<br>
+            <strong>Б)</strong> Требует наличие уникального токена в теле POST-запроса и сверяет его с токеном из cookie.<br>
+            <strong>В)</strong> Шифрует все передаваемые данные с помощью SSL/TLS ключа.<br>
+            <strong>Г)</strong> Блокирует все запросы, пришедшие не из браузера Chrome.
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 3 (SQL-инъекции): Какой из вариантов кода в Django РИСКУЕТ получить SQL-инъекцию при передаче данных от пользователя <code>user_input</code>?</div>
+          <div style="font-size: 1.05rem; margin-left: 10px; line-height: 1.4;">
+            <strong>А)</strong> <code>Book.objects.filter(title=user_input)</code><br>
+            <strong>Б)</strong> <code>Book.objects.raw("SELECT * FROM book WHERE title = %s", [user_input])</code><br>
+            <strong>В)</strong> <code>Book.objects.raw(f"SELECT * FROM book WHERE title = '{user_input}'")</code><br>
+            <strong>Г)</strong> <code>Book.objects.filter(title__contains=user_input)</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 21: Round 5 Questions (4-5) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Раунд 5: Безопасность & Деплой (Вопросы 4-5)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block" style="margin-bottom: 25px;">
+          <div class="question-text">Вопрос 4 (CORS): Почему браузер блокирует React-приложение на <code>localhost:3000</code> от чтения данных из Django API на <code>localhost:8000</code> без настройки CORS?</div>
+          <div style="font-size: 1.15rem; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> Из-за ограничений базы данных Django на параллельные сессии.<br>
+            <strong>Б)</strong> Из-за политики единого источника (Same-Origin Policy) в браузере.<br>
+            <strong>В)</strong> Потому что Django не умеет работать по HTTP-протоколу с React.<br>
+            <strong>Г)</strong> Потому что порт 3000 зарезервирован для баз данных.
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 5 (Деплой статики): Зачем нужна команда <code>python manage.py collectstatic</code> на сервере перед запуском сайта?</div>
+          <div style="font-size: 1.15rem; margin-left: 10px; line-height: 1.5;">
+            <strong>А)</strong> Чтобы сжать и минифицировать весь код CSS и JS.<br>
+            <strong>Б)</strong> Чтобы скачать Bootstrap и jQuery файлы из внешних CDN.<br>
+            <strong>В)</strong> Чтобы собрать статику всех приложений в одну папку <code>STATIC_ROOT</code> для раздачи веб-сервером (Nginx).<br>
+            <strong>Г)</strong> Чтобы скомпилировать Python-код проекта в байт-код.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 22: Round 5 Answers -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ответы: Раунд 5 (Безопасность & Деплой)</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem; line-height: 1.5;">
+        <p><strong>1. А) Сверху вниз (от первого к последнему)</strong>. Запрос идет по списку сверху вниз (Request), а возвращаемый ответ (Response) проходит обратно снизу вверх.</p>
+        <p><strong>2. Б) Сверяет уникальный CSRF-токен из тела запроса с токеном из cookie</strong>. Для этого мы пишем тег <code>{% csrf_token %}</code> внутри форм.</p>
+        <p><strong>3. В) Book.objects.raw(f"... '{user_input}'")</strong>. Прямое форматирование строк (f-строки) внедряет ввод пользователя в SQL-запрос напрямую, позволяя злоумышленнику сломать синтаксис и выполнить свой SQL-код. Варианты А, Б и Г безопасны, так как используют плейсхолдеры и экранирование ORM.</p>
+        <p><strong>4. Б) Политика единого источника (Same-Origin Policy)</strong>. Защищает данные: запрещает скриптам с одного сайта читать ответы от другого сайта, если тот явно не разрешил это через CORS-заголовки.</p>
+        <p><strong>5. В) Чтобы собрать статику в одну общую папку STATIC_ROOT</strong>. В продакшене Django не должен раздавать статику сам (это медленно). Собранную статику напрямую и очень быстро раздает веб-сервер Nginx.</p>
+      </div>
+    </div>
+
+    <!-- Slide 23: Round 6 Intro -->
+    <div class="slide">
+      <div class="slide-body" style="text-align: center;">
+        <div class="badge badge-accent" style="font-size: 1.5rem; padding: 10px 20px; margin-bottom: 20px;">Бонус-раунд</div>
+        <h1 class="round-title">Тай-брейк: Логика & Пазлы</h1>
+        <p class="round-subtitle">Хитрые структуры данных, особенности ORM и загадки</p>
+      </div>
+    </div>
+
+    <!-- Slide 24: Round 6 Questions -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Тай-брейк: Вопросы на логику</h2>
+      </div>
+      <div class="slide-body">
+        <div class="question-block">
+          <div class="question-text">Вопрос 1 (Хеш-ключи): Чему равна длина словаря: <code>len({1: 'a', 1.0: 'b', True: 'c'})</code>?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px;">
+            <strong>Варианты:</strong> А) 3 | Б) 2 | В) 1 | Г) Вызов упадет с TypeError
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 2 (Загадка уникальности): В модели Django для поля прописано <code>unique=True</code>. Однако при тестировании разработчик смог сохранить дубликаты записей в базу без ошибок. Как это возможно?</div>
+          <div style="font-size: 1.05rem; margin-left: 10px; line-height: 1.4;">
+            <strong>А)</strong> SQLite не поддерживает ограничения уникальности в принципе.<br>
+            <strong>Б)</strong> Не были созданы/применены миграции (БД не знает об ограничении), и записи создавались через <code>Model.objects.create()</code>, которая обходит валидацию самой модели Django.<br>
+            <strong>В)</strong> Django отключает уникальность в тестовом режиме для экономии времени.<br>
+            <strong>Г)</strong> Ограничение <code>unique=True</code> работает только в панели администратора Django.
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-text">Вопрос 3 (Загадка «Кто я?»): Кто я?</div>
+          <div style="font-size: 1.1rem; margin-left: 10px; line-height: 1.4;">
+            <em>«Я стою между клиентом и Gunicorn. Я напрямую раздаю картинки и стили, сжимаю трафик и шифрую SSL. Как меня зовут?»</em><br>
+            <strong>Варианты:</strong> А) SQLite | Б) Nginx | В) WSGI | Г) Git
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 25: Round 6 Answers -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ответы: Тай-брейк</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem; line-height: 1.5;">
+        <p><strong>1. В) 1</strong>. В Python числа <code>1</code>, <code>1.0</code> и логическое значение <code>True</code> равны между собой (<code>1 == 1.0 == True</code>) и имеют одинаковый хеш. Поскольку ключи словаря должны быть уникальными по значению и хешу, они перезаписывают один и тот же слот. Итоговый словарь: <code>{1: 'c'}</code>.</p>
+        <p><strong>2. Б) Миграции не применили, а .create() обходит валидацию Django</strong>. Валидация уникальности на уровне Python-кода происходит в Django-формах или при явном вызове <code>full_clean()</code>. Метод ORM <code>.create()</code> сразу пытается сделать INSERT в БД. Так как миграции не применили, БД не знает об ограничении и сохраняет дубль.</p>
+        <p><strong>3. Б) Nginx</strong>. Это классический веб-сервер и обратный прокси-сервер, который выполняет всю фронтенд-работу, разгружая Python-приложение.</p>
+      </div>
+    </div>
+
+    <!-- Slide 26: Results -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Подведение итогов</h2>
+      </div>
+      <div class="slide-body" style="text-align: center;">
+        <h2 style="color: var(--secondary-color); font-size: 3rem; margin-bottom: 20px;">Квиз завершен!</h2>
+        <p style="font-size: 1.5rem; margin-bottom: 30px;">Время жюри подсчитать финальные баллы команд.</p>
+        <div class="highlight-box" style="display: inline-block; text-align: left; padding: 20px 40px; font-size: 1.2rem;">
+          <strong>Что мы повторили сегодня:</strong>
+          <ul style="margin-top: 10px; margin-left: 20px;">
+            <li>Специфичность селекторов и блочную модель HTML/CSS</li>
+            <li>HTTP протокол, статус-коды и идемпотентность</li>
+            <li>Устройство сессий и Cookie</li>
+            <li>Архитектуру Django, MVT, роутинг и шаблонизатор</li>
+            <li>Работу с Django ORM, связь таблиц и проблему N+1</li>
+            <li>Безопасность (CORS, CSRF, SQL-инъекции) и основы деплоя</li>
+          </ul>
+        </div>
+        <p style="margin-top: 25px; font-size: 1.3rem; font-weight: bold; color: var(--primary-color);">Спасибо за участие! Вы — отличные веб-разработчики!</p>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран</button>
+      <button class="control-btn" id="next-btn">Вперед</button>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter" id="slide-counter">1 / 26</div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+</body>
+</html>

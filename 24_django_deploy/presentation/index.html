@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 24: Развертывание (Deploy) проектов на хостинг — ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="presentation-container">
+
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          Развертывание (Deploy)<br>Django-проектов на хостинг
+        </h1>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Урок 24: От локального компьютера к реальному серверу в сети</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Курс «Веб-разработка на Python (Django)»</p>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Что такое деплой? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое деплой (Deployment)?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column" style="flex: 1.2;">
+            <p style="font-size: 1.25rem; margin-bottom: 15px;">
+              <strong>Деплой (развертывание)</strong> — это процесс переноса вашего веб-приложения с локального компьютера (разработка) на сервер (продакшен), где оно станет доступно пользователям со всего мира.
+            </p>
+            <ul>
+              <li><strong>Локально (Development):</strong> <code>DEBUG = True</code>, SQLite, <code>runserver</code>. Всё работает быстро, ошибки видны на экране.</li>
+              <li><strong>Сервер (Production):</strong> <code>DEBUG = False</code>, PostgreSQL, полноценные веб-серверы, защита от взлома, работа 24/7.</li>
+            </ul>
+          </div>
+          <div class="column" style="flex: 0.8;">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Главная цель</h3>
+              <p>Обеспечить стабильную, быструю, безопасную работу сайта под высокими нагрузками и доступ по публичному доменному имени или IP-адресу.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Где разместить сайт? VPS/VDS vs Shared -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Где разместить сайт? VPS/VDS vs Shared</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box warning" style="height: 100%;">
+              <h3 style="margin-bottom: 10px; color: #e67e22;">Shared Хостинг (Общий)</h3>
+              <p style="font-size: 1.1rem;">Сотни сайтов делят ресурсы одного сервера. Доступны только базовые настройки (PHP, FTP).</p>
+              <p style="font-size: 1.1rem; margin-top: 10px; color: var(--accent-color);">❌ Не подходит для Python/Django из-за ограничений в установке системных библиотек и демонов.</p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="margin-bottom: 10px; color: var(--secondary-color);">VPS/VDS (Виртуальный сервер)</h3>
+              <p style="font-size: 1.1rem;">Вы получаете виртуальную машину с гарантированными ресурсами, собственным IP-адресом и полными правами администратора (root).</p>
+              <p style="font-size: 1.1rem; margin-top: 10px; color: var(--secondary-color);">✅ Идеально для Django. Можно установить любую ОС (обычно Ubuntu), СУБД и Docker.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Анатомия классического продакшена -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Анатомия классического продакшена</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px; text-align: center; font-weight: bold;">Как распределяются роли на реальном сервере:</p>
+        <div class="columns" style="align-items: stretch; text-align: center;">
+          <div class="column" style="background: #eaf2f8; border-radius: 8px; padding: 15px; border: 1px solid #d4e6f1;">
+            <strong style="color: var(--primary-color); font-size: 1.2rem;">1. Nginx</strong>
+            <p style="font-size: 0.95rem; margin-top: 10px;">Внешний веб-сервер. Принимает запросы пользователей (HTTPS), раздает статические файлы напрямую, а динамические запросы пересылает дальше.</p>
+          </div>
+          <div class="column" style="background: #eafaf1; border-radius: 8px; padding: 15px; border: 1px solid #d5f5e3;">
+            <strong style="color: var(--secondary-color); font-size: 1.2rem;">2. Gunicorn</strong>
+            <p style="font-size: 0.95rem; margin-top: 10px;">WSGI-сервер приложений. Запускает несколько параллельных процессов Django, принимает запросы от Nginx и передает их в код Python.</p>
+          </div>
+          <div class="column" style="background: #fef9e7; border-radius: 8px; padding: 15px; border: 1px solid #fdebd0;">
+            <strong style="color: #f39c12; font-size: 1.2rem;">3. Django</strong>
+            <p style="font-size: 0.95rem; margin-top: 10px;">Бизнес-логика проекта. Обрабатывает URL, выполняет код представлений (views), общается с СУБД и возвращает HTML или JSON.</p>
+          </div>
+          <div class="column" style="background: #fdedec; border-radius: 8px; padding: 15px; border: 1px solid #fadbd8;">
+            <strong style="color: var(--accent-color); font-size: 1.2rem;">4. PostgreSQL</strong>
+            <p style="font-size: 0.95rem; margin-top: 10px;">База данных. Надежное хранилище информации, оптимизированное для параллельных запросов и транзакций.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Настройка Django для Production: Безопасность -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Настройки Django в settings.py для Production</h2>
+      </div>
+      <div class="slide-body">
+        <pre><code style="font-size: 0.85rem; line-height: 1.35;"># settings.py
+# 1. ОБЯЗАТЕЛЬНО выключаем отладку. При True пользователи увидят пароли при ошибках!
+DEBUG = False
+
+# 2. Указываем доменные имена и IP-адреса, на которых разрешено работать сайту
+ALLOWED_HOSTS = ['myproject.ru', '123.45.67.89', 'localhost', '127.0.0.1']
+
+# 3. Секретный ключ должен быть сложным и храниться в тайне
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'default-unsafe-key')
+
+# 4. Список доверенных источников для отправки POST-запросов (защита CSRF)
+CSRF_TRUSTED_ORIGINS = ['https://myproject.ru']</code></pre>
+        <div class="highlight-box warning" style="margin-top: 10px; padding: 10px 15px; font-size: 1rem;">
+          <strong>Важно:</strong> Никогда не оставляйте <code>DEBUG = True</code> на публичном сервере. Это самая частая причина утечки баз данных и секретных ключей!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Переменные окружения -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Переменные окружения (.env)</h2>
+      </div>
+      <div class="slide-body">
+        <p style="font-size: 1.15rem; margin-bottom: 10px;">Все секретные настройки (ключи, пароли БД, токены API) нельзя «хардкодить» в коде, чтобы они не попали в публичный репозиторий Git.</p>
+        <div class="columns">
+          <div class="column">
+            <strong>Файл .env (не коммитим!):</strong>
+            <pre style="margin-top: 5px; font-size: 0.9rem;"><code class="language-bash">DEBUG=False
+SECRET_KEY=yoursecretkeyhere
+DATABASE_URL=postgres://db_user:password@db:5432/db_name</code></pre>
+          </div>
+          <div class="column">
+            <strong>Чтение в settings.py:</strong>
+            <pre style="margin-top: 5px; font-size: 0.9rem;"><code class="language-python">import os
+from dotenv import load_dotenv
+
+load_dotenv() # Загружает переменные из .env
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG') == 'True'</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Раздача статики: collectstatic -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Сбор статических файлов: collectstatic</h2>
+      </div>
+      <div class="slide-body">
+        <p style="font-size: 1.15rem; margin-bottom: 10px;">При <code>DEBUG = False</code> встроенный сервер Django <strong>отключает</strong> раздачу картинок, CSS и JS. Эти файлы должен раздавать быстрый веб-сервер Nginx.</p>
+        <div class="columns">
+          <div class="column" style="flex: 1.1;">
+            <strong>Настройка путей в settings.py:</strong>
+            <pre style="margin-top: 5px; font-size: 0.85rem;"><code class="language-python">STATIC_URL = '/static/'
+# Папка, куда Django соберет всю статику из всех приложений:
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')</code></pre>
+            <p style="font-size: 1.1rem; margin-top: 10px;">Запуск сборки статики одной командой перед деплоем:</p>
+            <pre style="margin-top: 5px; font-size: 0.9rem;"><code class="language-bash">python manage.py collectstatic --noinput</code></pre>
+          </div>
+          <div class="column" style="flex: 0.9;">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Зачем это нужно?</h3>
+              <p style="font-size: 1rem;">Nginx написан на C и оптимизирован под отдачу файлов из файловой системы. Он делает это в тысячи раз быстрее и экономичнее, чем Python-код Django.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Gunicorn: WSGI сервер приложений -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Gunicorn: WSGI сервер приложений</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column" style="flex: 1.2;">
+            <p style="font-size: 1.15rem; margin-bottom: 10px;">Django — это фреймворк, а не веб-сервер. Для его запуска в продакшене нужен WSGI-сервер, например, <strong>Gunicorn</strong> (Green Unicorn).</p>
+            <ul>
+              <li><strong>Многопоточность:</strong> Управляет пулом рабочих процессов (workers). Если один зависнет или выбросит ошибку, остальные продолжат обслуживать пользователей.</li>
+              <li><strong>Оптимизация:</strong> Отлично держит постоянные соединения.</li>
+            </ul>
+            <pre style="margin-top: 10px; font-size: 0.95rem;"><code class="language-bash"># Ручной запуск Gunicorn (слушает порт 8000)
+gunicorn myproject.wsgi:application --bind 0.0.0.0:8000</code></pre>
+          </div>
+          <div class="column" style="flex: 0.8;">
+            <div class="highlight-box warning">
+              <h3 style="color: #e67e22; margin-bottom: 5px;">Важно</h3>
+              <p style="font-size: 0.95rem;">Никогда не используйте <code>python manage.py runserver</code> на продакшене. Он однопоточный, медленный и падает при первой же перегрузке или ошибке.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Nginx: Обратный прокси (Reverse Proxy) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Nginx: Обратный прокси (Reverse Proxy)</h2>
+      </div>
+      <div class="slide-body">
+        <p style="font-size: 1.2rem; margin-bottom: 15px;">
+          Пользователи отправляют запросы на стандартные порты <strong>80 (HTTP)</strong> или <strong>443 (HTTPS)</strong>. На сервере их встречает <strong>Nginx</strong>.
+        </p>
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>Раздача статики:</strong> Запросы к <code>/static/</code> и <code>/media/</code> обрабатываются Nginx напрямую из папок на диске.</li>
+              <li><strong>Проксирование:</strong> Запросы к динамическим страницам пересылаются на локальный порт Gunicorn (например, <code>127.0.0.1:8000</code> или Unix-сокет).</li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li><strong>Безопасность:</strong> Скрывает структуру бэкенда, защищает от DDoS-атак, фильтрует плохие запросы.</li>
+              <li><strong>SSL-сертификаты:</strong> Отвечает за шифрование трафика (HTTPS) с помощью Let's Encrypt.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Конфигурация Nginx -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Базовая конфигурация Nginx</h2>
+      </div>
+      <div class="slide-body">
+        <pre><code style="font-size: 0.8rem; line-height: 1.3;"># /etc/nginx/sites-available/myproject
+server {
+    listen 80;
+    server_name myproject.ru 123.45.67.89;
+
+    # Раздача статических файлов напрямую
+    location /static/ {
+        alias /home/django/myproject/staticfiles/;
+    }
+
+    # Проксирование всех остальных запросов на Gunicorn
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Systemd: Управление процессами -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Systemd: Автозапуск Gunicorn</h2>
+      </div>
+      <div class="slide-body">
+        <p style="font-size: 1.15rem; margin-bottom: 10px;">Если сервер перезагрузится, Gunicorn должен запуститься автоматически. Для этого настраивают системную службу <strong>Systemd</strong>.</p>
+        <div class="columns">
+          <div class="column">
+            <strong>Файл службы: <code>gunicorn.service</code></strong>
+            <pre style="margin-top: 5px; font-size: 0.75rem; line-height: 1.2;"><code class="language-ini">[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=django
+WorkingDirectory=/home/django/myproject
+ExecStart=/home/django/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 myproject.wsgi:application
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+          </div>
+          <div class="column">
+            <strong>Управление службой в терминале:</strong>
+            <pre style="margin-top: 5px; font-size: 0.85rem;"><code class="language-bash"># Перезапустить службы
+sudo systemctl daemon-reload
+
+# Запустить и добавить в автозапуск
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+
+# Статус работы
+sudo systemctl status gunicorn</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: База данных в продакшене -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>База данных в продакшене</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column" style="flex: 1.1;">
+            <p style="font-size: 1.15rem; margin-bottom: 10px;">Вместо файловой СУБД <strong>SQLite</strong> в продакшене используют клиент-серверную <strong>PostgreSQL</strong>.</p>
+            <ul>
+              <li><strong>Параллелизм:</strong> SQLite блокирует всю БД при записи. Если два пользователя одновременно пишут отзывы, один будет ждать. PostgreSQL поддерживает тысячи параллельных записей.</li>
+              <li><strong>Надежность:</strong> Защита данных от сбоев питания, транзакции ACID, репликация.</li>
+            </ul>
+            <pre style="margin-top: 10px; font-size: 0.85rem;"><code class="language-python"># Требуется пакет psycopg2-binary
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'my_db_name',
+        'USER': 'my_db_user',
+        'PASSWORD': 'strong_password_here',
+        'HOST': 'localhost', # или IP контейнера
+        'PORT': '5432',
+    }
+}</code></pre>
+          </div>
+          <div class="column" style="flex: 0.9;">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Миграция данных</h3>
+              <p style="font-size: 1rem;">При переходе на новую БД не забудьте накатить миграции:</p>
+              <pre style="font-size: 0.9rem;"><code class="language-bash">python manage.py migrate</code></pre>
+              <p style="font-size: 1rem; margin-top: 10px;">Перенести данные из SQLite можно через дамп:</p>
+              <pre style="font-size: 0.9rem;"><code class="language-bash">python manage.py dumpdata > db.json</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Что такое Docker? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Что такое Docker и контейнеризация?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column" style="flex: 1.1;">
+            <p style="font-size: 1.15rem; margin-bottom: 15px;">
+              <strong>Контейнеризация</strong> упаковывает приложение и все его зависимости (Python, библиотеки, настройки ОС) в единый изолированный образ (Image).
+            </p>
+            <ul>
+              <li><strong>Контейнер</strong> — запущенный экземпляр этого образа.</li>
+              <li><strong>Решает проблему:</strong> «У меня на компьютере всё работает, а на сервере падает!». Контейнер работает абсолютно одинаково и на Windows, и на сервере Ubuntu.</li>
+              <li><strong>Изоляция:</strong> Каждое приложение крутится в своей песочнице и не мешает другим.</li>
+            </ul>
+          </div>
+          <div class="column" style="flex: 0.9;">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Как это устроено</h3>
+              <p style="font-size: 1rem;">1. Создаем <strong>Dockerfile</strong> (рецепт сборки).<br>
+              2. Собираем <strong>Docker Image</strong> (готовый слепок).<br>
+              3. Запускаем <strong>Docker Container</strong> (работающее приложение).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Dockerfile для Django проекта -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Dockerfile для Django проекта</h2>
+      </div>
+      <div class="slide-body">
+        <pre><code style="font-size: 0.8rem; line-height: 1.3;"># 1. Базовый образ с установленным Python 3.12
+FROM python:3.12-slim
+
+# 2. Установка системных переменных (отключаем буферизацию вывода и .pyc файлы)
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# 3. Создаем и переходим в рабочую директорию внутри контейнера
+WORKDIR /app
+
+# 4. Копируем файл зависимостей и устанавливаем их
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 5. Копируем исходный код проекта в контейнер
+COPY . /app/
+
+# 6. Запускаем проект через Gunicorn на порту 8000
+CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000"]</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Docker Compose: Оркестрация сервисов -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Docker Compose: Управление несколькими сервисами</h2>
+      </div>
+      <div class="slide-body">
+        <p style="font-size: 1.1rem; margin-bottom: 5px;">Для запуска сайта нам нужны: Django, PostgreSQL, Nginx. Описывать их запуск вручную сложно. <strong>Docker Compose</strong> позволяет запустить всё одной командой из файла <code>docker-compose.yml</code>.</p>
+        <pre><code style="font-size: 0.75rem; line-height: 1.25;"># docker-compose.yml
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: my_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 16: Команды Docker для развертывания -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Основные команды Docker Compose</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <strong>Запуск и сборка:</strong>
+            <pre style="margin-top: 5px; font-size: 0.85rem;"><code class="language-bash"># Собрать образы и запустить контейнеры
+docker compose up --build
+
+# Запустить в фоновом режиме (демоном)
+docker compose up -d
+
+# Остановить контейнеры
+docker compose down
+
+# Посмотреть логи запущенных сервисов
+docker compose logs -f</code></pre>
+          </div>
+          <div class="column">
+            <strong>Команды внутри контейнера:</strong>
+            <p style="font-size: 1.05rem; margin-top: 5px;">Чтобы применить миграции или собрать статику внутри запущенного контейнера <code>web</code>:</p>
+            <pre style="margin-top: 5px; font-size: 0.85rem;"><code class="language-bash"># Применить миграции БД в контейнере
+docker compose exec web python manage.py migrate
+
+# Собрать статические файлы
+docker compose exec web python manage.py collectstatic --noinput
+
+# Создать суперпользователя
+docker compose exec web python manage.py createsuperuser</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 17: Чек-лист перед деплоем -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Чек-лист перед деплоем проекта</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>Зависимости:</strong> Создан актуальный файл <code>requirements.txt</code> (с помощью команды <code>pip freeze &gt; requirements.txt</code>).</li>
+              <li><strong>Безопасность:</strong> <code>DEBUG = False</code>, <code>SECRET_KEY</code> скрыт в файле <code>.env</code>.</li>
+              <li><strong>Статика:</strong> Настроены <code>STATIC_ROOT</code> и <code>STATIC_URL</code> для сбора статики.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li><strong>БД:</strong> Настроено подключение к PostgreSQL вместо SQLite.</li>
+              <li><strong>Хост:</strong> Прописаны домен сервера и IP в <code>ALLOWED_HOSTS</code> и <code>CSRF_TRUSTED_ORIGINS</code>.</li>
+              <li><strong>Тесты:</strong> Все тесты проходят успешно на локальной машине.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box success" style="margin-top: 15px; text-align: center; font-size: 1.15rem;">
+          Готовы? Сохраняем код в репозиторий, заходим на сервер по SSH и запускаем Docker Compose!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Резюме и переход к практике! -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и переход к практике!</h2>
+      </div>
+      <div class="slide-body" style="text-align: center;">
+        <h3 style="color: var(--secondary-color); font-size: 1.8rem; margin-bottom: 25px;">Мы сегодня узнали:</h3>
+        <div class="columns" style="text-align: left; max-width: 950px; margin: 0 auto;">
+          <div class="column">
+            <ul>
+              <li><strong>Деплой</strong> — перенос локального кода на VPS сервер.</li>
+              <li>В продакшене <strong>DEBUG</strong> должен быть <strong>False</strong>!</li>
+              <li><strong>Nginx</strong> раздает статику и проксирует запросы на <strong>Gunicorn</strong>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li>Секреты хранятся в <strong>.env</strong> файле, а не в коде.</li>
+              <li><strong>Docker</strong> упаковывает код в изолированные контейнеры.</li>
+              <li><strong>Docker Compose</strong> управляет запуском Django, Postgres и Nginx.</li>
+            </ul>
+          </div>
+        </div>
+        <p style="font-size: 1.3rem; margin-top: 30px; font-weight: bold; color: var(--primary-color);">Давайте настроим проект для деплоя и упакуем его в Docker!</p>
+      </div>
+    </div>
+
+    <!-- Кнопки управления -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Счетчик и прогресс-бар -->
+    <div class="slide-counter" id="slide-counter">1 / 18</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>

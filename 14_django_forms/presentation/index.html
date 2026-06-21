@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 14: Формы в Django</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="presentation-container">
+    
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center; justify-content: center; align-items: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1rem; padding: 6px 12px;">Урок 14</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800;">Формы в Django</h1>
+        <p style="font-size: 1.8rem; font-weight: 500; margin-bottom: 30px;">Создание, рендеринг, валидация данных и безопасность</p>
+        <div style="border-top: 2px solid var(--border-color); width: 60%; margin: 20px 0; padding-top: 20px;">
+          <p style="color: #7f8c8d; font-size: 1.1rem;">ЛФМШ &laquo;Квант&raquo; &bull; Летняя физико-математическая школа</p>
+          <p style="color: #7f8c8d; font-size: 1.1rem;">Курс: &laquo;Веб-разработка на Python (Django)&raquo; &bull; 2 июля, 10:00-11:20</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Зачем нужны формы в веб-разработке? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Зачем нужны веб-формы?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Формы — это основной способ получения информации от пользователя:</p>
+            <ul>
+              <li>Регистрация и авторизация на сайтах</li>
+              <li>Отправка отзывов, комментариев, обратной связи</li>
+              <li>Поиск по сайту, фильтрация товаров</li>
+              <li>Загрузка файлов, оформление заказов</li>
+            </ul>
+            <p style="margin-top: 10px;"><strong>Проблемы при ручной обработке форм:</strong></p>
+            <ul>
+              <li>Необходимость вручную писать HTML-код разметки inputs</li>
+              <li>Ручная проверка типов данных (например, email, числа, даты)</li>
+              <li>Безопасность (защита от вредоносного кода, CSRF)</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h4>⚠️ Опасности ручного разбора</h4>
+              <p style="font-size: 0.95rem; margin-top: 5px;">Разбор сырых данных из <code>request.POST</code> требует десятков строк проверок: <code>if not email</code>, <code>try: int(age)</code>. Это ведёт к багам и уязвимостям безопасности.</p>
+            </div>
+            <div class="highlight-box success">
+              <h4>💡 Подход Django</h4>
+              <p style="font-size: 0.95rem; margin-top: 5px;">Django предоставляет декларативный класс <code>forms.Form</code>, который объединяет в себе разметку, очистку, приведение типов и валидацию.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Что делает подсистема Django Forms? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Три ключевые задачи Django Forms</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 20px;">Класс <code>forms.Form</code> берет на себя рутину и автоматизирует три важных этапа работы с формами:</p>
+        
+        <div class="columns">
+          <div class="column" style="background: #fdfefe; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+            <h4 style="color: var(--primary-color);">1. Генерация HTML</h4>
+            <p style="font-size: 0.9rem; margin-top: 8px;">Автоматически преобразует поля Python в HTML-элементы управления (<code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>) с учетом нужных атрибутов и ошибок.</p>
+          </div>
+          <div class="column" style="background: #fdfefe; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; margin: 0 10px;">
+            <h4 style="color: var(--secondary-color);">2. Валидация и очистка</h4>
+            <p style="font-size: 0.9rem; margin-top: 8px;">Проверяет входящие данные на корректность и типы, удаляет лишние пробелы, приводит к Python-объектам (<code>int</code>, <code>datetime</code>, <code>bool</code>).</p>
+          </div>
+          <div class="column" style="background: #fdfefe; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+            <h4 style="color: var(--accent-color);">3. Вывод ошибок</h4>
+            <p style="font-size: 0.9rem; margin-top: 8px;">Если пользователь ввел некорректные данные, форма вернет их обратно вместе с детальным описанием ошибок для каждого поля.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Объявление первой формы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Объявление формы в коде</h2>
+      </div>
+      <div class="slide-body">
+        <p>Создается файл <code>forms.py</code> внутри вашего приложения:</p>
+        <pre><code class="language-python">from django import forms
+
+class ContactForm(forms.Form):
+    name = forms.CharField(label="Имя", max_length=100)
+    email = forms.EmailField(label="Электронная почта")
+    message = forms.CharField(label="Сообщение", widget=forms.Textarea)
+    age = forms.IntegerField(label="Возраст", required=False)</code></pre>
+        <p style="margin-top: 10px;"><strong>Разбираем код:</strong></p>
+        <ul>
+          <li>Наследуемся от <code>forms.Form</code></li>
+          <li>Каждый атрибут класса — это поле формы (объект <code>Field</code>)</li>
+          <li>Параметры полей (<code>label</code>, <code>max_length</code>, <code>required</code>) определяют валидацию и отображение</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Типы полей формы (Fields) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Основные типы полей (Form Fields)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Классы полей валидируют входящие строки и переводят их в Python-типы:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Класс поля</th>
+              <th>HTML Элемент</th>
+              <th>Результат валидации (Python-тип)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CharField</code></td>
+              <td><code>&lt;input type="text"&gt;</code></td>
+              <td>Строка (<code>str</code>)</td>
+            </tr>
+            <tr>
+              <td><code>EmailField</code></td>
+              <td><code>&lt;input type="email"&gt;</code></td>
+              <td>Строка (<code>str</code>) с проверкой формата email</td>
+            </tr>
+            <tr>
+              <td><code>IntegerField</code></td>
+              <td><code>&lt;input type="number"&gt;</code></td>
+              <td>Целое число (<code>int</code>)</td>
+            </tr>
+            <tr>
+              <td><code>BooleanField</code></td>
+              <td><code>&lt;input type="checkbox"&gt;</code></td>
+              <td>Логическое значение (<code>bool</code>)</td>
+            </tr>
+            <tr>
+              <td><code>ChoiceField</code></td>
+              <td><code>&lt;select&gt;</code> со списком <code>&lt;option&gt;</code></td>
+              <td>Выбранное строковое значение</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Поля vs Виджеты (Widgets) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Поля vs Виджеты (Fields vs Widgets)</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Важно различать логику валидации и логику отрисовки:</p>
+            <ul>
+              <li><strong>Поле (Field)</strong> — отвечает за <em>логику валидации</em> и преобразование типов (например, <code>EmailField</code> проверяет формат email-адреса).</li>
+              <li><strong>Виджет (Widget)</strong> — отвечает за <em>HTML-представление</em> на странице (например, виджет <code>PasswordInput</code> скрывает вводимые символы).</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box">
+              <h4>Пример переопределения виджета:</h4>
+              <pre style="margin: 5px 0; padding: 8px;"><code style="font-size: 0.85rem;"># Поле CharField, но отрисуется как пароль
+password = forms.CharField(
+    label="Пароль",
+    widget=forms.PasswordInput()
+)
+
+# Выбор даты с календарем
+birth_date = forms.DateField(
+    label="Дата рождения",
+    widget=forms.DateInput(attrs={'type': 'date'})
+)</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Рендеринг формы в шаблоне -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Рендеринг формы в HTML-шаблоне</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Django умеет рендерить форму целиком с помощью встроенных методов:</p>
+            <pre style="margin: 5px 0; padding: 10px;"><code style="font-size: 0.85rem;">&lt;form method="post"&gt;
+    {% csrf_token %}
+    {{ form.as_p }}
+    &lt;button type="submit"&gt;Отправить&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+            <p><strong>Методы быстрого вывода:</strong></p>
+            <ul>
+              <li><code>{{ form.as_p }}</code> — поля оборачиваются в теги <code>&lt;p&gt;</code></li>
+              <li><code>{{ form.as_table }}</code> — поля выводятся в виде строк таблицы <code>&lt;tr&gt;</code></li>
+              <li><code>{{ form.as_ul }}</code> — поля оборачиваются в элементы списка <code>&lt;li&gt;</code></li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h4>🛡️ Важно: тег {% csrf_token %}</h4>
+              <p style="font-size: 0.9rem;">Внутри каждого HTML-шаблона с методом POST <strong>обязательно</strong> должен стоять тег <code>{% csrf_token %}</code>. Без него Django вернет ошибку 403 Forbidden! Это защита от межсайтовой подделки запросов (Cross-Site Request Forgery).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Тонкая настройка рендеринга (Ручной вывод) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Ручная верстка полей формы</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для создания красивого дизайна (например, с Bootstrap) мы можем выводить поля по отдельности:</p>
+        <pre><code style="font-size: 0.85rem;">&lt;form method="post"&gt;
+    {% csrf_token %}
+    &lt;div class="form-group"&gt;
+        &lt;label for="{{ form.email.id_for_label }}"&gt;{{ form.email.label }}&lt;/label&gt;
+        {{ form.email }}  &lt;!-- Сам input-элемент --&gt;
+        &lt;span class="error"&gt;{{ form.email.errors }}&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;button type="submit" class="btn btn-primary"&gt;Отправить&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <p><strong>Полезные свойства полей в шаблоне:</strong></p>
+        <ul>
+          <li><code>{{ field.label }}</code> — название поля.</li>
+          <li><code>{{ field.id_for_label }}</code> — сгенерированный уникальный ID для тега <code>&lt;label&gt;</code>.</li>
+          <li><code>{{ field.errors }}</code> — ошибки валидации, привязанные к этому полю.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Жизненный цикл формы во View -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Обработка формы во View (Контроллере)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Типичный паттерн обработки POST и GET запросов в Django:</p>
+        <pre><code style="font-size: 0.8rem; line-height: 1.3;">from django.shortcuts import render
+from .forms import ContactForm
+
+def contact_view(request):
+    if request.method == 'POST':
+      # 1. Связанная форма (bound form) — наполняем данными из запроса
+      form = ContactForm(request.POST)
+      if form.is_valid():  # 2. Проверка валидности
+          # 3. Обработка чистых данных
+          email = form.cleaned_data['email']
+          # отправка письма, запись в БД и т.д.
+          return render(request, 'success.html')
+    else:
+      # 1. Несвязанная форма (unbound form) — пустая для первого показа
+      form = ContactForm()
+    
+    return render(request, 'contact.html', {'form': form})</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Метод is_valid() под капотом -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как работает метод is_valid()?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Метод <code>form.is_valid()</code> возвращает <code>True</code>, если форма связана с данными и не содержит ни одной ошибки:</p>
+            <ul>
+              <li>Он запускает процесс валидации для всех полей.</li>
+              <li>Если ошибок нет, отфильтрованные данные помещаются в словарь <code>form.cleaned_data</code>.</li>
+              <li>Если ошибки найдены, словарь <code>form.errors</code> наполняется сообщениями, а <code>is_valid()</code> возвращает <code>False</code>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h4>📝 Важно: Состояния формы</h4>
+              <ul>
+                <li><strong>Несвязанная (Unbound):</strong> Создана без данных (<code>Form()</code>). Свойство <code>is_bound</code> равно <code>False</code>. Валидация невозможна.</li>
+                <li><strong>Связанная (Bound):</strong> Создана с данными (<code>Form(request.POST)</code>). Свойство <code>is_bound</code> равно <code>True</code>. Можно вызывать <code>is_valid()</code>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Работа со словарем cleaned_data -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Очищенные данные: cleaned_data</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>После вызова <code>is_valid()</code> Django сохраняет преобразованные данные в <code>form.cleaned_data</code>.</p>
+            <p><strong>Преобразование типов данных:</strong></p>
+            <ul>
+              <li><code>IntegerField</code> преобразует строку "42" в число <code>42</code>.</li>
+              <li><code>DateField</code> преобразует "2026-07-02" в объект <code>datetime.date</code>.</li>
+              <li><code>BooleanField</code> преобразует наличие ключа в <code>True</code>, отсутствие — в <code>False</code>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h4>⚠️ Ошибка KeyError!</h4>
+              <p style="font-size: 0.9rem;">Никогда не обращайтесь к <code>cleaned_data</code> до вызова <code>is_valid()</code> — словарь просто не будет существовать! Также помните, что если поле не прошло валидацию, его не будет в словаре <code>cleaned_data</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Валидация полей: clean_&lt;fieldname&gt;() -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Валидация отдельного поля (Field-level validation)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Если нужно добавить специфичную логику проверки для одного поля, определяют метод <code>clean_&lt;имя_поля&gt;()</code>:</p>
+        <pre><code style="font-size: 0.85rem; line-height: 1.35;">class RegisterForm(forms.Form):
+    username = forms.CharField(max_length=50)
+
+    def clean_username(self):
+        # 1. Получаем уже базово очищенное значение из self.cleaned_data
+        username = self.cleaned_data['username']
+        # 2. Наша кастомная проверка
+        if "admin" in username.lower():
+            raise forms.ValidationError("Имя пользователя не может содержать слово 'admin'!")
+        # 3. ОБЯЗАТЕЛЬНО возвращаем проверенное значение!
+        return username</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Валидация формы: метод clean() -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Валидация нескольких полей (Form-level validation)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Если логика проверки зависит от комбинации нескольких полей (например, сравнение паролей), переопределяют метод <code>clean()</code>:</p>
+        <pre><code style="font-size: 0.8rem; line-height: 1.3;">class PasswordResetForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        # 1. Запуск суперметода для сбора очищенных полей
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        # 2. Проверка взаимосвязи полей
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Введенные пароли не совпадают!")
+        
+        # 3. Возвращаем весь cleaned_data
+        return cleaned_data</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Кастомные валидаторы (Validators) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Использование встроенных и кастомных валидаторов</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Валидатор</strong> — это обычная функция или вызываемый объект, который принимает значение и выбрасывает <code>ValidationError</code>, если оно некорректно.</p>
+            <p>Их удобно переиспользовать в разных формах и моделях:</p>
+            <pre style="margin: 5px 0; padding: 8px;"><code style="font-size: 0.8rem;">from django.core.validators import RegexValidator
+
+phone_validator = RegexValidator(
+    regex=r'^\+7\d{10}$',
+    message="Телефон должен быть в формате +71234567890"
+)</code></pre>
+          </div>
+          <div class="column">
+            <p>Привязка валидатора к полю:</p>
+            <pre style="margin: 5px 0; padding: 8px;"><code style="font-size: 0.8rem;">class OrderForm(forms.Form):
+    # Передаем список валидаторов в поле
+    phone = forms.CharField(
+        validators=[phone_validator]
+    )</code></pre>
+            <div class="highlight-box success" style="margin-top: 10px; padding: 8px;">
+              <p style="font-size: 0.85rem;"><strong>Встроенные валидаторы:</strong> <code>MinLengthValidator</code>, <code>MaxLengthValidator</code>, <code>MinValueValidator</code>, <code>EmailValidator</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Типичные ошибки при работе с формами -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Типичные ошибки начинающих разработчиков</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><strong>Забыли написать <code>return value</code> в методе <code>clean_&lt;field&gt;()</code>.</strong> В таком случае поле возвращает <code>None</code>, затирая правильные данные в <code>cleaned_data</code>.</li>
+          <li><strong>Забыли <code>{% csrf_token %}</code> в шаблоне.</strong> Приводит к падению формы с ошибкой 403 Forbidden.</li>
+          <li><strong>Чтение <code>cleaned_data</code> без вызова <code>is_valid()</code>.</strong> Приведет к исключению <code>AttributeError</code>.</li>
+          <li><strong>Попытка получить данные из <code>cleaned_data</code> при падении валидации.</strong> Если поле не прошло валидацию, в <code>cleaned_data</code> его ключа не будет. Всегда используйте безопасный метод <code>.get()</code>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 16: Резюме и практическое задание -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Резюме и практическое задание</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Что мы сегодня узнали:</strong></p>
+            <ul>
+              <li>Как Django Forms упрощают генерацию HTML и валидацию.</li>
+              <li>Разницу между полями и виджетами.</li>
+              <li>Схему обработки POST и GET запросов во View.</li>
+              <li>Как писать кастомные проверки на уровне одного поля и на уровне всей формы.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h4>🎓 Практическая работа</h4>
+              <p style="font-size: 0.95rem; margin-top: 5px;">Мы напишем форму регистрации участника лагеря "Квант". В ней мы реализуем:</p>
+              <ul style="font-size: 0.9rem; margin-top: 5px; margin-left: 15px;">
+                <li>Валидацию года рождения (возраст от 12 до 17 лет).</li>
+                <li>Сравнение пароля и подтверждения пароля.</li>
+                <li>Красивое отображение ошибок в шаблоне.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Управление -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Счетчик слайдов -->
+    <div class="slide-counter" id="slide-counter">1 / 16</div>
+
+    <!-- Прогресс-бар -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

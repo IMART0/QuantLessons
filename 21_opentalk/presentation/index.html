@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenTalk: Кто такой программист? Как стать программистом? — ЛФМШ "Квант"</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="presentation-container">
+
+    <!-- Слайд 1: Титульный -->
+    <div class="slide active">
+      <div class="slide-body" style="text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          OpenTalk:<br>Кто такой программист?<br>Как стать программистом?
+        </h1>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Профориентация, траектории развития и реалии IT-индустрии</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Направление: Веб-разработка на Python (Django)</p>
+      </div>
+    </div>
+
+    <!-- Слайд 2: Зачем этот разговор? Мифы об IT -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Зачем нам этот разговор? Мифы об IT</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p style="font-size: 1.3rem; margin-bottom: 20px;">Вокруг IT-сферы существует множество мифов, которые мешают сделать правильный выбор:</p>
+            <ul>
+              <li><strong>Миф 1:</strong> Программирование — это только для гениев математики.</li>
+              <li><strong>Миф 2:</strong> Программисты целыми днями просто молча пишут код.</li>
+              <li><strong>Миф 3:</strong> Нейросети (ИИ) скоро полностью заменят программистов.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning" style="height: 100%;">
+              <h3 style="color: var(--accent-color); margin-bottom: 10px;">Реальность</h3>
+              <p>Разработка — это на 70% общение, проектирование и решение проблем пользователей, и только на 30% — написание кода. ИИ — это мощный инструмент-помощник, а не замена думающему инженеру.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Кто такой программист на самом деле? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Кто такой программист на самом деле?</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 20px; font-size: 1.3rem; font-weight: 500;">Программист — это не «кодер». Это инженер-решатель проблем (Problem Solver).</p>
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box" style="height: 100%;">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">Что делает программист?</h3>
+              <ul>
+                <li><strong>Анализирует:</strong> разбирается, какую задачу нужно решить бизнесу или пользователю.</li>
+                <li><strong>Декомпозирует:</strong> делит сложную задачу на простые шаги.</li>
+                <li><strong>Проектирует:</strong> выбирает структуру данных и архитектуру системы.</li>
+                <li><strong>Автоматизирует:</strong> перекладывает рутину на компьютер.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Главные навыки</h3>
+              <ul>
+                <li>Системное и логическое мышление.</li>
+                <li>Умение быстро осваивать новые технологии.</li>
+                <li>Понимание того, как работают сложные системы под капотом.</li>
+                <li>Умение договариваться в команде.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Карта IT-профессий -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Карта IT-профессий: Направления разработки</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 20px; font-size: 1.2rem;">Индустрия огромна, и каждый может найти направление по душе:</p>
+        <div class="columns" style="text-align: center;">
+          <div class="column" style="background: #ebf5fb; padding: 20px; border-radius: 8px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">🎨 Frontend</h3>
+            <p style="font-size: 0.95rem;">Интерфейсы, кнопки, анимация, браузерная логика, работа с пользователем.</p>
+          </div>
+          <div class="column" style="background: #e8f8f5; padding: 20px; border-radius: 8px;">
+            <h3 style="color: var(--secondary-color); margin-bottom: 10px;">⚙️ Backend</h3>
+            <p style="font-size: 0.95rem;">Базы данных, серверная логика, бизнес-правила, интеграции, безопасность.</p>
+          </div>
+          <div class="column" style="background: #fdf2e9; padding: 20px; border-radius: 8px;">
+            <h3 style="color: #e67e22; margin-bottom: 10px;">♾️ DevOps</h3>
+            <p style="font-size: 0.95rem;">Инфраструктура, сервера, автоматизация сборки и деплоя, облака.</p>
+          </div>
+          <div class="column" style="background: #f5eef8; padding: 20px; border-radius: 8px;">
+            <h3 style="color: #8e44ad; margin-bottom: 10px;">📊 Data Science</h3>
+            <p style="font-size: 0.95rem;">Анализ данных, машинное обучение, нейросети, предсказания.</p>
+          </div>
+        </div>
+        <p style="margin-top: 20px; text-align: center; font-style: italic;">Также есть мобильная разработка, GameDev, QA (тестирование), информационная безопасность и другие.</p>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Frontend-разработчик -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Frontend: Творец пользовательского опыта</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Кто это?</strong> Разработчик, который создает визуальную часть сайта или приложения, с которой взаимодействует пользователь.</p>
+            <h4 style="margin-top: 15px; color: var(--primary-color);">Стек технологий:</h4>
+            <ul>
+              <li><strong>HTML5 / CSS3:</strong> структура и стили страниц, адаптивная верстка.</li>
+              <li><strong>JavaScript (ES6+):</strong> динамическое поведение, анимация, запросы к API.</li>
+              <li><strong>Фреймворки:</strong> React, Vue.js, Angular, Svelte.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box" style="height: 100%;">
+              <h3 style="margin-bottom: 10px;">Кому подойдет?</h3>
+              <ul>
+                <li>Любите сразу видеть визуальный результат своей работы.</li>
+                <li>Обладаете чувством прекрасного, аккуратны к деталям.</li>
+                <li>Интересуетесь UX/UI (пользовательским интерфейсом и опытом).</li>
+                <li>Хотите делать сложные интерактивные веб-приложения.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: Backend-разработчик -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Backend: Архитектор «под капотом»</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Кто это?</strong> Разработчик, который пишет логику приложения, работающую на сервере. Это «невидимая» часть системы, которая делает ее живой.</p>
+            <h4 style="margin-top: 15px; color: var(--secondary-color);">Стек технологий:</h4>
+            <ul>
+              <li><strong>Языки:</strong> Python, Go, Java, C#, PHP, Node.js.</li>
+              <li><strong>Фреймворки:</strong> Django, FastAPI, Spring, Express.</li>
+              <li><strong>Базы данных:</strong> PostgreSQL, MySQL, Redis, MongoDB.</li>
+              <li><strong>API:</strong> REST, GraphQL, gRPC.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="margin-bottom: 10px;">Кому подойдет?</h3>
+              <ul>
+                <li>Любите работать со сложными структурами данных и алгоритмами.</li>
+                <li>Вам интересны вопросы оптимизации, безопасности и хранения информации.</li>
+                <li>Предпочитаете логические задачи дизайну и верстке.</li>
+                <li>Хотите разрабатывать надежные, масштабируемые системы.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Fullstack-разработчик -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Fullstack: Универсальный боец</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Кто это?</strong> Специалист, который может в одиночку разработать и визуальную часть (Frontend), и серверную логику (Backend).</p>
+            <div class="highlight-box" style="margin-top: 15px;">
+              <h4 style="color: var(--primary-color); margin-bottom: 5px;">Плюсы:</h4>
+              <p style="font-size: 0.95rem;">Высокая востребованность в стартапах и небольших командах, понимание всей архитектуры приложения, независимость в разработке фич.</p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning" style="height: 100%;">
+              <h4 style="color: var(--accent-color); margin-bottom: 5px;">Сложности:</h4>
+              <p style="font-size: 0.95rem;">Нужно знать в два раза больше технологий, сложно быть глубоким экспертом во всем (синдром "умею все, но понемногу"), высокая когнитивная нагрузка из-за переключения контекста.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 8: DevOps-инженер -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>DevOps: Повелитель инфраструктуры</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Кто это?</strong> Специалист, который наводит мосты между разработчиками (Development) и системными администраторами (Operations). Его цель — сделать так, чтобы код быстро и без сбоев попадал на сервера.</p>
+            <h4 style="margin-top: 15px; color: #e67e22;">Стек технологий:</h4>
+            <ul>
+              <li><strong>ОС:</strong> Linux (Bash-скрипты, системное администрирование).</li>
+              <li><strong>Контейнеризация:</strong> Docker, Kubernetes.</li>
+              <li><strong>CI/CD:</strong> GitLab CI, GitHub Actions.</li>
+              <li><strong>Облака и IaaC:</strong> AWS, Yandex Cloud, Terraform, Ansible.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning" style="height: 100%; border-left-color: #e67e22;">
+              <h3 style="margin-bottom: 10px; color: #e67e22;">Почему это важно?</h3>
+              <p>Без DevOps-инженеров релизы приложений выходили бы раз в полгода с кучей ручных ошибок. Они автоматизируют доставку кода так, чтобы новые фичи выкатывались за минуты без остановки сервиса.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Другие важные роли в IT -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Не кодом единым: Другие важные роли</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px;">Создание ИТ-продукта — это командная игра, где нужны не только программисты:</p>
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>QA Engineer (Тестировщик):</strong> ищет баги, проверяет программу на соответствие требованиям, пишет автотесты.</li>
+              <li><strong>Product Manager:</strong> решает, <em>что</em> и <em>зачем</em> мы делаем, изучает рынок и пользователей.</li>
+              <li><strong>Project Manager:</strong> следит за сроками, бюджетом и организует работу команды.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li><strong>System / Business Analyst:</strong> переводит пожелания заказчика на понятный программистам язык схем и ТЗ.</li>
+              <li><strong>UX/UI Designer:</strong> проектирует удобные интерфейсы и рисует красивый внешний вид.</li>
+              <li><strong>Data Analyst / Scientist:</strong> находит скрытые закономерности в терабайтах данных, обучает ИИ.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Олимпиадное vs Промышленное программирование -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Олимпиадное программирование vs Промышленная разработка</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 20px; font-size: 1.2rem;">Это два совершенно разных направления с разными целями и правилами игры:</p>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 1.1rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary-color); background-color: #f2f4f4;">
+              <th style="padding: 10px; text-align: left;">Критерий</th>
+              <th style="padding: 10px; text-align: left; color: var(--primary-color);">🏆 Олимпиадное программирование</th>
+              <th style="padding: 10px; text-align: left; color: var(--secondary-color);">🏢 Промышленная разработка</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px; font-weight: bold;">Главная цель</td>
+              <td style="padding: 10px;">Решить задачу быстро и уложиться в лимиты времени/памяти.</td>
+              <td style="padding: 10px;">Создать работающий продукт, который легко читать, изменять и поддерживать годами.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px; font-weight: bold;">Срок жизни кода</td>
+              <td style="padding: 10px;">Несколько часов (до конца олимпиады). Больше этот код никто не откроет.</td>
+              <td style="padding: 10px;">Годы. Код будут читать, переписывать и дополнять десятки других разработчиков.</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px; font-weight: bold;">Команда</td>
+              <td style="padding: 10px;">Индивидуально или в тройках (ACM).</td>
+              <td style="padding: 10px;">Крупные кросс-функциональные команды (десятки и сотни человек).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Олимпиадное программирование: Взгляд изнутри -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Олимпиадное программирование: Особенности</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box" style="height: 100%;">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">⚡ Сильные стороны:</h3>
+              <ul>
+                <li><strong>Математическая база:</strong> глубокое понимание алгоритмов и структур данных.</li>
+                <li><strong>Скорость ума:</strong> умение быстро находить решения сложных задач под давлением.</li>
+                <li><strong>Отличный старт:</strong> победы в олимпиадах дают льготы при поступлении в лучшие вузы без экзаменов (БВИ).</li>
+              </ul>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning" style="height: 100%;">
+              <h3 style="color: var(--accent-color); margin-bottom: 10px;">⚠️ Обратная сторона:</h3>
+              <ul>
+                <li><strong>"Пиши-выбрасывай":</strong> привычка называть переменные <code>a</code>, <code>b</code>, <code>c</code>, писать нечитаемый код ("спагетти").</li>
+                <li><strong>Отсутствие архитектуры:</strong> олимпиадники редко умеют проектировать базы данных, веб-сервисы или API.</li>
+                <li>Неприменимость олимпиадных трюков в реальном бизнесе, где важна надежность и простота.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Промышленная разработка: Особенности -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Промышленная разработка: Особенности</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">🚀 Что ценится в индустрии:</h3>
+              <ul>
+                <li><strong>Читаемость кода (Clean Code):</strong> код пишется для людей, а не для машин. Понятные имена, комментарии, модульность.</li>
+                <li><strong>Архитектурные паттерны:</strong> умение проектировать масштабируемые системы (MVC, Microservices).</li>
+                <li><strong>Автотесты:</strong> покрытие кода тестами для предотвращения регрессии.</li>
+                <li><strong>Git и код-ревью:</strong> умение работать в команде, аргументированно критиковать и принимать правки.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box" style="height: 100%;">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">Как совершить переход?</h3>
+              <p>Если вы олимпиадник — учитесь писать чистый код, документировать его, проектировать базы данных и делать pet-проекты.</p>
+              <p style="margin-top: 10px;">Если вы прикладник — не забывайте подтягивать алгоритмы, они пригодятся на собеседованиях в крупные компании (Яндекс, Google).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 13: Путь 1: IT-образование в Университетах -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Путь 1: Университеты и высшее образование</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px; font-size: 1.15rem;">Куда пойти учиться в России? Ведущие IT-вузы:</p>
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>ИТМО (СПб):</strong> кузница чемпионов мира по программированию, упор на олимпиадную математику, ИИ и разработку.</li>
+              <li><strong>МФТИ (Москва):</strong> мощнейшая фундаментальная база физики и математики, сильные кафедры Яндекса, 1С.</li>
+              <li><strong>НИУ ВШЭ (Москва/СПб):</strong> факультет компьютерных наук (ФКН), сильный преподавательский состав, проектная работа.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 5px;">Что реально дает вуз?</h3>
+              <ul>
+                <li><strong>Нетворкинг:</strong> окружение из умных, мотивированных людей (ваши будущие коллеги и сооснователи стартапов).</li>
+                <li><strong>Фундамент:</strong> математику, теорию алгоритмов, базы данных, которые тяжело выучить самому.</li>
+                <li><strong>Стажировки:</strong> партнерские программы с крупными ИТ-компаниями прямо во время учебы.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Путь 2: Самообразование и курсы -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Путь 2: Самообразование. Можно ли стать профи без вуза?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Да, можно!</strong> Многие успешные программисты — самоучки. В IT оценивают реальные навыки и портфолио, а не диплом.</p>
+            <h4 style="margin-top: 15px; color: var(--primary-color);">Инструменты самообразования:</h4>
+            <ul>
+              <li>Документация технологий (самый актуальный источник).</li>
+              <li>Книги (классика: Мартин "Чистый код", Макконнелл "Совершенный код").</li>
+              <li>Платформы: Stepik, Coursera, YouTube, LeetCode.</li>
+              <li>Разработка собственных <strong>pet-проектов</strong>.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning" style="height: 100%;">
+              <h3 style="margin-bottom: 5px; color: var(--accent-color);">Сложности самообразования</h3>
+              <ul>
+                <li><strong>Отсутствие системы:</strong> легко запутаться в море информации и учить устаревшие вещи.</li>
+                <li><strong>Прокрастинация:</strong> нет дедлайнов и внешнего контроля.</li>
+                <li><strong>Синдром самозванца:</strong> кажется, что ты ничего не знаешь, потому что некому дать оценку.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Главный секрет: Как учиться эффективно? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Как учиться программированию эффективно?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Правило 80/20</h3>
+              <p><strong>20% теории, 80% практики.</strong> Бессмысленно просто смотреть видеокурсы или читать книги, не запуская IDE. Написали 10 строк теории — напишите 40 строк своего кода, поэкспериментируйте с ним, сломайте его и почините.</p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box" style="height: 100%;">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">Что еще важно?</h3>
+              <ul>
+                <li><strong>Умение читать чужой код:</strong> изучайте проекты на GitHub, разбирайтесь, как пишут другие.</li>
+                <li><strong>Поиск ответов:</strong> Google, StackOverflow, ИИ-ассистенты — легитимные инструменты инженера. Важно понимать ответ, а не копировать вслепую.</li>
+                <li>Регулярность важнее интенсивности (лучше 1 час каждый день, чем 7 часов раз в неделю).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 16: Pet-проекты: Твой пропуск в IT -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Pet-проекты: Твой пропуск в IT</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Pet-проект (домашний проект)</strong> — это программа, которую вы пишете для себя в свободное время для решения какой-то личной проблемы или изучения новой технологии.</p>
+            <h4 style="margin-top: 15px; color: var(--primary-color);">Почему они важны?</h4>
+            <ul>
+              <li><strong>Портфолио:</strong> работодатели смотрят на ваш GitHub, а не на резюме.</li>
+              <li><strong>Опыт:</strong> вы сталкиваетесь с реальными проблемами архитектуры, интеграции, деплоя.</li>
+              <li>Свобода творчества: вы сами себе заказчик и архитектор.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Идеи для старта:</h3>
+              <ul>
+                <li>Telegram-бот с полезной логикой (например, парсер расписания или трекер привычек).</li>
+                <li>Личный блог или сайт-портфолио на Django.</li>
+                <li>Собственный API-сервис с полезными данными.</li>
+                <li>Небольшая текстовая или 2D-игра.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 17: Soft Skills для разработчика -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Soft Skills: Почему быть гением-одиночкой немодно?</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px; font-size: 1.25rem;">Времена, когда программист сидел в темном подвале и не общался с людьми, давно прошли. Сегодня важны гибкие навыки:</p>
+        <div class="columns">
+          <div class="column" style="background: #eaf2f8; padding: 20px; border-radius: 8px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">🗣️ Коммуникация и Эмпатия</h3>
+            <p style="font-size: 1rem;">Умение объяснить сложную техническую идею простыми словами коллегам, дизайнерам или клиентам. Понимание болей пользователя.</p>
+          </div>
+          <div class="column" style="background: #ebf5fb; padding: 20px; border-radius: 8px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">👥 Работа в команде</h3>
+            <p style="font-size: 1rem;">Умение договариваться об архитектуре, конструктивно обсуждать код на код-ревью без обид и личных претензий.</p>
+          </div>
+          <div class="column" style="background: #eaf2f8; padding: 20px; border-radius: 8px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">⏱️ Тайм-менеджмент</h3>
+            <p style="font-size: 1rem;">Умение адекватно оценивать сроки выполнения задач (эстимейты) и не пропадать с радаров, если задача затягивается.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Тренды IT в 2026 году -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Тренды IT в 2026 году и будущем</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><strong>ИИ-ассистенты (Copilot, LLM):</strong> написание шаблонного кода берет на себя ИИ. Задача программиста — формулировать архитектуру и верифицировать результат.</li>
+              <li><strong>Cloud-Native и Serverless:</strong> разработка сразу под облачные платформы с автоматическим масштабированием.</li>
+              <li><strong>Кибербезопасность (DevSecOps):</strong> безопасность внедряется на каждом этапе написания кода, а не после релиза.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box success" style="height: 100%;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Что это значит для вас?</h3>
+              <p>Учить просто синтаксис языка программирования больше недостаточно. Нужно понимать фундаментальные основы проектирования, алгоритмы, базы данных и уметь пользоваться ИИ для ускорения своей работы.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 19: С чего начать прямо сейчас? Пошаговый план -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Пошаговый план: С чего начать прямо сейчас?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <ol>
+              <li><strong>Определитесь с языком:</strong> Python (отличный старт для бэкенда и DS) или JavaScript (для веба и фронтенда).</li>
+              <li><strong>Изучите основы:</strong> переменные, циклы, функции, ООП.</li>
+              <li><strong>Освойте инструменты:</strong> Git и GitHub — ваша база.</li>
+              <li><strong>Создайте 1-2 pet-проекта:</strong> выложите их на GitHub и задеплойте в сеть.</li>
+            </ol>
+          </div>
+          <div class="column">
+            <ol start="5">
+              <li><strong>Учите английский язык:</strong> вся актуальная документация, статьи и лучшие книги выходят на английском.</li>
+              <li><strong>Участвуйте в комьюнити:</strong> общайтесь в чатах, ходите на хакатоны, задавайте вопросы.</li>
+              <li><strong>Ищите стажировку (Internship):</strong> это самый быстрый способ вырасти до Junior-разработчика.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 20: Вопросы и ответы -->
+    <div class="slide">
+      <div class="slide-header" style="border-bottom-color: var(--secondary-color);">
+        <h2 style="color: var(--secondary-color);">Открытый микрофон (Q&A)</h2>
+      </div>
+      <div class="slide-body" style="text-align: center;">
+        <p style="font-size: 1.6rem; margin-bottom: 30px; font-weight: bold; color: var(--text-color);">Самое время задать любые вопросы!</p>
+        <div class="highlight-box success" style="display: inline-block; max-width: 600px; text-align: left; margin: 0 auto;">
+          <h3 style="color: var(--secondary-color); margin-bottom: 10px; text-align: center;">О чем можно спросить преподавателя?</h3>
+          <ul>
+            <li>О его первом коммерческом проекте и факапах.</li>
+            <li>Как он совмещал учебу/работу и не выгорел.</li>
+            <li>Какую самую сложную архитектурную задачу он решал.</li>
+            <li>Какое направление в IT он считает наиболее перспективным.</li>
+          </ul>
+        </div>
+        <p style="font-size: 1.2rem; margin-top: 30px; font-style: italic;">Спасибо за внимание! Удачи в вашем IT-путешествии!</p>
+      </div>
+    </div>
+
+    <!-- Кнопки управления -->
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+    </div>
+
+    <!-- Счетчик и прогресс-бар -->
+    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>
