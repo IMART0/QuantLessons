@@ -19,7 +19,7 @@
           Как устроен веб?<br>Клиент-серверная архитектура и основы Git
         </h1>
         <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Курс «Веб-разработка на Python (Django)»</p>
-        <p style="font-size: 1.1rem; font-style: italic;">Преподаватель: [Ваше имя]</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Преподаватель: Ишхан</p>
       </div>
     </div>
 
@@ -300,6 +300,35 @@ Server: gunicorn
       </div>
     </div>
 
+    <!-- Слайд 11а: Сетевой TCP-чат -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Практический эксперимент: Сетевой TCP-чат</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 15px; font-size: 1.3rem;">Попробуем клиент-серверную архитектуру в действии прямо сейчас!</p>
+        <div class="columns">
+          <div class="column">
+            <div class="highlight-box success">
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">🖥️ Сервер чата (Ноутбук учителя)</h3>
+              <p>Запускает программу, которая слушает входящие подключения на порту <code>9000</code> и пересылает сообщения всем участникам.</p>
+            </div>
+            <div class="highlight-box" style="margin-top: 15px;">
+              <strong>Локальный IP сервера:</strong> <span style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color);">[IP-адрес преподавателя]</span>
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box">
+              <h3 style="color: var(--primary-color); margin-bottom: 10px;">📱 Клиенты (Ваши ноутбуки)</h3>
+              <p>Вы запускаете Python-клиент, подключаетесь к IP-адресу сервера и отправляете свои сообщения в общий эфир ЛФМШ.</p>
+            </div>
+            <pre style="margin-top: 15px; font-size: 0.9rem;"><code># Подключение через консоль:
+python chat_client.py</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Слайд 12: Что такое Git -->
     <div class="slide">
       <div class="slide-header">
@@ -515,7 +544,7 @@ git pull</code></pre>
     </div>
 
     <!-- Счетчик и прогресс-бар -->
-    <div class="slide-counter" id="slide-counter">1 / 20</div>
+    <div class="slide-counter" id="slide-counter">1 / 21</div>
     <div class="progress-container">
       <div class="progress-bar" id="progress-bar"></div>
     </div>
