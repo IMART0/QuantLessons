@@ -18,8 +18,8 @@
         <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
           Первое Django-приложение,<br>urls.py и Views (Представления)
         </h1>
-        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Курс «Веб-разработка на Python (Django)»</p>
-        <p style="font-size: 1.1rem; font-style: italic;">Урок 7 • 28 июня, 11:30 - 12:50</p>
+        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Разработка «Сайта летней школы Квант»</p>
+        <p style="font-size: 1.1rem; font-style: italic;">Урок 7 • Введение в MVT логику и маршрутизацию</p>
       </div>
     </div>
 
@@ -32,17 +32,17 @@
         <div class="columns">
           <div class="column">
             <p>Django работает по паттерну <strong>MVT (Model-View-Template)</strong>:</p>
-            <ul>
-              <li><strong>Model (Модель):</strong> Данные и работа с БД.</li>
-              <li><strong>Template (Шаблон):</strong> HTML-страница (внешний вид).</li>
-              <li><strong>View (Представление):</strong> Мозг приложения. Связывает данные (Model) и внешний вид (Template).</li>
+            <ul style="margin-top: 10px;">
+              <li><strong>Model (Модель):</strong> Описывает структуру данных и взаимодействует с БД.</li>
+              <li><strong>Template (Шаблон):</strong> HTML-страница, определяющая внешний вид.</li>
+              <li><strong>View (Представление):</strong> Логическое ядро. Принимает запросы, запрашивает данные у моделей и отправляет их в шаблоны.</li>
             </ul>
             <p style="margin-top: 15px;">Сегодня мы сфокусируемся на <strong>Views (Представлениях)</strong> и <strong>Маршрутизации (Routing)</strong>.</p>
           </div>
           <div class="column">
             <div class="highlight-box success">
               <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Как это работает?</h3>
-              <p>Пользователь переходит по URL-адресу &rarr; Django находит нужный <strong>View</strong> &rarr; View обрабатывает запрос &rarr; View возвращает ответ (HTML, JSON или ошибку).</p>
+              <p>Пользователь переходит по URL &rarr; Django находит нужный <strong>View</strong> &rarr; View обрабатывает запрос &rarr; View возвращает ответ (HTML-текст, JSON или ошибку).</p>
             </div>
           </div>
         </div>
@@ -60,32 +60,31 @@
           <div class="column">
             <div class="highlight-box">
               <h3 style="color: var(--primary-color); margin-bottom: 5px;">Project (Проект)</h3>
-              <p>Это веб-сайт в целом. Содержит общие настройки всего сайта, подключение баз данных и глобальные маршруты (settings.py, urls.py).</p>
+              <p>Это весь сайт в целом. Он содержит глобальные настройки сайта, параметры баз данных и корневые маршруты (файлы settings.py, urls.py проекта).</p>
             </div>
           </div>
           <div class="column">
             <div class="highlight-box success">
               <h3 style="color: var(--secondary-color); margin-bottom: 5px;">Application (Приложение)</h3>
-              <p>Это автономный модуль сайта, выполняющий конкретную задачу (например: блог, интернет-магазин, форум, личный кабинет).</p>
+              <p>Это независимый модуль, решающий конкретную задачу. Например, на сайте ЛФМШ «Квант» приложениями будут: <code>camp</code> (информация, расписание, отряды), <code>study</code> (курсы и задачи), <code>blog</code> (новости смены).</p>
             </div>
           </div>
         </div>
-        <p style="text-align: center; margin-top: 15px; font-weight: bold; color: var(--accent-color);">Один проект может содержать множество независимых приложений!</p>
+        <p style="text-align: center; margin-top: 15px; font-weight: bold; color: var(--accent-color);">Один Django-проект объединяет множество независимых приложений!</p>
       </div>
     </div>
 
     <!-- Слайд 4: Создание приложения -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Создание приложения (startapp)</h2>
+        <h2>Создание приложения (camp)</h2>
       </div>
       <div class="slide-body">
-        <p>Для создания нового приложения используется специальная команда CLI:</p>
-        <pre><code>python manage.py startapp &lt;название_приложения&gt;</code></pre>
-        <p style="margin-top: 15px;">Например, создадим приложение для ведения блога <code>posts</code>:</p>
-        <pre><code>python manage.py startapp posts</code></pre>
+        <p>Для создания нового приложения используется встроенная утилита управления:</p>
+        <pre><code>python manage.py startapp camp</code></pre>
+        <p style="margin-top: 15px;">Эта команда создаст папку <code>camp</code> со стартовой структурой файлов внутри нашего проекта.</p>
         <div class="highlight-box success" style="margin-top: 15px;">
-          <strong>Важно:</strong> Название приложения должно быть в нижнем регистре, существительным во множественном числе (рекомендуется) и без пробелов/спецсимволов.
+          <strong>Правило именования:</strong> Название пишется строчными латинскими буквами, обычно в единственном или множественном числе (например, <code>camp</code>, <code>users</code>, <code>events</code>), без спецсимволов.
         </div>
       </div>
     </div>
@@ -96,21 +95,21 @@
         <h2>Анатомия Django-приложения</h2>
       </div>
       <div class="slide-body" style="font-size: 1.15rem;">
-        <p>После запуска команды <code>startapp</code> создается папка со следующей структурой:</p>
+        <p>Внутри созданной папки <code>camp/</code> Django сгенерировал базовые файлы:</p>
         <div class="columns">
           <div class="column">
             <ul>
-              <li><strong><code>migrations/</code></strong> — файлы миграций базы данных.</li>
-              <li><strong><code>admin.py</code></strong> — регистрация моделей для админ-панели.</li>
-              <li><strong><code>apps.py</code></strong> — конфигурация текущего приложения.</li>
-              <li><strong><code>models.py</code></strong> — описание схем баз данных (Модели).</li>
+              <li><strong><code>migrations/</code></strong> — папка для отслеживания изменений в базе данных.</li>
+              <li><strong><code>admin.py</code></strong> — регистрация моделей приложения в админ-панели.</li>
+              <li><strong><code>apps.py</code></strong> — технический файл конфигурации приложения.</li>
+              <li><strong><code>models.py</code></strong> — описание структур данных (Модели).</li>
             </ul>
           </div>
           <div class="column">
             <ul>
-              <li><strong><code>tests.py</code></strong> — юнит-тесты для тестирования кода.</li>
-              <li><strong><code>views.py</code></strong> — представления (логика обработки запросов).</li>
-              <li><strong><code>urls.py</code></strong> (создаем вручную) — маршруты приложения.</li>
+              <li><strong><code>tests.py</code></strong> — тесты для проверки работоспособности кода.</li>
+              <li><strong><code>views.py</code></strong> — представления (наша бизнес-логика).</li>
+              <li><strong><code>urls.py</code></strong> (создаем вручную) — файл локальных маршрутов приложения.</li>
             </ul>
           </div>
         </div>
@@ -123,17 +122,17 @@
         <h2>Регистрация приложения в settings.py</h2>
       </div>
       <div class="slide-body">
-        <p>Django должен знать, какие приложения входят в проект. Их нужно прописать в списке <code>INSTALLED_APPS</code> в файле <strong><code>settings.py</code></strong>:</p>
+        <p>Чтобы Django знал о нашем приложении, его необходимо добавить в список <code>INSTALLED_APPS</code> файла <strong><code>settings.py</code></strong> проекта:</p>
         <pre><code># mysite/settings.py
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     # ... другие системные приложения ...
-    'posts.apps.PostsConfig', # Наш новый класс конфигурации
+    'camp.apps.CampConfig', # Наш новый класс конфигурации
 ]</code></pre>
         <div class="highlight-box warning">
-          <strong>Частая ошибка:</strong> забыть добавить созданное приложение в <code>INSTALLED_APPS</code>. Без этого Django не увидит модели и шаблоны приложения.
+          <strong>Внимание:</strong> Без регистрации приложения в <code>INSTALLED_APPS</code> Django не сможет найти его шаблоны, модели и локальные команды!
         </div>
       </div>
     </div>
@@ -144,14 +143,14 @@ INSTALLED_APPS = [
         <h2>Что такое View (Представление)?</h2>
       </div>
       <div class="slide-body">
-        <p><strong>View</strong> — это функция или класс, которые принимают HTTP-запрос от пользователя и возвращают HTTP-ответ.</p>
+        <p><strong>View</strong> — это функция или класс на Python, которая принимает HTTP-запрос и возвращает HTTP-ответ.</p>
         <div class="highlight-box">
-          <h3 style="color: var(--primary-color); margin-bottom: 5px;">Главное правило Django View:</h3>
+          <h3 style="color: var(--primary-color); margin-bottom: 5px;">Основной цикл Django View:</h3>
           <p style="font-size: 1.4rem; font-weight: bold; text-align: center; color: var(--accent-color);">
-            Request (Запрос) &rarr; View (Логика) &rarr; Response (Ответ)
+            HttpRequest &rarr; View (Логика обработки) &rarr; HttpResponse
           </p>
         </div>
-        <p>Если View принимает HTTP-запрос, она <strong>обязана</strong> вернуть объект HTTP-ответа (например, HTML-код, JSON, редирект или ошибку). Иначе Django выбросит ошибку <code>ValueError</code>.</p>
+        <p>Представление обязано возвращать корректный объект ответа (например, <code>HttpResponse</code> с текстом, редирект или ошибку). Если функция ничего не вернет, Django вызовет ошибку.</p>
       </div>
     </div>
 
@@ -161,15 +160,15 @@ INSTALLED_APPS = [
         <h2>Написание первой View (FBV)</h2>
       </div>
       <div class="slide-body">
-        <p>Будем использовать <strong>Function-Based View (FBV)</strong> — представления на основе функций:</p>
-        <pre><code># posts/views.py
+        <p>Создадим простое представление на основе функций (Function-Based View):</p>
+        <pre><code># camp/views.py
 from django.http import HttpResponse
 
-def index(request):
-    return HttpResponse("Привет! Это главная страница блога.")</code></pre>
+def main_page(request):
+    return HttpResponse("Добро пожаловать на официальный сайт ЛФМШ «Квант»!")</code></pre>
         <ul>
-          <li><strong><code>request</code></strong> — обязательный первый аргумент функции, содержащий данные об HTTP-запросе (заголовки, метод GET/POST, IP-адрес клиента).</li>
-          <li><strong><code>HttpResponse</code></strong> — класс, который оборачивает строку в полноценный HTTP-ответ со статусом 200 OK.</li>
+          <li><strong><code>request</code></strong> — объект класса <code>HttpRequest</code>. Содержит все метаданные запроса (GET/POST параметры, IP-адрес, тип браузера).</li>
+          <li><strong><code>HttpResponse</code></strong> — упаковывает строковый ответ в корректный HTTP-пакет с кодом состояния 200 OK.</li>
         </ul>
       </div>
     </div>
@@ -180,21 +179,20 @@ def index(request):
         <h2>Маршрутизация (Routing) в Django</h2>
       </div>
       <div class="slide-body">
-        <p>Как Django узнает, какую функцию-view вызвать при переходе на конкретную страницу? Для этого используется файл <strong><code>urls.py</code></strong>.</p>
+        <p>Маршрутизация связывает URL-адрес из строки браузера с конкретной View. Она описывается в файле <strong><code>urls.py</code></strong>.</p>
         <div class="columns">
           <div class="column">
             <ul>
-              <li><strong>URL Dispatcher</strong> — сопоставляет URL-адрес из адресной строки браузера со списком маршрутов.</li>
-              <li>При совпадении вызывается привязанная функция-view.</li>
-              <li>Маршруты описываются в списке <code>urlpatterns</code> с помощью функции <code>path()</code>.</li>
+              <li><strong>URL Dispatcher</strong> — перебирает список маршрутов сверху вниз до первого совпадения.</li>
+              <li>Для создания маршрутов используется функция <code>path()</code>.</li>
             </ul>
           </div>
           <div class="column">
-            <pre style="margin-top: 0;"><code># Пример функции path()
+            <pre style="margin-top: 0;"><code># Синтаксис функции path
 path(route, view, name=None)</code></pre>
             <ul>
-              <li><code>route</code>: строка-шаблон пути (например, <code>'about/'</code>).</li>
-              <li><code>view</code>: ссылка на функцию (например, <code>views.index</code>).</li>
+              <li><code>route</code>: шаблон пути (строка, например <code>'schedule/'</code>).</li>
+              <li><code>view</code>: ссылка на функцию (например, <code>views.schedule_list</code>).</li>
               <li><code>name</code>: имя маршрута (для обратного поиска).</li>
             </ul>
           </div>
@@ -202,23 +200,23 @@ path(route, view, name=None)</code></pre>
       </div>
     </div>
 
-    <!-- Слайд 10: Подключение маршрутов приложения -->
+    <!-- Слайд 10: Делегирование маршрутов -->
     <div class="slide">
       <div class="slide-header">
         <h2>Делегирование маршрутов (include)</h2>
       </div>
       <div class="slide-body">
-        <p>Глобальный файл <code>urls.py</code> проекта не должен содержать все маршруты! Мы должны делегировать их каждому приложению с помощью <code>include</code>:</p>
+        <p>Не пишите все маршруты в глобальном <code>urls.py</code> проекта! Используйте функцию <strong><code>include()</code></strong> для подключения локальных маршрутов приложений:</p>
         <pre><code># mysite/urls.py (Проект)
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('blog/', include('posts.urls')), # Все запросы к blog/ уходят в posts.urls
+    path('', include('camp.urls')), # Делегируем корень сайта приложению camp
 ]</code></pre>
         <div class="highlight-box success">
-          Функция <strong><code>include()</code></strong> позволяет подключать локальные файлы маршрутов приложений. Это делает проект модульным и чистым.
+          Благодаря <code>include()</code> приложение <code>camp</code> становится изолированным. Мы можем перенести его в другой проект, и его внутренние ссылки не сломаются.
         </div>
       </div>
     </div>
@@ -226,59 +224,60 @@ urlpatterns = [
     <!-- Слайд 11: Локальные маршруты приложения -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Создание локальных маршрутов (urls.py)</h2>
+        <h2>Локальные маршруты приложения (camp/urls.py)</h2>
       </div>
       <div class="slide-body">
-        <p>Создадим локальный файл <code>urls.py</code> внутри папки приложения <code>posts/</code>:</p>
-        <pre><code># posts/urls.py (Приложение)
+        <p>Создадим файл <code>urls.py</code> в папке приложения <code>camp/</code>:</p>
+        <pre><code># camp/urls.py (Приложение)
 from django.urls import path
-from . import views # Импортируем представления из текущей папки
+from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'), # Будет доступен по адресу blog/
+    path('', views.main_page, name='main_page'),
+    path('schedule/', views.schedule_list, name='schedule_list'),
 ]</code></pre>
         <div class="highlight-box">
-          Поскольку в проекте мы подключили маршруты приложения через <code>path('blog/', include('posts.urls'))</code>, пустой путь <code>''</code> в приложении превратится во внешний URL-адрес <strong><code>/blog/</code></strong>.
+          Так как в проекте мы подключили маршруты через <code>path('', include('camp.urls'))</code>, пустая строка <code>''</code> соответствует корню сайта (<code>/</code>), а <code>'schedule/'</code> — адресу <code>/schedule/</code>.
         </div>
       </div>
     </div>
 
-    <!-- Слайд 12: Схема Request-Response -->
+    <!-- Слайд 12: Схема прохождения запроса -->
     <div class="slide">
       <div class="slide-header">
         <h2>Схема обработки запроса в Django</h2>
       </div>
       <div class="slide-body" style="text-align: center;">
-        <div class="highlight-box" style="display: inline-block; text-align: left; font-family: monospace; font-size: 1.15rem; padding: 20px;">
-          Браузер (запрос /blog/) <br>
+        <div class="highlight-box" style="display: inline-block; text-align: left; font-family: monospace; font-size: 1.15rem; padding: 20px; border-left-color: var(--secondary-color);">
+          Пользователь запрашивает URL: <strong>/schedule/</strong><br>
           &nbsp;&nbsp;&darr;<br>
-          Django (проверяет корневой urls.py проекта)<br>
-          &nbsp;&nbsp;&darr; совпадение с 'blog/' &rarr; include('posts.urls')<br>
-          Django (проверяет posts/urls.py)<br>
-          &nbsp;&nbsp;&darr; совпадение с '' &rarr; вызывает views.index(request)<br>
-          Выполнение views.index() &rarr; return HttpResponse("Привет!")<br>
+          Django парсит корневой <strong>mysite/urls.py</strong><br>
+          &nbsp;&nbsp;&darr; находит совпадение с '' &rarr; передает в include('camp.urls')<br>
+          Django парсит локальный <strong>camp/urls.py</strong><br>
+          &nbsp;&nbsp;&darr; находит совпадение с 'schedule/' &rarr; вызывает views.schedule_list(request)<br>
+          Функция <strong>views.schedule_list</strong> возвращает HttpResponse с расписанием<br>
           &nbsp;&nbsp;&darr;<br>
-          Браузер получает ответ (200 OK) и отображает текст
+          Пользователь видит страницу в браузере (статус 200 OK)
         </div>
       </div>
     </div>
 
-    <!-- Слайд 13: Динамические URL (Dynamic Routing) -->
+    <!-- Слайд 13: Динамическая маршрутизация -->
     <div class="slide">
       <div class="slide-header">
         <h2>Динамическая маршрутизация</h2>
       </div>
       <div class="slide-body">
-        <p>Что если нам нужны страницы для конкретных статей блога? Например, <code>blog/post/1/</code>, <code>blog/post/2/</code>.</p>
-        <p>Писать отдельный path для каждого ID невозможно. Мы используем <strong>угловые скобки</strong> для захвата переменных из URL:</p>
-        <pre><code># posts/urls.py
+        <p>В лагере каждый день проводятся десятки мероприятий. Как открыть детали конкретного события по его ID без создания сотен статичных маршрутов?</p>
+        <p>Используйте <strong>угловые скобки</strong> для захвата переменных из URL:</p>
+        <pre><code># camp/urls.py
 urlpatterns = [
     # ...
-    path('post/&lt;int:post_id&gt;/', views.post_detail, name='post_detail'),
+    path('schedule/&lt;int:event_id&gt;/', views.event_detail, name='event_detail'),
 ]</code></pre>
         <ul>
-          <li><strong><code>int</code></strong> — конвертер типа (параметр должен быть целым числом).</li>
-          <li><strong><code>post_id</code></strong> — имя переменной, которая будет передана в функцию-view.</li>
+          <li><strong><code>int</code></strong> — конвертер пути (гарантирует, что параметр является целым числом).</li>
+          <li><strong><code>event_id</code></strong> — имя переменной, которая передается в аргументы представления.</li>
         </ul>
       </div>
     </div>
@@ -286,10 +285,9 @@ urlpatterns = [
     <!-- Слайд 14: Конвертеры путей (Path Converters) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Стандартные конвертеры путей</h2>
+        <h2>Встроенные конвертеры путей</h2>
       </div>
       <div class="slide-body" style="font-size: 1.15rem;">
-        <p>Django предоставляет 5 встроенных конвертеров:</p>
         <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
           <thead>
             <tr style="border-bottom: 2px solid var(--primary-color); text-align: left;">
@@ -301,28 +299,28 @@ urlpatterns = [
           <tbody>
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 8px;"><code>&lt;int:...&gt;</code></td>
-              <td style="padding: 8px;">Соответствует любому целому числу (0, 1, 42).</td>
-              <td style="padding: 8px;"><code>blog/post/42/</code></td>
+              <td style="padding: 8px;">Целые неотрицательные числа (1, 2, 105).</td>
+              <td style="padding: 8px;"><code>/schedule/5/</code></td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 8px;"><code>&lt;str:...&gt;</code></td>
-              <td style="padding: 8px;">Любая непустая строка без косой черты <code>/</code> (по умолчанию).</td>
-              <td style="padding: 8px;"><code>blog/category/it/</code></td>
+              <td style="padding: 8px;">Любая непустая строка, кроме слеша <code>/</code> (по умолчанию).</td>
+              <td style="padding: 8px;"><code>/teacher/ivanov/</code></td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 8px;"><code>&lt;slug:...&gt;</code></td>
-              <td style="padding: 8px;">Буквы, цифры, дефисы и подчеркивания.</td>
-              <td style="padding: 8px;"><code>blog/post/my-first-post/</code></td>
+              <td style="padding: 8px;">Буквы, цифры, дефисы и символы подчеркивания.</td>
+              <td style="padding: 8px;"><code>/teacher/alex-smirnov/</code></td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 8px;"><code>&lt;uuid:...&gt;</code></td>
-              <td style="padding: 8px;">UUID-идентификатор.</td>
-              <td style="padding: 8px;"><code>post/3f2b4.../</code></td>
+              <td style="padding: 8px;">Стандартизированный идентификатор UUID.</td>
+              <td style="padding: 8px;"><code>/event/9f7e8a93-b.../</code></td>
             </tr>
             <tr>
               <td style="padding: 8px;"><code>&lt;path:...&gt;</code></td>
-              <td style="padding: 8px;">Любая строка, включая слеши <code>/</code> (осторожно с этим!).</td>
-              <td style="padding: 8px;"><code>files/docs/manual.pdf</code></td>
+              <td style="padding: 8px;">Любая непустая строка, включая слеши <code>/</code>.</td>
+              <td style="padding: 8px;"><code>/files/physics/lec1.pdf</code></td>
             </tr>
           </tbody>
         </table>
@@ -335,58 +333,58 @@ urlpatterns = [
         <h2>Обработка динамических параметров во View</h2>
       </div>
       <div class="slide-body">
-        <p>Имя переменной из <code>urls.py</code> должно <strong>строго совпадать</strong> с именем аргумента в функции-view:</p>
-        <pre><code># posts/views.py
+        <p>Имя переменной в <code>urls.py</code> должно <strong>символ в символ</strong> совпадать с именем аргумента во View:</p>
+        <pre><code># camp/views.py
 
-# Маршрут: path('post/&lt;int:post_id&gt;/', views.post_detail)
-def post_detail(request, post_id):
-    # post_id автоматически придет как тип int благодаря конвертеру
-    return HttpResponse(f"Вы читаете статью с ID: {post_id}")</code></pre>
+# Соответствует маршруту: path('schedule/&lt;int:event_id&gt;/', views.event_detail)
+def event_detail(request, event_id):
+    # event_id уже имеет тип int благодаря конвертеру
+    return HttpResponse(f"Детальная информация о мероприятии №{event_id}")</code></pre>
         <div class="highlight-box success">
-          Благодаря конвертеру <code>int</code>, переменная <code>post_id</code> внутри функции уже является числом (<code>int</code>), а не строкой! Приведение типов происходит под капотом.
+          Django автоматически преобразует строку из URL в число <code>int</code> перед передачей во View. Вам не нужно писать <code>int(event_id)</code> вручную!
         </div>
       </div>
     </div>
 
-    <!-- Слайд 16: Управление статус-кодами (HTTP Status Codes) -->
+    <!-- Слайд 16: Управление HTTP-статусами -->
     <div class="slide">
       <div class="slide-header">
         <h2>Управление HTTP-статусами ответов</h2>
       </div>
       <div class="slide-body">
-        <p>По умолчанию <code>HttpResponse</code> отправляет статус <strong>200 OK</strong>. Мы можем вернуть другие статусы:</p>
-        <pre><code># 1. Изменение статуса через аргумент status
-def error_view(request):
-    return HttpResponse("Ресурс не найден", status=404)
+        <p>Мы можем возвращать кастомные статус-коды (например, 404 Not Found, 400 Bad Request) с помощью параметра <code>status</code> или специализированных классов:</p>
+        <pre><code># Способ 1: Использование именованного параметра status
+def bad_request_demo(request):
+    return HttpResponse("Некорректный запрос", status=400)
 
-# 2. Использование готовых подклассов HttpResponse
-from django.http import HttpResponseNotFound, HttpResponseForbidden
+# Способ 2: Использование готовых наследников HttpResponse
+from django.http import HttpResponseNotFound
 
-def archive(request, year):
-    if year &gt; 2026:
-        return HttpResponseNotFound("Архив за этот год еще не создан")
-    return HttpResponse(f"Архив публикаций за {year} год")</code></pre>
+def teacher_profile(request, username):
+    # Если имя преподавателя пустое или не найдено
+    if username == "admin":
+        return HttpResponseNotFound("Профиль администратора недоступен")
+    return HttpResponse(f"Профиль преподавателя: {username}")</code></pre>
       </div>
     </div>
 
     <!-- Слайд 17: Исключение Http404 -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Вызов ошибки 404 через исключения</h2>
+        <h2>Генерация ошибки 404 с помощью исключений</h2>
       </div>
       <div class="slide-body">
-        <p>Часто в логике приложения проще выбросить исключение (exception), чем возвращать объект ответа. Django предоставляет класс <strong><code>Http404</code></strong>:</p>
+        <p>В процессе работы логики (например, если ID события не найден) бывает удобнее прервать выполнение функции и выбросить исключение <strong><code>Http404</code></strong>:</p>
         <pre><code>from django.http import Http404
 
-# Имитация базы данных постов
-POSTS = {1: "Первый пост", 2: "Второй пост"}
+EVENTS = {1: "Лекция по Django", 2: "Физический квест"}
 
-def get_post(request, post_id):
-    if post_id not in POSTS:
-        raise Http404("Такого поста нет в базе данных")
-    return HttpResponse(POSTS[post_id])</code></pre>
+def event_detail(request, event_id):
+    if event_id not in EVENTS:
+        raise Http404("Мероприятие не найдено в расписании!")
+    return HttpResponse(f"Мероприятие: {EVENTS[event_id]}")</code></pre>
         <div class="highlight-box warning">
-          <strong>Внимание:</strong> <code>Http404</code> — это исключение, поэтому его нужно выбрасывать с помощью ключевого слова <code>raise</code>, а не <code>return</code>!
+          <strong>Помни:</strong> Исключение <code>Http404</code> выбрасывается с помощью <code>raise</code>, а не возвращается с помощью <code>return</code>!
         </div>
       </div>
     </div>
@@ -394,21 +392,21 @@ def get_post(request, post_id):
     <!-- Слайд 18: Типичные ошибки новичков -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Типичные ошибки при работе с View и URL</h2>
+        <h2>Частые ошибки при написании View и URL</h2>
       </div>
-      <div class="slide-body">
+      <div class="slide-body" style="font-size: 1.15rem;">
         <ul>
-          <li><strong>Забыли вернуть HttpResponse:</strong>
-            <br><small>Ошибка: <code>"The view ... didn't return an HttpResponse object."</code>. Всегда используйте <code>return HttpResponse(...)</code>.</small>
+          <li><strong>Забытый return:</strong>
+            <br><small>Ошибка: <code>"The view didn't return an HttpResponse object."</code>. View обязана возвращать ответ!</small>
           </li>
           <li><strong>Несовпадение имен аргументов:</strong>
-            <br><small>В URL: <code>&lt;int:id&gt;</code>, во View: <code>def detail(request, post_id)</code>. Имена должны совпадать!</small>
+            <br><small>В URL: <code>&lt;int:event_id&gt;</code>, во View: <code>def detail(request, ev_id)</code>. Возникнет <code>TypeError</code>.</small>
           </li>
-          <li><strong>Отсутствие завершающего слеша:</strong>
-            <br><small>Django по умолчанию перенаправляет с <code>/about</code> на <code>/about/</code>. Всегда пишите слеш в путях: <code>path('about/', ...)</code>.</small>
+          <li><strong>Отсутствие слеша в конце:</strong>
+            <br><small>По умолчанию пишите слеш в путях: <code>path('schedule/', ...)</code>, иначе Django не сможет сопоставить адрес.</small>
           </li>
-          <li><strong>Забыли запятую:</strong>
-            <br><small>В списке <code>urlpatterns</code> каждый <code>path()</code> должен завершаться запятой!</small>
+          <li><strong>Забытая запятая:</strong>
+            <br><small>Списки <code>urlpatterns</code> в Python требуют запятую после каждого элемента.</small>
           </li>
         </ul>
       </div>
@@ -417,27 +415,27 @@ def get_post(request, post_id):
     <!-- Слайд 19: Best Practices (Лучшие практики) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Best Practices</h2>
+        <h2>Рекомендации по разработке (Best Practices)</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
             <ul>
-              <li><strong>Именуйте маршруты (<code>name</code>):</strong>
-                <br><small>Используйте осмысленные имена для путей, например <code>name='post-detail'</code>. Это позволит не хардкодить ссылки в будущем.</small>
+              <li><strong>Именуйте маршруты:</strong>
+                <br><small>Всегда добавляйте <code>name='...'</code> в <code>path()</code> для гибкого управления ссылками.</small>
               </li>
-              <li><strong>Модульность:</strong>
-                <br><small>Каждому приложению — свой <code>urls.py</code>. Главный urls.py проекта только координирует их через <code>include()</code>.</small>
+              <li><strong>Изолируйте URL:</strong>
+                <br><small>Корневой urls.py должен быть точкой входа, подключающей файлы приложений через <code>include()</code>.</small>
               </li>
             </ul>
           </div>
           <div class="column">
             <ul>
-              <li><strong>Тонкие представления (Thin Views):</strong>
-                <br><small>В представлениях должна быть только логика обработки запроса и выбора ответа. Сложная бизнес-логика должна лежать в моделях.</small>
+              <li><strong>Концепция «Тонких контроллеров»:</strong>
+                <br><small>Views должны отвечать только за маршрутизацию и выдачу ответов. Расчеты и выборку данных лучше делать в моделях.</small>
               </li>
-              <li><strong>Используйте правильные конвертеры:</strong>
-                <br><small>Не принимайте числовые ID в виде строк <code>&lt;str:id&gt;</code>, всегда используйте <code>&lt;int:id&gt;</code>.</small>
+              <li><strong>Типизируйте параметры:</strong>
+                <br><small>Всегда вешайте строгие конвертеры (например, <code>&lt;int:id&gt;</code> вместо <code>&lt;str:id&gt;</code>) для защиты от мусорного трафика.</small>
               </li>
             </ul>
           </div>
@@ -454,20 +452,20 @@ def get_post(request, post_id):
         <div class="columns" style="text-align: left;">
           <div class="column">
             <ul>
-              <li><strong>startapp:</strong> создает обособленное Django-приложение.</li>
-              <li><strong>INSTALLED_APPS:</strong> место регистрации приложения.</li>
-              <li><strong>View:</strong> функция, принимающая request и возвращающая response.</li>
+              <li><strong>startapp</strong>: создает изолированную логическую область проекта.</li>
+              <li><strong>INSTALLED_APPS</strong>: регистрирует новые приложения.</li>
+              <li><strong>View</strong>: связующее звено, генерирующее HttpResponse из HttpRequest.</li>
             </ul>
           </div>
           <div class="column">
             <ul>
-              <li><strong>include:</strong> перенаправляет маршруты в приложение.</li>
-              <li><strong>Конвертеры путей:</strong> фильтруют и приводят типы URL-параметров.</li>
-              <li><strong>Статус-коды:</strong> явно передают результат клиенту.</li>
-            </tr>
+              <li><strong>include</strong>: делегирует парсинг путей локальному urls.py.</li>
+              <li><strong>Конвертеры путей</strong>: валидируют URL-параметры на лету.</li>
+              <li><strong>Http404 и статус-коды</strong>: информируют о корректности выполнения запроса.</li>
+            </ul>
           </div>
         </div>
-        <p style="font-size: 1.3rem; margin-top: 20px; font-weight: bold; color: var(--primary-color); text-align: center;">Переходим к упражнениям! Напишем первую маршрутизацию.</p>
+        <p style="font-size: 1.3rem; margin-top: 20px; font-weight: bold; color: var(--primary-color); text-align: center;">Переходим к упражнениям! Напишем маршруты для сайта Кванта.</p>
       </div>
     </div>
 

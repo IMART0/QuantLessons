@@ -21,16 +21,16 @@
       </p>
       <p style="font-size: 1.3rem; margin-bottom: 40px; color: #7f8c8d;">
         Летняя физико-математическая школа "Квант"<br>
-        1 июля • 10:00 - 11:20
+        Проект: "Сайт летней школы Квант"
       </p>
-      <div class="highlight-box" style="display: inline-block; max-width: 650px; margin: 0 auto; text-align: left;">
+      <div class="highlight-box" style="display: inline-block; max-width: 700px; margin: 0 auto; text-align: left;">
         <strong>Сегодня на уроке:</strong>
         <ul style="margin-top: 10px; margin-bottom: 0;">
-          <li>Проблема Stateless HTTP: почему сервер нас забывает?</li>
-          <li>Cookies (Куки) и их структура: хранение данных в браузере.</li>
-          <li>Сессии (Sessions): безопасный механизм идентификации клиентов.</li>
+          <li>Проблема Stateless HTTP: почему сервер нас «забывает»?</li>
+          <li>Cookies (Куки) и их структура: хранение настроек в браузере.</li>
+          <li>Сессии (Sessions): безопасный механизм хранения избранных клубов и просмотренных новостей.</li>
           <li>Django User: встроенная модель пользователя и PBKDF2-хэширование паролей.</li>
-          <li>Middleware: как перехватывать запросы и писать свои фильтры.</li>
+          <li>Middleware: как перехватывать запросы для логирования и аналитики.</li>
         </ul>
       </div>
     </div>
@@ -44,17 +44,17 @@
     <div class="slide-body">
       <div class="columns">
         <div class="column">
-          <p>Протокол <strong>HTTP</strong>, на котором держится весь веб, является <strong>stateless</strong> (без сохранения состояния).</p>
+          <p>Протокол <strong>HTTP</strong>, на котором строится взаимодействие в Сети, является <strong>stateless</strong> (без сохранения состояния).</p>
           <ul style="margin-top: 15px;">
-            <li>Каждый запрос от браузера к серверу обрабатывается «с чистого листа».</li>
+            <li>Каждый запрос от браузера к серверу обрабатывается изолированно, с чистого листа.</li>
             <li>Сервер не помнит предыдущие запросы того же клиента.</li>
-            <li><strong>Проблема:</strong> без дополнительных костылей мы бы разлогинивались после каждого перехода по ссылке, а корзина интернет-магазина обнулялась при обновлении страницы.</li>
+            <li><strong>Проблема:</strong> без дополнительных механизмов пользователь разлогинивался бы при переходе на любую страницу, а выбранные им клубы «Кванта» исчезали бы из избранного при обычном обновлении страницы.</li>
           </ul>
         </div>
         <div class="column">
           <div class="highlight-box warning">
             <strong>Аналогия:</strong>
-            <p style="margin-top: 10px; font-size: 1.1rem;">Представьте врача с амнезией. Каждый раз, когда вы заходите в кабинет (делаете запрос), он видит вас впервые. Чтобы он вспомнил вас, вы должны каждый раз показывать ему медицинскую карту (передавать идентификатор).</p>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Представьте врача с амнезией. Каждый раз, когда вы заглядываете к нему в кабинет (делаете запрос), он видит вас впервые. Чтобы он вспомнил вас, вы должны каждый раз показывать ему медицинскую карту (передавать идентификатор).</p>
           </div>
         </div>
       </div>
@@ -67,14 +67,14 @@
       <h2>Что такое Cookies (Куки)?</h2>
     </div>
     <div class="slide-body">
-      <p><strong>Cookies</strong> — это небольшие текстовые фрагменты данных, которые сервер отправляет в браузер клиента, а браузер сохраняет их локально и автоматически отправляет обратно с каждым последующим запросом к этому же серверу.</p>
+      <p><strong>Cookies</strong> — это небольшие текстовые данные, которые сервер просит браузер сохранить на компьютере клиента. Браузер автоматически прикрепляет их к каждому последующему запросу к тому же серверу.</p>
       <div class="highlight-box success" style="margin: 20px 0;">
         <strong>Схема работы:</strong>
         <ol style="margin-top: 10px; font-size: 1.1rem; margin-left: 20px;">
-          <li>Браузер делает запрос: <code>GET /index.html</code></li>
-          <li>Сервер присылает ответ со специальным заголовком: <code>Set-Cookie: user=Alex</code></li>
-          <li>Браузер сохраняет этот файл у себя на диске.</li>
-          <li>При следующем запросе браузер сам добавляет заголовок: <code>Cookie: user=Alex</code>. Теперь сервер знает, кто пришёл!</li>
+          <li>Браузер запрашивает расписание: <code>GET /schedule/</code></li>
+          <li>Сервер присылает ответ со специальным заголовком: <code>Set-Cookie: user_theme=dark</code></li>
+          <li>Браузер сохраняет этот файл локально.</li>
+          <li>При следующем переходе по сайту браузер сам добавляет заголовок: <code>Cookie: user_theme=dark</code>. Сервер сразу понимает, какую тему рендерить.</li>
         </ol>
       </div>
     </div>
@@ -86,12 +86,12 @@
       <h2>Структура Cookie и её атрибуты</h2>
     </div>
     <div class="slide-body">
-      <p>Cookie — это не просто пара «ключ-значение». У неё есть важные служебные атрибуты:</p>
+      <p>Cookie — это не просто пара «ключ-значение». У неё есть важные служебные атрибуты безопасности:</p>
       <ul style="margin-top: 15px;">
         <li><strong>Expires / Max-Age:</strong> время жизни куки. Без него кука удалится при закрытии браузера (сессионная кука).</li>
-        <li><strong>Domain & Path:</strong> определяют, для каких сайтов и папок на сервере кука активна.</li>
+        <li><strong>Domain & Path:</strong> определяют, для каких доменов и путей на сервере кука активна.</li>
         <li><strong>Secure:</strong> если включено, кука передается только по зашифрованному протоколу HTTPS.</li>
-        <li><strong>HttpOnly:</strong> запрещает доступ к куке из JavaScript (защита от XSS-атак).</li>
+        <li><strong>HttpOnly:</strong> запрещает доступ к куке из JavaScript (защита от кражи кук через XSS-атаки).</li>
         <li><strong>SameSite:</strong> управляет отправкой кук при переходах со сторонних сайтов (защита от CSRF-атак).</li>
       </ul>
     </div>
@@ -105,17 +105,17 @@
     <div class="slide-body">
       <p>В Django чтение кук происходит через объект запроса, а запись — через объект ответа:</p>
       <pre><code># Чтение куки во View
-def read_cookie_view(request):
-    username = request.COOKIES.get('username', 'Гость')
-    return HttpResponse(f"Привет, {username}!")
+def read_theme_view(request):
+    theme = request.COOKIES.get('user_theme', 'light')
+    return render(request, 'index.html', {'theme': theme})
 
 # Запись куки во View
-def set_cookie_view(request):
-    response = HttpResponse("Кука установлена!")
-    response.set_cookie('username', 'Alex', max_age=3600, httponly=True)
+def set_theme_view(request):
+    response = HttpResponse("Тема оформления сохранена!")
+    response.set_cookie('user_theme', 'dark', max_age=3600*24*30, httponly=True)
     return response</code></pre>
       <p style="font-size: 1.1rem; margin-top: 10px;">
-        Обратите внимание: мы сначала создаем объект <code>response</code>, вызываем у него метод <code>set_cookie()</code> и только потом возвращаем.
+        Обратите внимание: мы сначала создаем объект <code>response</code>, вызываем у него метод <code>set_cookie()</code> и только потом возвращаем его.
       </p>
     </div>
   </div>
@@ -130,14 +130,14 @@ def set_cookie_view(request):
         <div class="column">
           <ul style="margin-top: 15px;">
             <li><strong>Лимит размера:</strong> один файл куки не может превышать 4 КБ. Навешать много данных не получится.</li>
-            <li><strong>Уязвимость:</strong> данные кук хранятся на компьютере клиента. Пользователь может легко открыть консоль разработчика и вручную поменять значение (например, с <code>role=user</code> на <code>role=admin</code>).</li>
-            <li><strong>Лишний трафик:</strong> куки летают туда-обратно с каждым HTTP-запросом (включая картинки, CSS, JS), засоряя сетевой канал.</li>
+            <li><strong>Уязвимость:</strong> данные кук хранятся на компьютере клиента. Пользователь может открыть консоль разработчика и вручную поменять значение (например, с <code>role=user</code> на <code>role=admin</code>).</li>
+            <li><strong>Лишний трафик:</strong> куки летают туда-обратно с каждым HTTP-запросом, включая запросы картинок и статики.</li>
           </ul>
         </div>
         <div class="column">
           <div class="highlight-box warning">
             <strong>Важное правило безопасности:</strong>
-            <p style="margin-top: 10px; font-size: 1.1rem;">Никогда не храните в обычных куках важные, секретные или легко подделываемые данные (пароли, баланс кошелька, права доступа)!</p>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Никогда не храните в обычных куках важные, секретные или легко подделываемые данные (пароли, права доступа, баланс счета)!</p>
           </div>
         </div>
       </div>
@@ -151,11 +151,11 @@ def set_cookie_view(request):
     </div>
     <div class="slide-body">
       <p>Чтобы обойти ограничения кук, используют <strong>сессии</strong>. Идея проста: хранить все данные пользователя на стороне сервера, а клиенту отдавать лишь случайный уникальный ключ.</p>
-      <div class="highlight-box success" style="margin: 20px 0;">
+      <div class="highlight-box success" style="margin: 15px 0;">
         <strong>Принцип работы сессий:</strong>
-        <ol style="margin-top: 10px; font-size: 1.1rem; margin-left: 20px;">
+        <ol style="margin-top: 5px; font-size: 1.1rem; margin-left: 20px;">
           <li>Пользователь логинится. Django генерирует длинную случайную строку (например, <code>"abc123xyz"</code>) — <strong>Session Key</strong>.</li>
-          <li>Django создает в своей базе данных запись, где ключ — <code>"abc123xyz"</code>, а значение — JSON-словарь со всеми данными пользователя.</li>
+          <li>Django создает в своей базе данных запись, где ключ — <code>"abc123xyz"</code>, а значение — закодированный JSON-словарь со всеми данными пользователя.</li>
           <li>Сервер отправляет клиенту куку с именем <code>sessionid</code> и значением <code>"abc123xyz"</code>.</li>
           <li>При следующем запросе браузер присылает эту куку. Django находит в БД словарь по ключу <code>"abc123xyz"</code> и загружает его в память.</li>
         </ol>
@@ -176,7 +176,7 @@ def set_cookie_view(request):
         <li>Сами данные в БД хранятся в закодированном виде (Base64 + подпись), чтобы их нельзя было легко прочесть в сыром виде из базы данных.</li>
       </ul>
       <div class="highlight-box" style="margin-top: 15px;">
-        <strong>Где еще можно хранить сессии?</strong> (меняется в <code>settings.py</code>):<br>
+        <strong>Где еще можно хранить сессии?</strong> (настраивается в <code>settings.py</code>):<br>
         В БД (по умолчанию), в кэше (Redis / Memcached), в файлах или непосредственно в зашифрованных куках на клиенте.
       </div>
     </div>
@@ -185,22 +185,24 @@ def set_cookie_view(request):
   <!-- Слайд 9: Работа с сессиями во View -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Работа с сессиями во View</h2>
+      <h2>Работа с сессиями во View: Избранные клубы</h2>
     </div>
     <div class="slide-body">
       <p>В Django доступ к сессии осуществляется через словарь-подобный объект <code>request.session</code>:</p>
-      <pre><code>def cart_add(request, item_id):
-    # Получаем корзину из сессии или создаем пустой список, если её нет
-    cart = request.session.get('cart', [])
-    cart.append(item_id)
+      <pre><code>def add_favorite_club(request, club_id):
+    # Получаем список избранных клубов из сессии или создаем пустой список
+    favorites = request.session.get('favorite_clubs', [])
+    
+    if club_id not in favorites:
+        favorites.append(club_id)
     
     # Сохраняем обратно в сессию
-    request.session['cart'] = cart
+    request.session['favorite_clubs'] = favorites
     
     # Важно: если мы изменяем изменяемый объект (список, словарь) внутри сессии,
     # нужно явно сообщить Django о необходимости сохранения в БД:
     request.session.modified = True
-    return HttpResponse("Товар добавлен!")</code></pre>
+    return HttpResponse("Клуб добавлен в избранное!")</code></pre>
     </div>
   </div>
 
@@ -257,9 +259,9 @@ def set_cookie_view(request):
     <div class="slide-body">
       <p>Эти три термина часто путают, но они обозначают разные этапы входа в систему:</p>
       <ul style="margin-top: 15px;">
-        <li><strong>Идентификация</strong> — это заявление пользователя о том, кто он такой. Например, ввод логина или email: <em>«Я пользователь с ником <code>alex_99</code>»</em>.</li>
+        <li><strong>Идентификация</strong> — это заявление пользователя о том, кто он такой. Например, ввод логина или email: <em>«Я пользователь с ником <code>ivan_kvant</code>»</em>.</li>
         <li><strong>Аутентификация</strong> — это подтверждение личности. Пользователь доказывает, что он тот, за кого себя выдает (вводит пароль, код из SMS или прикладывает палец): <em>«Вот мой пароль, проверьте»</em>.</li>
-        <li><strong>Авторизация</strong> — это проверка прав доступа. Определение того, что именно этому пользователю разрешено делать на сайте: <em>«У пользователя <code>alex_99</code> есть права администратора, пустить его в админку»</em>.</li>
+        <li><strong>Авторизация</strong> — это проверка прав доступа. Определение того, что именно этому пользователю разрешено делать на сайте: <em>«Иван имеет статус вожатого (staff), разрешить ему редактировать расписание отрядов»</em>.</li>
       </ul>
     </div>
   </div>
@@ -283,7 +285,7 @@ def set_cookie_view(request):
         <div class="column">
           <ul>
             <li><code>is_active</code> — активен ли аккаунт (вместо удаления лучше делать False).</li>
-            <li><code>is_staff</code> — разрешен ли доступ в панель администратора.</li>
+            <li><code>is_staff</code> — разрешен ли доступ в панель администратора (вожатые, админы).</li>
             <li><code>is_superuser</code> — обладает ли всеми правами.</li>
             <li><code>date_joined</code> — дата регистрации.</li>
           </ul>
@@ -345,7 +347,7 @@ pbkdf2_sha256$600000$AbCdEf123$xYz987...2B4c</pre>
 # ПРАВИЛЬНО: пароль автоматически захэшируется
 user = User.objects.create_user(
     username='ivan',
-    email='ivan@mail.ru',
+    email='ivan@kvant-camp.ru',
     password='SuperSafePassword123'
 )
 
@@ -376,7 +378,7 @@ user = User.objects.create(username='ivan', password='plain_password')</code></p
       <h2>Пример кастомного Middleware</h2>
     </div>
     <div class="slide-body">
-      <p>Мы можем написать класс, который будет логировать каждый запрос в консоль:</p>
+      <p>Мы можем написать класс, который будет логировать каждый запрос на сайт «Кванта» в консоль:</p>
       <pre style="font-size: 0.9rem; padding: 10px;"><code>class RequestLogMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -411,11 +413,12 @@ user = User.objects.create(username='ivan', password='plain_password')</code></p
         <div class="column">
           <div class="highlight-box success">
             <strong>Что делаем сегодня на практике:</strong>
-            <p style="margin-top: 10px; font-size: 1.1rem;">
-              1. Научимся сохранять в Cookies любимую цветовую тему пользователя.<br>
-              2. Создадим корзину покупок с помощью Django Sessions.<br>
-              3. Будем работать с пользователями в Django Shell.<br>
-              4. Напишем Middleware для подсчета общего количества просмотров страниц.
+            <p style="margin-top: 10px; font-size: 1.05rem;">
+              1. Научимся сохранять в Cookies выбранную тему сайта «Кванта».<br>
+              2. Создадим список избранных клубов/мероприятий в сессии.<br>
+              3. Реализуем список недавно просмотренных новостей в сессии.<br>
+              4. Будем создавать и проверять пользователей в Django Shell.<br>
+              5. Напишем Middleware для трекинга посещений страниц.
             </p>
           </div>
         </div>

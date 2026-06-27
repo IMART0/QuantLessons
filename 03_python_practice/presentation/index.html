@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Урок 3: Практикум по Python — ЛФМШ "Квант"</title>
+  <title>Урок 3: Практикум по Python — Сайт летней школы «Квант»</title>
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
 </head>
@@ -15,265 +15,285 @@
     <div class="slide active">
       <div class="slide-body" style="text-align: center;">
         <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
-        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
-          Практикум по Python для веб-разработки
+        <h1 style="font-size: 2.8rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          Практикум по Python:<br>Сайт летней школы «Квант»
         </h1>
-        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Пишем компоненты Django «под капотом»</p>
-        <p style="font-size: 1.1rem; font-style: italic;">Преподаватель: [Ваше имя]</p>
+        <p style="font-size: 1.4rem; color: #7f8c8d; margin-bottom: 40px;">Проектируем архитектуру веб-приложения под капотом</p>
+        <p style="font-size: 1.1rem; font-style: italic; color: #2c3e50;">Тема: Практическое применение структур данных, datetime, JSON, CRUD и маршрутизации</p>
       </div>
     </div>
 
     <!-- Слайд 2: Карта занятия -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Что мы сегодня сделаем?</h2>
+        <h2>Карта занятия: Сайт «Квант»</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p style="font-size: 1.25rem; margin-bottom: 15px;">Мы изучим и напишем с нуля:</p>
+            <p style="font-size: 1.2rem; margin-bottom: 15px; font-weight: 600;">Сегодня мы разработаем бэкенд-компоненты сайта:</p>
             <ul>
-              <li><strong>JSON & Datetime</strong> — парсинг внешних данных и арифметика дат.</li>
-              <li><strong>Валидатор запросов</strong> — защита API от некорректного ввода.</li>
-              <li><strong>Маршрутизатор (Router)</strong> — сопоставление URL и параметров с кодом Python.</li>
-              <li><strong>In-Memory DB</strong> — хранилище данных без внешней СУБД.</li>
-              <li><strong>Middleware</strong> — конвейер сквозной обработки запросов.</li>
+              <li><strong>JSON-парсер</strong> — чтение и валидация расписания смены лагеря.</li>
+              <li><strong>Сортировка новостей</strong> — работа с датами публикаций через <code>datetime</code>.</li>
+              <li><strong>Фильтр мероприятий</strong> — поиск лекций OpenTalks по спикерам.</li>
+              <li><strong>Mock-БД участников</strong> — хранилище пользователей в ОЗУ с поддержкой CRUD.</li>
+              <li><strong>Симулятор роутера URL</strong> — сопоставление путей с кодом.</li>
+              <li><strong>Конвейер Middleware</strong> — авторизация и логирование запросов.</li>
             </ul>
           </div>
           <div class="column">
             <div class="highlight-box success">
-              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Конечный результат</h3>
-              <p>Вы создадите собственную микроверсию веб-фреймворка, выполняющую весь цикл обработки запроса от клиента до БД и обратно.</p>
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px; font-size: 1.3rem;">Наша цель</h3>
+              <p>Понять, как устроена обработка данных в Django, реализовав ключевые механизмы самостоятельно на чистом Python.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 3: JSON vs Python Dict -->
+    <!-- Слайд 3: Сериализация и JSON -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Сериализация: JSON и Словари</h2>
+        <h2>JSON-расписание: Сериализация</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p><strong>JSON</strong> (строка) и <strong>Словарь</strong> (объект в ОЗУ) похожи, но имеют строгие отличия:</p>
+            <p>Сайт лагеря получает расписание смены от внешнего API в формате <strong>JSON</strong> (строка). Для работы в Python мы парсим его в словарь или список:</p>
             <ul>
-              <li>В JSON строки только в <strong>двойных</strong> кавычках: <code>"key"</code>.</li>
-              <li>Логические значения: в JSON — <code>true/false/null</code>, в Python — <code>True/False/None</code>.</li>
+              <li><code>json.loads()</code>: строка JSON ➡️ структуры Python (dict, list).</li>
+              <li><code>json.dumps()</code>: структуры Python ➡️ строка JSON.</li>
             </ul>
             <div class="highlight-box warning">
-              Любая опечатка в JSON вызывает ошибку <code>json.JSONDecodeError</code>. Обязательно используем <code>try-except</code>!
+              <strong>Осторожно:</strong> опечатка в JSON (например, одинарные кавычки или <code>True</code> вместо <code>true</code>) вызовет <code>json.JSONDecodeError</code>. Используйте <code>try-except</code>!
             </div>
           </div>
           <div class="column">
             <pre><code>import json
 
-# Парсим JSON-строку в словарь
-data = json.loads('{"active": true}')
-print(data["active"])  # True
+# JSON-строка (ключи строго в " ")
+raw_schedule = '[{"title": "OpenTalk", "active": true}]'
 
-# Сериализуем обратно в строку
-raw = json.dumps(data, ensure_ascii=False)
-# '{"active": true}'</code></pre>
+try:
+    schedule = json.loads(raw_schedule)
+    print(schedule[0]["title"]) # OpenTalk
+except json.JSONDecodeError as e:
+    print(f"Ошибка в формате JSON: {e}")</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 4: Работа со временем -->
+    <!-- Слайд 4: Работа со временем (datetime) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Время в вебе: модуль datetime</h2>
+        <h2>Лента новостей: Работа с datetime</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
+            <p>Новости на сайте лагеря публикуются в разное время. Чтобы отсортировать их, нужно перевести строки в объекты <code>datetime</code>:</p>
             <ul>
-              <li>Даты передаются по сети строками (ISO 8601).</li>
-              <li><code>strptime()</code> — преобразует строку времени в объект <code>datetime</code> по шаблону.</li>
-              <li><code>strftime()</code> — преобразует объект в красивую строку.</li>
-              <li><code>timedelta</code> — хранит длительность интервала.</li>
+              <li><code>strptime(str, format)</code> — парсинг строки в объект по шаблону.</li>
+              <li><code>strftime(format)</code> — красивое форматирование даты для вывода на сайт.</li>
+              <li><code>timedelta</code> — интервалы времени (например, длительность мастер-класса).</li>
             </ul>
-            <div class="highlight-box success">
-              <strong>Формула пересечения:</strong><br>
-              Два интервала [S1, E1] и [S2, E2] пересекаются, если:<br>
-              <code>S1 < E2 and S2 < E1</code> (без учета стыков)
-            </div>
           </div>
           <div class="column">
             <pre><code>from datetime import datetime, timedelta
 
-fmt = "%Y-%m-%d %H:%M"
-start = datetime.strptime("2026-06-26 12:00", fmt)
+# Шаблон: День.Месяц.Год Часы:Минуты
+fmt = "%d.%m.%Y %H:%M"
+pub_time = datetime.strptime("26.06.2026 14:30", fmt)
 
-# Прибавим 2 часа
-end = start + timedelta(hours=2)
-print(end.strftime("%H:%M"))  # 14:00
-
-# Длительность в часах
-diff = end - start
-hours = diff.total_seconds() // 3600</code></pre>
+# Прибавим время (длительность лекции)
+lecture_end = pub_time + timedelta(minutes=90)
+print(lecture_end.strftime("%H:%M")) # 16:00</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 5: Валидация данных -->
+    <!-- Слайд 5: Фильтрация данных -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Валидация запросов: Безопасность</h2>
+        <h2>Спикеры и лекции: Поиск и фильтрация</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 15px;"><strong>Никогда не верьте клиенту.</strong> Все входящие данные должны проверяться.</p>
         <div class="columns">
           <div class="column">
-            <h4 style="color: var(--primary-color); margin-bottom: 10px;">Что нужно проверить:</h4>
+            <p>На сайте «Кванта» пользователи хотят искать мероприятия конкретного лектора.</p>
             <ul>
-              <li><strong>Наличие полей</strong> — не забыл ли клиент пароль/email?</li>
-              <li><strong>Тип данных</strong> — возраст должен быть числом, а не текстом <code>"17 лет"</code>.</li>
-              <li><strong>Формат значений</strong> — почта должна содержать <code>@</code> и <code>.</code>, логин — быть латинским.</li>
+              <li>Поиск должен быть <strong>регистронезависимым</strong> (приводим к <code>.lower()</code>).</li>
+              <li>Поиск должен поддерживать <strong>частичные совпадения</strong> (оператор <code>in</code>).</li>
+              <li>Обеспечиваем защиту от отсутствующих полей (метод <code>.get()</code>).</li>
             </ul>
           </div>
           <div class="column">
-            <div class="highlight-box">
-              Хороший API в ответ на невалидный запрос возвращает статус <code>400 Bad Request</code> и структурированный словарь с описанием ошибок для каждого поля.
+            <pre><code>events = [
+    {"title": "Веб на Django", "speaker": "Игорь"},
+    {"title": "Физика космоса", "speaker": "Сергей"}
+]
+
+# Фильтрация
+query = "иг"
+result = [e for e in events if query.lower() in e.get("speaker", "").lower()]
+# Результат: [{"title": "Веб на Django", "speaker": "Игорь"}]</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 6: База данных в памяти -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Хранилище участников: Mock БД</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Сайту нужна база данных для хранения участников смены. В учебных целях мы напишем <strong>In-Memory Database</strong> на основе вложенных словарей Python:</p>
+            <pre><code>self._data = {
+    "users": {
+        1: {"id": 1, "name": "Никита"},
+        2: {"id": 2, "name": "Мария"}
+    }
+}</code></pre>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h4 style="color: var(--accent-color); margin-bottom: 5px;">Важнейшее правило ОЗУ-БД</h4>
+              <p>Словари в Python передаются по ссылке. Если мы не сделаем глубокую копию с помощью <code>copy.deepcopy()</code>, внешние изменения изменят данные в самой базе данных!</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 6: Схема жизненного цикла запроса -->
+    <!-- Слайд 7: CRUD-операции над пользователями -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Жизненный цикл HTTP-запроса</h2>
+        <h2>Что такое CRUD?</h2>
+      </div>
+      <div class="slide-body">
+        <p style="margin-bottom: 20px;"><strong>CRUD</strong> — четыре базовые функции управления данными:</p>
+        <div style="display: flex; gap: 20px;">
+          <div style="flex: 1; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; text-align: center;">
+            <h3 style="color: var(--primary-color);">C</h3>
+            <p><strong>Create</strong><br>Создание (метод <code>insert</code>)</p>
+          </div>
+          <div style="flex: 1; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; text-align: center;">
+            <h3 style="color: var(--secondary-color);">R</h3>
+            <p><strong>Read</strong><br>Чтение (метод <code>get</code> или <code>find</code>)</p>
+          </div>
+          <div style="flex: 1; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; text-align: center;">
+            <h3 style="color: #f39c12;">U</h3>
+            <p><strong>Update</strong><br>Обновление (метод <code>update</code>)</p>
+          </div>
+          <div style="flex: 1; border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; text-align: center;">
+            <h3 style="color: var(--accent-color);">D</h3>
+            <p><strong>Delete</strong><br>Удаление (метод <code>delete</code>)</p>
+          </div>
+        </div>
+        <p style="margin-top: 20px; font-style: italic;">Мы реализуем полноценный класс InMemoryDB с автоинкрементом ID и защитой от перезаписи первичного ключа.</p>
+      </div>
+    </div>
+
+    <!-- Слайд 8: Роутер URL (Маршрутизатор) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>URL-Router: Связываем пути с кодом</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Роутер</strong> анализирует URL запроса и находит соответствующий обработчик (View):</p>
+            <ul>
+              <li>Простые пути: <code>/news/</code> ➡️ <code>show_news()</code>.</li>
+              <li>Сложнее — пути с параметрами: <code>/speaker/&lt;string:username&gt;/</code> ➡️ <code>speaker_profile(username)</code>.</li>
+            </ul>
+            <div class="highlight-box">
+              Мы напишем парсер путей, который разбивает URL на сегменты (по слэшу) и динамически вырезает переменные из строки запроса.
+            </div>
+          </div>
+          <div class="column">
+            <pre><code># Как это будет выглядеть:
+@router.register("/event/&lt;int:event_id&gt;/", "GET")
+def get_event(event_id):
+    return f"Мероприятие №{event_id}"
+
+# При вызове /event/15/
+# Роутер вернет функцию get_event и {"event_id": 15}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 9: Жизненный цикл запроса на сайте -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Жизненный цикл запроса (Схема)</h2>
       </div>
       <div class="slide-body" style="text-align: center;">
-        <div style="display: flex; justify-content: space-around; align-items: center; margin: 20px 0;">
-          <div style="border: 2px solid var(--text-color); padding: 15px; border-radius: 8px; width: 14%;">🌐 Клиент</div>
+        <div style="display: flex; justify-content: space-around; align-items: center; margin: 30px 0;">
+          <div style="border: 2px solid var(--text-color); padding: 12px; border-radius: 8px; width: 14%; font-weight: bold;">🌐 Браузер</div>
           <div style="font-size: 1.5rem;">➡️</div>
-          <div style="border: 2px solid var(--accent-color); padding: 15px; border-radius: 8px; width: 18%; background: #fdf2e9;">🛡️ Middleware</div>
+          <div style="border: 2px solid var(--accent-color); padding: 12px; border-radius: 8px; width: 18%; background: #fdf2e9; font-weight: bold;">🛡️ Middleware</div>
           <div style="font-size: 1.5rem;">➡️</div>
-          <div style="border: 2px solid var(--primary-color); padding: 15px; border-radius: 8px; width: 18%; background: #ebf5fb;">🗺️ URL Router</div>
+          <div style="border: 2px solid var(--primary-color); padding: 12px; border-radius: 8px; width: 18%; background: #ebf5fb; font-weight: bold;">🗺️ URL Router</div>
           <div style="font-size: 1.5rem;">➡️</div>
-          <div style="border: 2px solid var(--secondary-color); padding: 15px; border-radius: 8px; width: 16%; background: #e8f8f5;">👁️ View</div>
+          <div style="border: 2px solid var(--secondary-color); padding: 12px; border-radius: 8px; width: 16%; background: #e8f8f5; font-weight: bold;">👁️ View (БД)</div>
           <div style="font-size: 1.5rem;">➡️</div>
-          <div style="border: 2px solid #9b59b6; padding: 15px; border-radius: 8px; width: 14%;">💾 База данных</div>
+          <div style="border: 2px solid #9b59b6; padding: 12px; border-radius: 8px; width: 14%; font-weight: bold;">💾 InMemoryDB</div>
         </div>
-        <p style="margin-top: 25px; font-style: italic; font-size: 1.15rem;">
-          Мы реализуем эту схему полностью в рамках практического задания!
+        <p style="margin-top: 20px; font-size: 1.15rem; color: #555;">
+          Запрос проходит цепочку посредников (Middleware), маршрутизируется к обработчику, который запрашивает данные из БД и возвращает ответ.
         </p>
       </div>
     </div>
 
-    <!-- Слайд 7: Проектируем URL-Router -->
+    <!-- Слайд 10: Middleware: Посредники -->
     <div class="slide">
       <div class="slide-header">
-        <h2>URL-Router: Карта путей</h2>
+        <h2>Middleware: Цепочка обработки</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
+            <p><strong>Middleware</strong> — слои, через которые проходит запрос до и после попадания во View.</p>
             <ul>
-              <li><strong>Задача роутера</strong> — по входящему пути (например, <code>/users/42/</code>) найти нужную функцию-обработчик.</li>
-              <li>Сложность: поддержка динамических параметров типа <code>&lt;int:id&gt;</code>.</li>
-              <li><strong>Решение:</strong> разбиваем шаблоны и реальные пути на списки сегментов по слэшу <code>/</code> и сопоставляем их поэлементно.</li>
-            </ul>
-          </div>
-          <div class="column">
-            <pre><code># Как это работает в Django:
-path('users/&lt;int:id&gt;/', view_func)
-
-# Как напишем мы:
-@router.register("/users/&lt;int:id&gt;/", "GET")
-def get_user(id):
-    ...
-</code></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 8: База данных в ОЗУ (In-Memory) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Имитация СУБД: In-Memory CRUD</h2>
-      </div>
-      <div class="slide-body">
-        <div class="columns">
-          <div class="column">
-            <ul>
-              <li>База данных должна сохранять состояние между запросами.</li>
-              <li>Для тестов идеально подходит хранилище в оперативной памяти (переменные класса).</li>
-              <li>Мы используем вложенные словари: <code>{коллекция: {id: документ}}</code>.</li>
-            </ul>
-            <div class="highlight-box warning">
-              <strong>Внимание:</strong> Всегда используйте <code>copy.deepcopy()</code>, чтобы изменения в переданных словарях не меняли данные внутри БД!
-            </div>
-          </div>
-          <div class="column">
-            <pre><code># Структура базы в ОЗУ
-self._data = {
-    "users": {
-        1: {"id": 1, "name": "Иван"},
-        2: {"id": 2, "name": "Анна"}
-    }
-}
-</code></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 9: Пайплайн и Middleware -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Middleware: Цепочка посредников</h2>
-      </div>
-      <div class="slide-body">
-        <div class="columns">
-          <div class="column">
-            <ul>
-              <li><strong>Middleware</strong> — функция, которая оборачивает вызов основного обработчика.</li>
-              <li>Получает <code>request</code> и функцию <code>next_handler</code>.</li>
-              <li>Позволяет делать сквозные задачи:
-                <ul>
-                  <li>Логирование (запись логов запросов).</li>
-                  <li>Авторизация (проверка токенов).</li>
-                  <li>Rate Limiting (ограничение спама).</li>
-                </ul>
-              </li>
+              <li><strong>Логирование:</strong> записывает в лог информацию о запросе.</li>
+              <li><strong>Авторизация:</strong> проверяет токен. Если токена нет, возвращает <code>401 Unauthorized</code>, прерывая цепочку.</li>
             </ul>
           </div>
           <div class="column">
             <div class="highlight-box success">
-              Прерывание запроса: если middleware обнаруживает неверный токен, оно не вызывает <code>next_handler</code>, а сразу возвращает ответ <code>401 Unauthorized</code>.
+              <h4 style="margin-bottom: 5px;">Принцип конвейера</h4>
+              <p>Каждое Middleware получает функцию <code>next_handler</code>. Если оно не вызывает <code>next_handler()</code>, обработка прерывается. Это защищает чувствительные разделы сайта.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 10: Задачи на практику -->
+    <!-- Слайд 11: Практические задачи -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Практические задания</h2>
+        <h2>Задания практической лаборатории</h2>
       </div>
       <div class="slide-body">
-        <ol style="font-size: 1.15rem;">
-          <li><strong>Задача 1 (Basic):</strong> Парсер JSON-профилей пользователей с фильтрацией и группировкой по городам.</li>
-          <li><strong>Задача 2 (Basic):</strong> Проверка наложения интервалов времени для комнат бронирования.</li>
-          <li><strong>Задача 3 (Basic):</strong> Безопасный валидатор тела API-запроса на регистрацию.</li>
-          <li><strong>Задача 4 (Medium):</strong> Класс URL-Router для извлечения динамических параметров из пути.</li>
-          <li><strong>Задача 5 (Medium):</strong> Класс InMemoryDB с полной логикой CRUD и поиском документов.</li>
-          <li><strong>Задача 6 (Hard):</strong> Конвейер обработки (WebApplication + цепочка Middleware + БД).</li>
+        <ol style="font-size: 1.1rem; line-height: 1.5;">
+          <li><strong>Задача 1 (Basic):</strong> JSON-парсер расписания смены лагеря с валидацией полей.</li>
+          <li><strong>Задача 2 (Basic):</strong> Сортировка новостей лагеря по дате публикации (datetime).</li>
+          <li><strong>Задача 3 (Basic):</strong> Фильтр мероприятий OpenTalks по спикерам с частичным совпадением.</li>
+          <li><strong>Задача 4 (Medium):</strong> Имитация БД участников смены (UserStorage) с методами CRUD.</li>
+          <li><strong>Задача 5 (Medium):</strong> Динамический роутер URL для сайта (CampSiteRouter) с параметрами.</li>
+          <li><strong>Задача 6 (Hard):</strong> WebApplication для лагеря: объединение роутера, БД и Middleware.</li>
         </ol>
       </div>
     </div>
 
-    <!-- Слайд 11: Домашнее задание -->
+    <!-- Слайд 12: Домашнее задание -->
     <div class="slide">
       <div class="slide-header">
         <h2>Домашнее задание</h2>
@@ -281,36 +301,36 @@ self._data = {
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <h4 style="color: var(--primary-color); margin-bottom: 10px;">1. Обязательное задание</h4>
-            <p>Добавить в <code>InMemoryDB</code> мягкое удаление (<strong>Soft Delete</strong>):</p>
+            <h4 style="color: var(--primary-color); margin-bottom: 10px; font-size: 1.2rem;">1. Обязательная часть</h4>
+            <p>Реализовать <strong>мягкое удаление (Soft Delete)</strong> в базе данных участников:</p>
             <ul>
-              <li>Удаление ставит пометку <code>"is_deleted": True</code>.</li>
-              <li>Все CRUD-методы игнорируют удаленные записи.</li>
-              <li>Метод <code>restore()</code> восстанавливает запись.</li>
+              <li><code>delete()</code> помечает запись как <code>"is_deleted": True</code>.</li>
+              <li><code>get()</code>, <code>find()</code>, <code>update()</code> игнорируют удаленные записи.</li>
+              <li><code>restore()</code> возвращает запись к жизни.</li>
             </ul>
           </div>
           <div class="column">
-            <h4 style="color: var(--accent-color); margin-bottom: 10px;">2. Задание со звездочкой ⭐</h4>
+            <h4 style="color: var(--accent-color); margin-bottom: 10px; font-size: 1.2rem;">2. Со звездочкой ⭐</h4>
             <p>Написать <strong>Rate Limiting Middleware</strong>:</p>
             <ul>
-              <li>Максимум 3 запроса в течение 10 секунд с одного IP (из заголовка <code>X-Real-IP</code>).</li>
-              <li>При превышении — ответ <code>429 Too Many Requests</code>.</li>
+              <li>Ограничить частоту: не более 3 запросов в течение 10 секунд с одного IP (из заголовка <code>X-Real-IP</code>).</li>
+              <li>Превышение лимита возвращает ошибку <code>429 Too Many Requests</code>.</li>
             </ul>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 12: Вопросы и ответы -->
+    <!-- Слайд 13: Вопросы и ответы (Q&A) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Финал занятия</h2>
+        <h2>Практикум: Вопросы и ответы</h2>
       </div>
       <div class="slide-body" style="text-align: center;">
-        <h3 style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 20px;">Q&A: Вопросы и ответы</h3>
-        <p style="font-size: 1.3rem; margin-bottom: 30px;">Все материалы и решения доступны в репозитории класса.</p>
-        <div class="highlight-box" style="display: inline-block; padding: 20px 40px;">
-          👨‍💻 Переходите к файлу <code>lesson_materials.md</code> и запускайте редакторы кода!
+        <h3 style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 25px;">Q&A сессия</h3>
+        <p style="font-size: 1.25rem; margin-bottom: 30px;">Задайте вопросы по работе структур данных, декораторов и middleware.</p>
+        <div class="highlight-box" style="display: inline-block; padding: 15px 30px;">
+          🚀 Открывайте файл <code>lesson_materials.md</code>, настраивайте окружение и приступайте к написанию кода!
         </div>
       </div>
     </div>
@@ -323,7 +343,7 @@ self._data = {
     </div>
 
     <!-- Счетчик и прогресс-бар -->
-    <div class="slide-counter" id="slide-counter">1 / 12</div>
+    <div class="slide-counter" id="slide-counter">1 / 13</div>
     <div class="progress-container">
       <div class="progress-bar" id="progress-bar"></div>
     </div>

@@ -12,619 +12,488 @@
     <!-- Слайд 1: Титульный -->
     <div class="slide active">
       <div class="slide-header">
-        <h2>Реляционная модель данных и основы SQL</h2>
+        <h2>Реляционные базы данных и основы SQL</h2>
       </div>
       <div class="slide-body" style="text-align: center;">
         <p style="font-size: 1.5rem; margin-bottom: 20px; color: var(--primary-color); font-weight: bold;">
-          Урок 10 | Курс веб-разработки на Django
+          Урок 10 | Разработка сайта летней школы «Квант»
         </p>
         <p style="font-size: 1.3rem; margin-bottom: 40px;">
           Летняя физико-математическая школа «Квант»
         </p>
-        <div class="highlight-box" style="display: inline-block; text-align: left; max-width: 600px; margin: 0 auto;">
+        <div class="highlight-box" style="display: inline-block; text-align: left; max-width: 700px; margin: 0 auto;">
           <strong>Сегодня в программе:</strong>
           <ul>
-            <li>Понятие баз данных и реляционной модели</li>
-            <li>Таблицы, типы данных, первичные (PK) и внешние (FK) ключи</li>
-            <li>Связи между сущностями (1:1, 1:N, N:M)</li>
-            <li>Написание SQL-запросов: SELECT, WHERE, JOIN и GROUP BY</li>
+            <li>Почему обычные файлы не подходят для хранения данных сайта</li>
+            <li>Реляционная модель: таблицы, поля, типы данных, первичные (PK) и внешние (FK) ключи</li>
+            <li>Связи в схеме лагеря: 1:1, 1:N, N:M</li>
+            <li>Язык SQL: Выборка (SELECT), фильтрация (WHERE), джоины (JOIN) и агрегация (GROUP BY)</li>
+            <li>Модификация данных: INSERT, UPDATE, DELETE</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 2: Что такое база данных? -->
+    <!-- Слайд 2: Почему не файлы? -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Проблема: Почему не хранить данные в файлах?</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p>Представьте, что мы пишем сайт школы «Квант» и храним баланс коинов и расписание в файле <code>data.json</code>.</p>
+            <ul style="margin-top: 15px;">
+              <li><strong>Нет конкурентного доступа:</strong> Если 5 вожатых одновременно начислят баллы ребятам, файл перезапишется с ошибкой, и часть данных пропадет.</li>
+              <li><strong>Медленный поиск:</strong> Чтобы найти одного студента из 10 000, серверу придется прочитать весь файл с начала.</li>
+              <li><strong>Нет контроля связности:</strong> Легко случайно привязать достижение к несуществующему ID студента.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <strong>Решение:</strong> Использование специализированного ПО — <strong>СУБД</strong>, которая берет на себя управление безопасностью, скоростью поиска и целостностью данных.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 3: Базы данных и СУБД -->
     <div class="slide">
       <div class="slide-header">
         <h2>Базы данных и СУБД</h2>
       </div>
       <div class="slide-body">
-        <div class="columns">
+        <p><strong>База данных (БД)</strong> — это упорядоченное структурированное хранилище информации.</p>
+        <p style="margin-top: 10px;"><strong>СУБД</strong> (Система управления базами данных) — программное обеспечение для создания баз данных, чтения, записи и обновления информации.</p>
+        
+        <div class="columns" style="margin-top: 20px;">
           <div class="column">
-            <p><strong>База данных (БД)</strong> — это упорядоченная совокупность структурированных данных, хранящаяся в компьютерной системе.</p>
-            <p style="margin-top: 15px;"><strong>СУБД</strong> (Система управления базами данных) — ПО для создания БД, записи, чтения и обновления данных (например, PostgreSQL, SQLite, MySQL).</p>
+            <div class="highlight-box success">
+              <strong>SQLite (Встроенная СУБД)</strong>
+              <p style="font-size: 0.95rem; margin-top: 5px;">Хранит всю БД в одном файле на диске. Не требует настройки серверов. Идеальна для обучения и небольших приложений.</p>
+            </div>
           </div>
           <div class="column">
-            <div class="highlight-box warning">
-              <strong>Почему не обычные файлы (.json или .txt)?</strong>
-              <ul style="margin-top: 10px; font-size: 1.1rem;">
-                <li><strong>Масштабируемость:</strong> БД работают с гигабайтами и терабайтами данных мгновенно.</li>
-                <li><strong>Конкурентный доступ:</strong> тысячи пользователей могут одновременно читать и писать данные.</li>
-                <li><strong>Целостность и транзакции:</strong> защита от сбоев питания и некорректных записей.</li>
-              </ul>
+            <div class="highlight-box">
+              <strong>PostgreSQL / MySQL (Серверные СУБД)</strong>
+              <p style="font-size: 0.95rem; margin-top: 5px;">Работают как отдельные мощные службы. Обеспечивают одновременную работу миллионов пользователей.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 3: Реляционная модель данных -->
+    <!-- Слайд 4: Реляционная модель: Таблицы -->
     <div class="slide">
       <div class="slide-header">
         <h2>Реляционная модель: Таблицы</h2>
       </div>
       <div class="slide-body">
-        <p>Слово <strong>relation</strong> переводится как «отношение». В математике отношение — это множество кортежей. В базах данных отношение представляется как <strong>таблица</strong>.</p>
+        <p>Слово <strong>relation</strong> означает «отношение». В базах данных отношение представляется в виде двумерной <strong>таблицы</strong>.</p>
         <div class="columns" style="margin-top: 20px;">
-          <div class="column" style="flex: 1.5;">
+          <div class="column" style="flex: 1.3;">
             <table class="db-table">
               <thead>
                 <tr>
                   <th>id <span class="pk-marker">[PK]</span></th>
+                  <th>username</th>
                   <th>first_name</th>
-                  <th>last_name</th>
-                  <th>age</th>
+                  <th>role</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>1</td>
+                  <td>ivan_q</td>
                   <td>Иван</td>
-                  <td>Иванов</td>
-                  <td>15</td>
+                  <td>student</td>
                 </tr>
                 <tr>
                   <td>2</td>
-                  <td>Анна</td>
-                  <td>Петрова</td>
-                  <td>16</td>
+                  <td>masha_math</td>
+                  <td>Мария</td>
+                  <td>student</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>anton_py</td>
+                  <td>Антон</td>
+                  <td>teacher</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div class="column">
             <ul>
-              <li><strong>Строка (Запись / Кортеж)</strong> — один конкретный объект.</li>
-              <li><strong>Столбец (Поле / Атрибут)</strong> — свойство объекта.</li>
-              <li><strong>Тип данных</strong> — жестко определяет, какие значения могут быть в столбце (числа, строки, даты).</li>
+              <li><strong>Столбец (Поле)</strong> — атрибут сущности. Имеет строгий <strong>тип данных</strong> (число, строка, дата).</li>
+              <li><strong>Строка (Запись)</strong> — описание одного конкретного объекта.</li>
+              <li>СУБД контролирует типы полей и не позволит записать текст в числовое поле.</li>
             </ul>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 4: Первичный ключ (Primary Key) -->
+    <!-- Слайд 5: Первичный ключ (Primary Key) -->
     <div class="slide">
       <div class="slide-header">
         <h2>Первичный ключ (Primary Key)</h2>
       </div>
       <div class="slide-body">
-        <p><strong>Первичный ключ (PK)</strong> — это уникальный идентификатор строки в таблице. Он гарантирует, что каждая запись уникальна и к ней можно обратиться напрямую.</p>
+        <p><strong>Первичный ключ (PK)</strong> — уникальный идентификатор строки в таблице. СУБД использует его для поиска конкретной записи и связывания таблиц.</p>
         
         <div class="highlight-box success" style="margin-top: 15px;">
           <strong>Свойства Первичного Ключа (PK):</strong>
-          <ol style="margin-top: 10px;">
-            <li><strong>Уникальность:</strong> в таблице не может быть двух строк с одинаковым PK.</li>
-            <li><strong>Непустота:</strong> значение PK не может быть <code>NULL</code> (пустым).</li>
-            <li><strong>Стабильность:</strong> PK не должен меняться со временем (например, имя или паспорт могут измениться, поэтому лучше использовать суррогатный ключ: автоинкрементное число <code>id</code>).</li>
+          <ol style="margin-top: 10px; font-size: 1.1rem;">
+            <li><strong>Уникальность:</strong> В таблице не может быть двух строк с одинаковым значением PK.</li>
+            <li><strong>Непустота:</strong> PK не может принимать значение <code>NULL</code> (пустота).</li>
+            <li><strong>Стабильность:</strong> PK не должен меняться (поэтому естественные ключи, такие как телефон или email, заменяют суррогатным автоинкрементным <code>id</code>).</li>
           </ol>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 5: Внешний ключ (Foreign Key) -->
+    <!-- Слайд 6: Схема базы данных сайта «Квант» -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Схема базы данных сайта «Квант»</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.1rem;">
+        <p style="margin-bottom: 10px;">Для сайта нашей школы мы проектируем структуру из связанных таблиц:</p>
+        <ul>
+          <li><strong>users:</strong> все пользователи (id, username, first_name, last_name, role).</li>
+          <li><strong>students:</strong> профили учеников (user_id [PK], cohort_number, balance).</li>
+          <li><strong>teachers:</strong> профили преподавателей (user_id [PK], subject, bio).</li>
+          <li><strong>events:</strong> мероприятия лагеря (id, title, description, points, event_date).</li>
+          <li><strong>achievements:</strong> грамоты студентов (id, student_id [FK], title, points, awarded_at).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 7: Внешний ключ (Foreign Key) -->
     <div class="slide">
       <div class="slide-header">
         <h2>Внешний ключ (Foreign Key)</h2>
       </div>
       <div class="slide-body">
-        <p>Как связать две таблицы между собой? Использовать <strong>Внешний ключ (FK)</strong>!</p>
-        <p><strong>Внешний ключ</strong> — это столбец одной таблицы, который содержит значения первичного ключа (PK) другой таблицы. Так создаются связи (relations).</p>
-        
-        <div class="columns" style="margin-top: 25px;">
+        <p><strong>Внешний ключ (FK)</strong> — колонка в таблице, содержащая значение первичного ключа (PK) другой таблицы. Это инструмент связывания таблиц.</p>
+        <div class="columns" style="margin-top: 15px;">
           <div class="column">
-            <p><strong>Таблица классов (classes)</strong></p>
+            <p><strong>Родительская таблица (students)</strong></p>
             <table class="db-table">
               <thead>
                 <tr>
-                  <th>id <span class="pk-marker">[PK]</span></th>
-                  <th>name</th>
+                  <th>user_id <span class="pk-marker">[PK]</span></th>
+                  <th>balance</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><strong>1</strong></td>
-                  <td>10-А</td>
+                  <td>150</td>
                 </tr>
                 <tr>
                   <td><strong>2</strong></td>
-                  <td>10-Б</td>
+                  <td>300</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="column">
-            <p><strong>Таблица учеников (students)</strong></p>
+          <div class="column" style="flex: 1.2;">
+            <p><strong>Дочерняя таблица (achievements)</strong></p>
             <table class="db-table">
               <thead>
                 <tr>
                   <th>id <span class="pk-marker">[PK]</span></th>
-                  <th>name</th>
-                  <th>class_id <span class="fk-marker">[FK]</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Иван</td>
-                  <td><strong>1</strong> (ссылается на 10-А)</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Анна</td>
-                  <td><strong>2</strong> (ссылается на 10-Б)</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Петр</td>
-                  <td><strong>1</strong> (ссылается на 10-А)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 6: Типы связей: Один ко многим (1:N) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Связь «Один ко многим» (1:N / One-to-Many)</h2>
-      </div>
-      <div class="slide-body">
-        <p>Это самый частый тип связи. Одна запись из первой таблицы может быть связана со многими записями из второй. Но запись из второй связана ровно с одной записью из первой.</p>
-        
-        <div class="highlight-box">
-          <strong>Примеры:</strong>
-          <ul>
-            <li>У одного <strong>Класса</strong> может быть много <strong>Учеников</strong>, но ученик учится в одном классе.</li>
-            <li>У одного <strong>Автора</strong> может быть много <strong>Книг</strong>, но у книги (упростим) один автор.</li>
-            <li>У одной <strong>Категории</strong> много <strong>Товаров</strong>.</li>
-          </ul>
-        </div>
-        <p style="margin-top: 15px; font-weight: bold; color: var(--primary-color);">
-          Реализация: Внешний ключ (FK) добавляется на сторону «Многие» (в таблицу учеников, книг или товаров).
-        </p>
-      </div>
-    </div>
-
-    <!-- Слайд 7: Типы связей: Многие ко многим (N:M) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Связь «Многие ко многим» (N:M / Many-to-Many)</h2>
-      </div>
-      <div class="slide-body">
-        <p>Одна запись из первой таблицы связана со многими из второй, и наоборот.</p>
-        <p><strong>Пример:</strong> Один <strong>Ученик</strong> может посещать много <strong>Кружков</strong>. Один <strong>Кружок</strong> посещают много <strong>Учеников</strong>.</p>
-        <p style="font-weight: bold; color: var(--accent-color); margin-top: 10px;">
-          Реализация: Требуется промежуточная таблица-связка (Junction Table)!
-        </p>
-        
-        <div class="columns" style="margin-top: 15px; font-size: 0.8rem;">
-          <div class="column">
-            <p><strong>students</strong></p>
-            <table class="db-table">
-              <tr><th>id <span class="pk-marker">[PK]</span></th><th>name</th></tr>
-              <tr><td>1</td><td>Иван</td></tr>
-              <tr><td>2</td><td>Анна</td></tr>
-            </table>
-          </div>
-          <div class="column">
-            <p><strong>student_clubs (Связка)</strong></p>
-            <table class="db-table" style="background-color: #fef9e7;">
-              <tr><th>student_id <span class="fk-marker">[FK]</span></th><th>club_id <span class="fk-marker">[FK]</span></th></tr>
-              <tr><td>1 (Иван)</td><td>101 (Физика)</td></tr>
-              <tr><td>1 (Иван)</td><td>102 (Шахматы)</td></tr>
-              <tr><td>2 (Анна)</td><td>101 (Физика)</td></tr>
-            </table>
-          </div>
-          <div class="column">
-            <p><strong>clubs</strong></p>
-            <table class="db-table">
-              <tr><th>id <span class="pk-marker">[PK]</span></th><th>title</th></tr>
-              <tr><td>101</td><td>Физика</td></tr>
-              <tr><td>102</td><td>Шахматы</td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 8: Типы связей: Один к одному (1:1) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Связь «Один к одному» (1:1 / One-to-One)</h2>
-      </div>
-      <div class="slide-body">
-        <p>Каждой записи из первой таблицы соответствует строго одна запись из второй таблицы.</p>
-        <p><strong>Пример:</strong> Один <strong>Гражданин</strong> и его один <strong>Паспорт</strong>. Один <strong>Ученик</strong> и один <strong>Личный профиль здоровья</strong>.</p>
-        
-        <div class="columns" style="margin-top: 20px;">
-          <div class="column">
-            <p><strong>Таблица граждан (citizens)</strong></p>
-            <table class="db-table">
-              <thead>
-                <tr>
-                  <th>id <span class="pk-marker">[PK]</span></th>
-                  <th>name</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>1</strong></td>
-                  <td>Иван Иванов</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="column">
-            <p><strong>Таблица паспортов (passports)</strong></p>
-            <table class="db-table">
-              <thead>
-                <tr>
-                  <th>id <span class="pk-marker">[PK]</span></th>
-                  <th>passport_number</th>
-                  <th>citizen_id <span class="fk-marker">[FK, Unique]</span></th>
+                  <th>student_id <span class="fk-marker">[FK]</span></th>
+                  <th>title</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>10</td>
-                  <td>4508 123456</td>
                   <td><strong>1</strong> (Иван)</td>
+                  <td>Турнир по шахматам</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td><strong>2</strong> (Мария)</td>
+                  <td>Проект на Django</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-        <p style="margin-top: 15px; font-weight: bold; color: var(--primary-color);">
-          Реализация: Внешний ключ (FK) помещается в любую из таблиц с ограничением уникальности (UNIQUE).
-        </p>
       </div>
     </div>
 
-    <!-- Слайд 9: Что такое SQL? -->
+    <!-- Слайд 8: Связь Один к одному (1:1) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Введение в SQL</h2>
+        <h2>Типы связей: Один к одному (1:1)</h2>
       </div>
       <div class="slide-body">
-        <p><strong>SQL</strong> (Structured Query Language) — декларативный язык структурированных запросов. Мы описываем, <strong>какой</strong> результат хотим получить, а СУБД сама решает, как его извлечь.</p>
-        
-        <div class="highlight-box" style="margin-top: 15px;">
-          <strong>Основные подмножества команд SQL:</strong>
-          <ul style="margin-top: 10px;">
-            <li><strong>DQL (Data Query Language):</strong> получение данных (<code>SELECT</code>) — <em>наш фокус сегодня!</em></li>
-            <li><strong>DML (Data Manipulation Language):</strong> изменение данных (<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>)</li>
-            <li><strong>DDL (Data Definition Language):</strong> описание структуры таблиц (<code>CREATE TABLE</code>, <code>ALTER TABLE</code>, <code>DROP TABLE</code>)</li>
+        <p>Каждой строке первой таблицы соответствует ровно одна строка второй таблицы.</p>
+        <div class="highlight-box success" style="margin-top: 15px;">
+          <strong>Пример в ЛШ «Квант»:</strong> Связь между пользователем <code>users</code> и его ролью студента <code>students</code>. 
+          <ul>
+            <li>Каждая запись в <code>students</code> имеет <code>user_id</code>, который одновременно является её Primary Key и ссылается на Primary Key в <code>users</code>.</li>
+            <li>На эту связь накладывается ограничение уникальности (<code>UNIQUE</code>), чтобы у одного пользователя не могло появиться двух профилей студента.</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 10: Простейшие выборки: SELECT и WHERE -->
+    <!-- Слайд 9: Связь Один ко многим (1:N) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Выборка данных: SELECT и WHERE</h2>
+        <h2>Типы связей: Один ко многим (1:N)</h2>
       </div>
       <div class="slide-body">
-        <p>Базовый синтаксис получения данных:</p>
-        <pre><code class="sql">SELECT column1, column2 FROM table_name WHERE condition;</code></pre>
-        
-        <div class="columns" style="margin-top: 10px;">
+        <p>Один объект первой таблицы может быть связан со многими объектами второй таблицы, но дочерний объект связан ровно с одним родительским.</p>
+        <div class="highlight-box success" style="margin-top: 15px;">
+          <strong>Пример в ЛШ «Квант»:</strong> Связь между студентами (<code>students</code>) и их достижениями (<code>achievements</code>).
+          <ul>
+            <li>Один студент может заработать много достижений.</li>
+            <li>Каждое конкретное достижение принадлежит строго одному студенту.</li>
+            <li><strong>Правило:</strong> Внешний ключ (<code>student_id</code>) размещается в дочерней таблице на стороне «Многие» (то есть в <code>achievements</code>).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Связь Многие ко многим (N:M) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Типы связей: Многие ко многим (N:M)</h2>
+      </div>
+      <div class="slide-body">
+        <p>Запись из таблицы А связана со множеством записей таблицы Б, и наоборот. Напрямую через одну ссылку связать их невозможно.</p>
+        <div class="highlight-box warning" style="margin-top: 10px;">
+          <strong>Пример:</strong> Студенты (<code>students</code>) и Мероприятия (<code>events</code>). Студент может записаться на много лекций, а на лекцию придет много ребят.
+        </div>
+        <p style="margin-top: 10px;"><strong>Решение:</strong> Создание связующей таблицы <code>event_registrations</code>:</p>
+        <pre><code>CREATE TABLE event_registrations (
+    student_id INTEGER REFERENCES students(user_id),
+    event_id INTEGER REFERENCES events(id),
+    PRIMARY KEY (student_id, event_id) -- составной ключ
+);</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Язык SQL и базовый SELECT -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Язык SQL и выборка данных (SELECT)</h2>
+      </div>
+      <div class="slide-body">
+        <p><strong>SQL</strong> — декларативный язык запросов. Мы пишем, <em>что</em> хотим получить, а не алгоритм поиска.</p>
+        <div class="columns" style="margin-top: 20px;">
           <div class="column">
-            <p><strong>Выбрать все колонки учеников:</strong></p>
-            <pre><code class="sql">SELECT * FROM students;</code></pre>
+            <p>Выбрать все столбцы из таблицы пользователей:</p>
+            <pre><code>SELECT * 
+FROM users;</code></pre>
           </div>
           <div class="column">
-            <p><strong>Ученики старше 15 лет:</strong></p>
-            <pre><code class="sql">SELECT first_name, last_name 
+            <p>Выбрать только имя, фамилию и роль:</p>
+            <pre><code>SELECT first_name, last_name, role 
+FROM users;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Фильтрация: WHERE -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Фильтрация данных: предложение WHERE</h2>
+      </div>
+      <div class="slide-body">
+        <p>Используется для отсечения строк по условиям. Поддерживает логические связки <code>AND</code>, <code>OR</code>, <code>NOT</code>.</p>
+        <pre><code>-- Выбрать студентов 1-го отряда с балансом не менее 150 коинов
+SELECT user_id, balance 
 FROM students 
-WHERE age > 15;</code></pre>
-          </div>
+WHERE cohort_number = 1 AND balance >= 150;</code></pre>
+        <div class="highlight-box success" style="margin-top: 15px;">
+          <strong>Операторы сравнения:</strong> <code>=</code> (равно), <code>&lt;&gt;</code> или <code>!=</code> (не равно), <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>.
         </div>
-        <p style="margin-top: 10px; font-size: 1.1rem;">В секции <code>WHERE</code> можно использовать операторы: <code>=</code>, <code>!=</code> (или <code>&lt;&gt;</code>), <code>&lt;</code>, <code>&gt;</code>, <code>AND</code>, <code>OR</code>, <code>NOT</code>, <code>IN (...)</code>.</p>
       </div>
     </div>
 
-    <!-- Слайд 11: Фильтрация: LIKE и NULL -->
+    <!-- Слайд 13: Поиск по шаблону (LIKE) и работа с NULL -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Поиск по шаблону (LIKE) и проверка на NULL</h2>
+        <h2>Поиск по шаблону (LIKE) и работа с NULL</h2>
       </div>
       <div class="slide-body">
-        <div class="columns">
-          <div class="column">
-            <p><strong>Фильтрация по тексту (LIKE):</strong></p>
-            <p>Знак <code>%</code> означает «ноль или более любых символов». <code>_</code> означает «ровно один символ».</p>
-            <pre><code class="sql">-- Имена, начинающиеся на 'А'
-SELECT * FROM students 
-WHERE first_name LIKE 'А%';
-
--- Фамилии, оканчивающиеся на 'ов'
-SELECT * FROM students 
-WHERE last_name LIKE '%ов';</code></pre>
-          </div>
-          <div class="column">
-            <p><strong>Работа с пустыми значениями (NULL):</strong></p>
-            <p><code>NULL</code> — это отсутствие значения. Его нельзя сравнивать через знак <code>=</code>!</p>
-            <pre><code class="sql">-- Найти учеников без указанного email
-SELECT * FROM students 
-WHERE email IS NULL;
-
--- Найти учеников, у которых есть email
-SELECT * FROM students 
-WHERE email IS NOT NULL;</code></pre>
-          </div>
-        </div>
+        <p><strong>LIKE</strong> и шаблоны: <code>%</code> (любое количество символов), <code>_</code> (один любой символ).</p>
+        <pre><code>-- Поиск пользователей, у которых фамилия начинается на "Ива"
+SELECT first_name, last_name FROM users WHERE last_name LIKE 'Ива%';</code></pre>
+        <p style="margin-top: 10px;"><strong>Проверка на пустоту (NULL):</strong> Сравнение <code>= NULL</code> не работает. Нужно использовать <code>IS NULL</code> / <code>IS NOT NULL</code>.</p>
+        <pre><code>-- Выбрать преподавателей, у которых не заполнена биография
+SELECT user_id, subject FROM teachers WHERE bio IS NULL;</code></pre>
       </div>
     </div>
 
-    <!-- Слайд 12: Сортировка и лимиты -->
+    <!-- Слайд 14: Сортировка (ORDER BY) и Ограничение (LIMIT) -->
     <div class="slide">
       <div class="slide-header">
         <h2>Сортировка (ORDER BY) и Ограничение (LIMIT)</h2>
       </div>
       <div class="slide-body">
-        <p>Иногда нужно отсортировать результаты или взять только верхнюю часть списка.</p>
-        <pre><code class="sql">SELECT first_name, age FROM students
-ORDER BY age DESC, first_name ASC
-LIMIT 5;</code></pre>
-        
+        <p>Сортировка выполняется по возрастанию (<code>ASC</code>, по умолчанию) или убыванию (<code>DESC</code>).</p>
+        <pre><code>-- Вывести топ-3 студентов по количеству заработанных квант-коинов
+SELECT user_id, balance 
+FROM students 
+WHERE balance > 0
+ORDER BY balance DESC 
+LIMIT 3;</code></pre>
         <div class="highlight-box success" style="margin-top: 15px;">
-          <strong>Разбор конструкции:</strong>
-          <ul>
-            <li><code>ORDER BY age DESC</code> — сортировка по возрасту по убыванию (от старших к младшим).</li>
-            <li><code>..., first_name ASC</code> — если возраст совпадает, сортируем по имени по возрастанию (алфавитный порядок). По умолчанию используется <code>ASC</code>.</li>
-            <li><code>LIMIT 5</code> — вернуть ровно 5 строк (например, топ-5 самых старших учеников).</li>
-          </ul>
+          Сочетание <code>ORDER BY</code> и <code>LIMIT</code> часто применяется для формирования рейтингов, лидербордов и пагинации на страницах сайта.
         </div>
       </div>
     </div>
 
-    <!-- Слайд 13: Зачем нужны объединения таблиц (JOIN)? -->
+    <!-- Слайд 15: Объединение таблиц: JOIN -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Связывание таблиц: Идея JOIN</h2>
+        <h2>Объединение таблиц: INNER JOIN vs LEFT JOIN</h2>
       </div>
-      <div class="slide-body">
-        <p>В реляционных базах данные распределены по разным таблицам для избежания дублирования. Чтобы получить сводный отчет (например, имя ученика и название его класса), нам нужно объединить эти таблицы на основе первичного и внешнего ключа.</p>
-        
-        <div style="text-align: center; margin: 20px 0;">
-          <pre style="display: inline-block; padding: 20px 40px; font-size: 1.2rem; border-left-color: var(--secondary-color);">
-[Таблица students]  <span style="color:var(--secondary-color); font-weight:bold;">INNER JOIN</span>  [Таблица classes]
-      (students.class_id = classes.id)
-          </pre>
-        </div>
-        <p>В SQL для этого служит оператор <code>JOIN</code>. Он сопоставляет строки из двух таблиц по заданному условию (обычно после ключевого слова <code>ON</code>).</p>
-      </div>
-    </div>
-
-    <!-- Слайд 14: Внутреннее объединение (INNER JOIN) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>INNER JOIN (Внутреннее объединение)</h2>
-      </div>
-      <div class="slide-body">
-        <p><code>INNER JOIN</code> возвращает только те записи, для которых условие связи истинно в <strong>обеих</strong> таблицах. Если у ученика нет класса, или у класса нет учеников — они не попадут в результат.</p>
-        
-        <pre><code class="sql">SELECT students.name, classes.name AS class_name
-FROM students
-INNER JOIN classes ON students.class_id = classes.id;</code></pre>
-
-        <div class="highlight-box success" style="margin-top: 10px;">
-          <strong>Результат объединения:</strong>
-          <table class="db-table" style="font-size: 0.8rem; margin-top: 5px;">
-            <thead><tr><th>students.name</th><th>class_name</th></tr></thead>
-            <tbody>
-              <tr><td>Иван</td><td>10-А</td></tr>
-              <tr><td>Анна</td><td>10-Б</td></tr>
-              <tr><td>Петр</td><td>10-А</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 15: Левое внешнее объединение (LEFT JOIN) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>LEFT JOIN (Внешнее левое объединение)</h2>
-      </div>
-      <div class="slide-body">
-        <p><code>LEFT JOIN</code> возвращает <strong>все</strong> записи из левой таблицы и подходящие записи из правой. Если соответствия в правой таблице нет, то значения её колонок заполняются как <code>NULL</code>.</p>
-        
-        <pre><code class="sql">-- Предположим, у нас есть ученик Сергей, у которого class_id равен NULL
-SELECT students.name, classes.name AS class_name
-FROM students
-LEFT JOIN classes ON students.class_id = classes.id;</code></pre>
-
-        <div class="highlight-box warning" style="margin-top: 10px;">
-          <strong>Результат LEFT JOIN:</strong>
-          <table class="db-table" style="font-size: 0.8rem; margin-top: 5px;">
-            <thead><tr><th>students.name</th><th>class_name</th></tr></thead>
-            <tbody>
-              <tr><td>Иван</td><td>10-А</td></tr>
-              <tr><td>Анна</td><td>10-Б</td></tr>
-              <tr><td>Сергей</td><td><em style="color:var(--accent-color);">NULL</em> (нет класса)</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 16: Агрегатные функции -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Агрегатные функции</h2>
-      </div>
-      <div class="slide-body">
-        <p>Агрегатные функции вычисляют единое результирующее значение по набору строк.</p>
-        
-        <div class="columns" style="margin-top: 15px;">
-          <div class="column">
-            <ul>
-              <li><code>COUNT(col)</code> — количество непустых значений</li>
-              <li><code>SUM(col)</code> — сумма значений</li>
-              <li><code>AVG(col)</code> — среднее арифметическое</li>
-              <li><code>MIN(col)</code> / <code>MAX(col)</code> — минимум / максимум</li>
-            </ul>
-          </div>
-          <div class="column">
-            <pre><code class="sql">-- Средний возраст всех учеников
-SELECT AVG(age) FROM students;
-
--- Количество учеников в школе
-SELECT COUNT(*) FROM students;
-
--- Максимальный возраст ученика
-SELECT MAX(age) FROM students;</code></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 17: Группировка данных (GROUP BY) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Группировка данных: GROUP BY</h2>
-      </div>
-      <div class="slide-body">
-        <p>Оператор <code>GROUP BY</code> разделяет записи таблицы на группы. Агрегатные функции затем применяются отдельно для каждой группы.</p>
-        
-        <pre><code class="sql">-- Посчитать количество учеников в каждом классе
-SELECT class_id, COUNT(*) AS students_count
-FROM students
-GROUP BY class_id;</code></pre>
-
-        <div class="highlight-box success" style="margin-top: 15px;">
-          <strong>Важное правило GROUP BY:</strong>
-          <p>Все колонки, которые стоят в <code>SELECT</code> (кроме агрегатных функций), <strong>обязательно</strong> должны быть перечислены в секции <code>GROUP BY</code>. Иначе СУБД выдаст ошибку целостности!</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 18: Сложные запросы: Фильтрация групп (HAVING) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Фильтрация групп: HAVING vs WHERE</h2>
-      </div>
-      <div class="slide-body">
-        <p>Как отфильтровать группы после расчета агрегатов? Использовать <code>HAVING</code>!</p>
-        <ul>
-          <li><code>WHERE</code> фильтрует <strong>исходные строки</strong> перед группировкой.</li>
-          <li><code>HAVING</code> фильтрует <strong>группы</strong> после выполнения группировки и вычисления функций.</li>
+      <div class="slide-body" style="font-size: 1.15rem;">
+        <p>Поскольку данные нормализованы и лежат в разных таблицах, нам нужно склеивать их в одном запросе по ключевому полю.</p>
+        <ul style="margin-top: 15px; margin-bottom: 15px;">
+          <li><strong>INNER JOIN (Внутреннее объединение):</strong> Выводит строки только тогда, когда условие склеивания совпало в обеих таблицах.</li>
+          <li><strong>LEFT JOIN (Левое внешнее объединение):</strong> Выводит все строки левой таблицы, а для полей правой таблицы подставляет <code>NULL</code>, если соответствий не найдено.</li>
         </ul>
-        
-        <pre><code class="sql">-- Найти классы, в которых средний возраст учеников больше 15 лет
-SELECT class_id, AVG(age) AS avg_age
-FROM students
-GROUP BY class_id
-HAVING AVG(age) > 15;</code></pre>
+        <pre><code>-- Пример INNER JOIN: Соединить профиль студента с его ФИО
+SELECT u.first_name, u.last_name, s.cohort_number
+FROM students s
+JOIN users u ON s.user_id = u.id;</code></pre>
       </div>
     </div>
 
-    <!-- Слайд 19: Порядок выполнения запроса СУБД -->
+    <!-- Слайд 16: Агрегатные функции и группировка -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Порядок написания vs выполнения запроса</h2>
+        <h2>Агрегатные функции и GROUP BY</h2>
       </div>
       <div class="slide-body">
+        <p>Агрегатные функции сжимают множество строк в одно значение: <code>COUNT()</code>, <code>SUM()</code>, <code>AVG()</code>, <code>MIN()</code>, <code>MAX()</code>.</p>
+        <pre><code>-- Посчитать сумму баллов по каждому отряду
+SELECT cohort_number, SUM(balance) AS total_score, COUNT(*) AS students_count
+FROM students
+GROUP BY cohort_number;</code></pre>
+        <div class="highlight-box warning" style="margin-top: 10px;">
+          <strong>Важнейшее правило:</strong> Любое поле в секции <code>SELECT</code>, не обернутое в агрегатную функцию, обязано присутствовать в блоке <code>GROUP BY</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 17: Фильтрация групп: HAVING -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Фильтрация групп: HAVING против WHERE</h2>
+      </div>
+      <div class="slide-body">
+        <ul>
+          <li><code>WHERE</code> — фильтрует строки <strong>до</strong> группировки. Не имеет доступа к агрегатам.</li>
+          <li><code>HAVING</code> — фильтрует группы <strong>после</strong> агрегации и группировки.</li>
+        </ul>
+        <pre style="margin-top: 15px;"><code>-- Выбрать отряды, в которых средний балл студентов строго больше 100
+SELECT cohort_number, AVG(balance) AS avg_bal
+FROM students
+GROUP BY cohort_number
+HAVING AVG(balance) > 100;</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Модификация данных (DML) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Модификация данных: INSERT, UPDATE, DELETE</h2>
+      </div>
+      <div class="slide-body" style="font-size: 1.15rem;">
         <div class="columns">
           <div class="column">
-            <p><strong>Порядок написания в коде:</strong></p>
-            <ol style="font-size: 1rem; margin-top: 10px;">
-              <li><code>SELECT</code> (выбор колонок)</li>
-              <li><code>FROM</code> (таблица)</li>
-              <li><code>JOIN</code> (связи)</li>
-              <li><code>WHERE</code> (фильтр строк)</li>
-              <li><code>GROUP BY</code> (группировка)</li>
-              <li><code>HAVING</code> (фильтр групп)</li>
-              <li><code>ORDER BY</code> (сортировка)</li>
-              <li><code>LIMIT</code> (ограничение)</li>
-            </ol>
+            <p><strong>1. Добавление данных (INSERT)</strong></p>
+            <pre style="margin-top: 5px;"><code>INSERT INTO users 
+(username, first_name, last_name, role) 
+VALUES ('pupil_1', 'Олег', 'Петров', 'student');</code></pre>
+            
+            <p><strong>2. Изменение данных (UPDATE)</strong></p>
+            <pre style="margin-top: 5px;"><code>UPDATE students 
+SET balance = balance + 50 
+WHERE cohort_number = 1;</code></pre>
           </div>
           <div class="column">
-            <div class="highlight-box success">
-              <p><strong>Порядок выполнения внутри СУБД:</strong></p>
-              <ol style="font-size: 1rem; margin-top: 10px;">
-                <li><code>FROM + JOIN</code> (сбор данных)</li>
-                <li><code>WHERE</code> (фильтрация строк)</li>
-                <li><code>GROUP BY</code> (группировка)</li>
-                <li><code>HAVING</code> (фильтрация групп)</li>
-                <li><code>SELECT</code> (генерация колонок)</li>
-                <li><code>ORDER BY</code> (сортировка)</li>
-                <li><code>LIMIT</code> (срез)</li>
-              </ol>
+            <p><strong>3. Удаление данных (DELETE)</strong></p>
+            <pre style="margin-top: 5px;"><code>DELETE FROM users 
+WHERE id = 4;</code></pre>
+            
+            <div class="highlight-box warning" style="margin-top: 15px; font-size: 0.95rem;">
+              <strong>Осторожно!</strong> Забытый фильтр <code>WHERE</code> в запросах <code>UPDATE</code> и <code>DELETE</code> приведет к обновлению или удалению всей таблицы!
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 20: Вопросы и практические задачи -->
+    <!-- Слайд 19: Логический порядок выполнения запроса -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Практика: Закрепление материала</h2>
+        <h2>Логический порядок выполнения запроса СУБД</h2>
       </div>
       <div class="slide-body">
-        <p>Сейчас мы перейдем к живой демонстрации в интерактивной среде (SQLite/Python), где выполним:</p>
-        
-        <div class="columns" style="margin-top: 15px;">
-          <div class="column">
-            <div class="highlight-box success">
-              <strong>1. Разработку схем данных:</strong>
-              <p style="font-size: 1.1rem; margin-top: 5px;">Проектирование таблиц для школы, библиотеки, кружков с правильными PK, FK и типами связей.</p>
-            </div>
-          </div>
-          <div class="column">
-            <div class="highlight-box accent">
-              <strong>2. Написание SQL-запросов:</strong>
-              <p style="font-size: 1.1rem; margin-top: 5px;">Выборки, фильтрация по шаблону, объединения JOIN и агрегации с группировкой.</p>
-            </div>
-          </div>
-        </div>
-        <p style="text-align: center; margin-top: 20px; font-weight: bold; color: var(--primary-color);">
-          Вперед к упражнениям!
-        </p>
+        <p>Хотя мы пишем ключевые слова в одном порядке, СУБД выполняет их совершенно в другом:</p>
+        <ol style="margin-top: 15px; font-size: 1.1rem; line-height: 1.5;">
+          <li><code>FROM</code> и <code>JOIN</code> (СУБД определяет, с какими таблицами работать)</li>
+          <li><code>WHERE</code> (Отбрасываются ненужные строки)</li>
+          <li><code>GROUP BY</code> (Строки делятся на группы)</li>
+          <li><code>HAVING</code> (Отбрасываются группы, не подходящие под условия)</li>
+          <li><code>SELECT</code> (Вычисляются результирующие колонки и выражения)</li>
+          <li><code>ORDER BY</code> (Результаты сортируются)</li>
+          <li><code>LIMIT</code> (Обрезается лишний вывод)</li>
+        </ol>
       </div>
     </div>
 
-    <!-- Элементы управления презентацией -->
-    <div class="controls">
-      <button class="control-btn" id="prev-btn">&larr; Назад</button>
-      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
-      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
-    </div>
-    
-    <!-- Номер слайда -->
-    <div class="slide-counter" id="slide-counter">1 / 20</div>
-    
-    <!-- Прогресс-бар -->
-    <div class="progress-container">
-      <div class="progress-bar" id="progress-bar"></div>
+    <!-- Слайд 20: Вопросы и практика -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Вопросы и практика</h2>
+      </div>
+      <div class="slide-body" style="text-align: center;">
+        <p style="font-size: 1.4rem; color: var(--primary-color); font-weight: bold; margin-bottom: 20px;">
+          Время переходить к написанию SQL запросов!
+        </p>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">
+          Откройте редактор кода и запустите демонстрационный файл <code>demo_db.py</code>
+        </p>
+        <div class="highlight-box success" style="display: inline-block; max-width: 600px; text-align: left; margin: 0 auto;">
+          <strong>Контрольные вопросы для старта:</strong>
+          <ol style="margin-top: 10px;">
+            <li>Почему нельзя сравнить <code>WHERE phone = NULL</code>?</li>
+            <li>Где размещается Внешний Ключ в связи 1:N?</li>
+            <li>В чем ключевая разница между WHERE и HAVING?</li>
+          </ol>
+        </div>
+      </div>
     </div>
 
+  </div>
+
+  <!-- Панель управления презентацией -->
+  <div class="slide-counter" id="slide-counter">1 / 20</div>
+  <div class="controls">
+    <button class="control-btn" id="prev-btn">&larr; Назад</button>
+    <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+    <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+  </div>
+  
+  <!-- Прогресс-бар -->
+  <div class="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
   </div>
 
   <script src="script.js"></script>

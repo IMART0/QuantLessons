@@ -10,167 +10,238 @@
 
 <div class="presentation-container">
 
-  <!-- Слайд 1 -->
+  <!-- Слайд 1: Титульный -->
   <div class="slide active">
     <div class="slide-header">
       <h2>Django Models, миграции, CRUD</h2>
     </div>
     <div class="slide-body" style="text-align: center;">
       <p style="font-size: 1.8rem; font-weight: bold; color: var(--primary-color); margin-bottom: 20px;">
-        Урок 11: Работа с базами данных и ORM
+        Разработка базы данных для сайта Летней школы «Квант»
       </p>
       <p style="font-size: 1.3rem; margin-bottom: 40px; color: #7f8c8d;">
         Летняя физико-математическая школа "Квант"<br>
-        30 июня • 11:30 - 12:50
+        Работа с базами данных и Django ORM
       </p>
-      <div class="highlight-box" style="display: inline-block; max-width: 600px; margin: 0 auto; text-align: left;">
-        <strong>Сегодня в программе:</strong>
+      <div class="highlight-box" style="display: inline-block; max-width: 650px; margin: 0 auto; text-align: left;">
+        <strong>Сегодня мы научимся:</strong>
         <ul style="margin-top: 10px; margin-bottom: 0;">
-          <li>Что такое ORM и зачем нужны модели?</li>
-          <li>Создание структуры БД без написания SQL-кода</li>
-          <li>Механизм миграций: сохраняем историю изменений</li>
-          <li>CRUD-операции в консоли Django Shell</li>
+          <li>Проектировать структуру данных сайта лагеря без SQL-кода</li>
+          <li>Создавать модели событий, новостей и расписания в Django</li>
+          <li>Управлять историей изменений БД с помощью миграций</li>
+          <li>Наполнять и фильтровать базу данных через консоль Django Shell</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- Слайд 2 -->
+  <!-- Слайд 2: Проблема: Как хранить данные? -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Проблема: Как хранить данные?</h2>
+      <h2>Проблема: Хранение данных на сайте лагеря</h2>
     </div>
     <div class="slide-body">
       <div class="columns">
         <div class="column">
-          <p>В реальных веб-приложениях данные пользователей, товаров, постов и настроек нужно где-то хранить. Почему не подходят обычные файлы (TXT, JSON)?</p>
+          <p>Нашему сайту «Квант» нужно надежно хранить расписание, новости и сетку мероприятий. Почему обычные файлы (TXT или JSON) не подойдут?</p>
           <ul style="margin-top: 15px;">
-            <li><strong>Медленно:</strong> Чтение файла в 1 ГБ целиком ради одной строки займет много секунд.</li>
-            <li><strong>Небезопасно:</strong> При одновременной записи от двух пользователей файл может повредиться.</li>
-            <li><strong>Сложно:</strong> Трудный поиск взаимосвязей (например, "найти комментарии пользователя №5").</li>
+            <li><strong>Медленный поиск:</strong> Найти мероприятие на конкретную дату в файле на 500 МБ потребует чтения всего диска.</li>
+            <li><strong>Конфликты записи:</strong> Если вожатый Вася добавляет новость, а вожатая Лена в ту же секунду меняет расписание, файл перезапишется с ошибкой.</li>
+            <li><strong>Связи данных:</strong> Сложно связать новость с конкретным мероприятием.</li>
           </ul>
         </div>
         <div class="column">
           <div class="highlight-box warning">
-            <strong>Решение: СУБД (Системы управления базами данных)</strong>
-            <p style="margin-top: 10px; font-size: 1.1rem;">Специальные программы для быстрого, безопасного и надежного хранения структурированной информации. Мы используем <strong>SQLite</strong> — легкую БД, которая хранит все данные в одном файле внутри проекта.</p>
+            <strong>Решение: СУБД SQLite</strong>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Мы используем реляционную базу данных SQLite. Она поставляется вместе с Django, хранит все данные в одном файле <code>db.sqlite3</code> в корне проекта и идеально подходит для учебных и небольших проектов.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Слайд 3 -->
+  <!-- Слайд 3: Что такое ORM? -->
   <div class="slide">
     <div class="slide-header">
       <h2>Что такое ORM?</h2>
     </div>
     <div class="slide-body">
-      <p>Обычно для общения с реляционными базами данных используется язык <strong>SQL</strong>. Но в Django мы работаем через <strong>ORM</strong>.</p>
+      <p>Обычно для работы с реляционными БД программисты пишут запросы на языке <strong>SQL</strong>. Но в Django мы используем технологию <strong>ORM</strong>.</p>
       <div class="highlight-box success" style="margin: 20px 0;">
-        <strong>ORM (Object-Relational Mapping)</strong> — технология, которая связывает таблицы базы данных с объектами в объектно-ориентированном языке программирования (в нашем случае — Python).
+        <strong>ORM (Object-Relational Mapping)</strong> — объектно-реляционное отображение. Технология, которая автоматически связывает таблицы базы данных с классами языка Python.
       </div>
+      <p>Благодаря ORM мы можем создавать таблицы, делать выборки и сохранять данные, вообще не зная синтаксиса SQL и работая только с объектами Python.</p>
+    </div>
+  </div>
+
+  <!-- Слайд 4: Как ORM связывает Python и Базы Данных -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Соответствие между БД и Python</h2>
+    </div>
+    <div class="slide-body">
+      <p>ORM сопоставляет концепции реляционной БД с концепциями Объектно-Ориентированного Программирования:</p>
       <table style="margin-top: 15px;">
         <thead>
           <tr>
-            <th>В Базе Данных (SQL)</th>
-            <th>В Django (Python)</th>
+            <th>В Базе Данных (СУБД)</th>
+            <th>В Django ORM (Python)</th>
+            <th>Пример в проекте "Квант"</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Таблица (Table)</td>
-            <td>Класс модели (Class наследник models.Model)</td>
+            <td>Класс Python (наследник models.Model)</td>
+            <td><code>class News(models.Model)</code></td>
           </tr>
           <tr>
             <td>Столбец / Колонка (Column)</td>
-            <td>Поле модели (Атрибут класса, например CharField)</td>
+            <td>Поле модели (атрибут класса)</td>
+            <td><code>title = models.CharField(...)</code></td>
           </tr>
           <tr>
-            <td>Строка таблицы / Запись (Row)</td>
-            <td>Объект / Экземпляр класса модели (Instance)</td>
+            <td>Строка в таблице (Row / Record)</td>
+            <td>Экземпляр класса (объект модели)</td>
+            <td>Конкретная новость о дискотеке</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Слайд 4 -->
+  <!-- Слайд 5: Преимущества ORM -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Преимущества ORM</h2>
+      <h2>Преимущества использования ORM</h2>
     </div>
     <div class="slide-body">
       <div class="columns">
         <div class="column">
           <ul>
-            <li><strong>Не пишем SQL руками:</strong> Код пишется исключительно на чистом Python, что уменьшает количество ошибок и опечаток.</li>
-            <li><strong>Безопасность (SQL Injection):</strong> Django ORM автоматически экранирует все входящие данные, защищая проект от хакерских атак через поля ввода.</li>
-            <li><strong>Независимость от СУБД (Портативность):</strong> Код моделей одинаков для SQLite, PostgreSQL, MySQL или Oracle. Достаточно сменить настройки в <code>settings.py</code>!</li>
+            <li><strong>Безопасность:</strong> Django автоматически экранирует все данные. Это полностью защищает сайт от хакерских атак типа <em>SQL Injection</em>.</li>
+            <li><strong>Портативность (СУБД-независимость):</strong> Мы пишем код один раз. Если мы захотим перенести сайт лагеря с SQLite на мощный PostgreSQL, нам нужно будет изменить только 6 строчек в файле <code>settings.py</code>!</li>
+            <li><strong>Скорость разработки:</strong> Написание Python-кода значительно быстрее составления громоздких SQL-запросов.</li>
           </ul>
         </div>
         <div class="column">
           <div class="highlight-box">
-            <strong>Пример запроса:</strong>
-            <p style="margin-top: 10px; font-size: 1.1rem; font-family: monospace; color: #2980b9;">
-              # SQL:<br>
-              SELECT * FROM articles WHERE status = 'published';<br><br>
-              # Django ORM:<br>
-              Article.objects.filter(status='published')
-            </p>
+            <strong>Сравнение запросов:</strong>
+            <pre style="margin: 10px 0; font-size: 0.9rem;"><code># SQL Запрос:
+SELECT * FROM news 
+WHERE created_at = '2026-06-30';
+
+# Django ORM:
+News.objects.filter(
+    created_at='2026-06-30'
+)</code></pre>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Слайд 5 -->
+  <!-- Слайд 6: Создание моделей в Django -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Создание модели в Django</h2>
+      <h2>Создание моделей в Django</h2>
     </div>
     <div class="slide-body">
-      <p>Каждая модель описывается как класс Python в файле <code>models.py</code> вашего Django-приложения и наследуется от <code>django.db.models.Model</code>.</p>
+      <p>Все модели нашего приложения описываются в файле <code>models.py</code> и наследуются от класса <code>django.db.models.Model</code>.</p>
       <pre><code>from django.db import models
 
-class Article(models.Model):
+class News(models.Model):
+    # Поля модели (колонки таблицы) описываются как атрибуты класса:
     title = models.CharField(max_length=200)
     content = models.TextField()
-    views_count = models.IntegerField(default=0)
-    is_published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)</code></pre>
-      <p style="font-size: 1.1rem; margin-top: 10px; color: #555;">
-        Каждая переменная внутри класса определяет колонку таблицы базы данных. Типы полей определяют тип данных, которые могут там храниться.
+    created_at = models.DateField(auto_now_add=True)</code></pre>
+      <p style="font-size: 1.1rem; color: #555; margin-top: 10px;">
+        Наследуясь от <code>models.Model</code>, наш класс получает встроенную логику для сохранения в БД, удаления, поиска и валидации.
       </p>
     </div>
   </div>
 
-  <!-- Слайд 6 -->
+  <!-- Слайд 7: Поля моделей: CharField и TextField -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Основные типы полей (Model Fields)</h2>
+      <h2>Поля моделей: CharField и TextField</h2>
     </div>
     <div class="slide-body">
-      <p>Django предоставляет десятки типов полей для разных видов данных. Вот самые частые:</p>
-      <ul style="margin-top: 15px;">
-        <li><code>CharField(max_length=...)</code> — короткая строка (обязательно указывать лимит длины).</li>
-        <li><code>TextField()</code> — длинный текст (для статей, комментариев, описаний).</li>
-        <li><code>IntegerField()</code> и <code>FloatField()</code> — целые и вещественные числа.</li>
-        <li><code>BooleanField()</code> — логическое значение (True/False). Удобно с параметром <code>default</code>.</li>
-        <li><code>DateTimeField()</code> и <code>DateField()</code> — дата и время.</li>
-        <li><code>EmailField()</code> — строка с автоматической валидацией формата email на уровне Django.</li>
-      </ul>
+      <div class="columns">
+        <div class="column">
+          <strong><code>CharField</code> — Короткая строка</strong>
+          <ul>
+            <li>Используется для заголовков, имен, коротких текстов.</li>
+            <li><strong>Обязательно</strong> требует параметр <code>max_length</code> (максимальное число символов). Это нужно СУБД для резервации памяти.</li>
+          </ul>
+          <pre style="font-size: 0.9rem;"><code>title = models.CharField(
+    max_length=200
+)</code></pre>
+        </div>
+        <div class="column">
+          <strong><code>TextField</code> — Длинный текст</strong>
+          <ul>
+            <li>Используется для подробного описания событий, текстов новостей, статей.</li>
+            <li>Не имеет ограничения по длине на уровне Django (БД сама выделяет динамический объем).</li>
+          </ul>
+          <pre style="font-size: 0.9rem;"><code>content = models.TextField()</code></pre>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Слайд 7 -->
+  <!-- Слайд 8: Числовые и временные поля: IntegerField и DateField -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Параметры полей (Field Arguments)</h2>
+      <h2>Поля моделей: IntegerField и DateField</h2>
     </div>
     <div class="slide-body">
-      <p>Параметры полей позволяют гибко настраивать валидацию и структуру БД:</p>
-      <table style="margin-top: 15px;">
+      <div class="columns">
+        <div class="column">
+          <strong><code>IntegerField</code> — Целое число</strong>
+          <ul>
+            <li>Хранит только целые значения (как положительные, так и отрицательные).</li>
+            <li>Пример: номера кабинетов в расписании, количество участников.</li>
+          </ul>
+          <pre style="font-size: 0.9rem;"><code>classroom = models.IntegerField()</code></pre>
+        </div>
+        <div class="column">
+          <strong><code>DateField</code> — Работа с датами</strong>
+          <ul>
+            <li>Хранит дату (год, месяц, день) без указания точного времени.</li>
+            <li>Параметр <code>auto_now_add=True</code> автоматически заполняет поле текущей датой при создании записи.</li>
+          </ul>
+          <pre style="font-size: 0.9rem;"><code>date = models.DateField()</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 9: Работа с медиафайлами: ImageField -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Поле ImageField</h2>
+    </div>
+    <div class="slide-body">
+      <p>Для загрузки изображений (обложек мероприятий, фотографий к новостям) используется <code>ImageField</code>.</p>
+      <pre><code>image = models.ImageField(upload_to='news_images/', blank=True, null=True)</code></pre>
+      <div class="highlight-box warning" style="margin-top: 15px;">
+        <strong>Важные требования для ImageField:</strong>
+        <ol style="margin-top: 10px; margin-left: 20px;">
+          <li>Для работы с изображениями в Python должна быть установлена библиотека <strong>Pillow</strong> (<code>pip install Pillow</code>).</li>
+          <li>Параметр <code>upload_to</code> указывает подпапку внутри директории медиафайлов, куда Django физически сохранит файл.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 10: Параметры полей (Field Arguments) -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Важные параметры полей</h2>
+    </div>
+    <div class="slide-body">
+      <table style="font-size: 1.1rem;">
         <thead>
           <tr>
             <th>Параметр</th>
@@ -181,319 +252,398 @@ class Article(models.Model):
         <tbody>
           <tr>
             <td><code>default</code></td>
-            <td>Значение по умолчанию для поля при создании записи</td>
-            <td><code>default=0</code> или <code>default='Черновик'</code></td>
+            <td>Задает дефолтное значение для поля, если оно не передано.</td>
+            <td><code>default="Аудитория 1"</code></td>
           </tr>
           <tr>
-            <td><code>null</code></td>
-            <td>Разрешает хранить пустое значение (<code>NULL</code>) на уровне базы данных</td>
-            <td><code>null=True</code> (по умолчанию <code>False</code>)</td>
+            <td><code>null=True</code></td>
+            <td>Разрешает базе данных хранить пустое значение <code>NULL</code>.</td>
+            <td><code>null=True</code> (для обложек/изображений)</td>
           </tr>
           <tr>
-            <td><code>blank</code></td>
-            <td>Разрешает оставлять поле пустым при валидации форм (например, в админке)</td>
-            <td><code>blank=True</code> (по умолчанию <code>False</code>)</td>
+            <td><code>blank=True</code></td>
+            <td>Разрешает не заполнять поле в веб-формах (например, в админке).</td>
+            <td><code>blank=True</code> (описание может быть пустым)</td>
           </tr>
           <tr>
             <td><code>verbose_name</code></td>
-            <td>Человекочитаемое название поля (будет показано в админке)</td>
-            <td><code>verbose_name="Заголовок статьи"</code></td>
+            <td>Человекочитаемое имя поля для отображения в админ-панели.</td>
+            <td><code>verbose_name="Время начала"</code></td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Слайд 8 -->
+  <!-- Слайд 11: Описание модели Event -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Что такое миграции?</h2>
+      <h2>Модель Event (Событие лагеря)</h2>
     </div>
     <div class="slide-body">
-      <p>Когда вы создаете класс в <code>models.py</code> или меняете его (добавляете/удаляете поле), база данных об этом ничего не знает. Нам нужно передать эти изменения в БД.</p>
-      <div class="highlight-box warning" style="margin: 15px 0;">
-        <strong>Миграции</strong> — это файлы-чертежи (инструкции), в которых зафиксирована история изменений ваших моделей. Они выполняют роль системы контроля версий для базы данных.
-      </div>
-      <div class="columns" style="margin-top: 10px;">
-        <div class="column">
-          <p><strong>Шаг 1:</strong> Пишем код в <code>models.py</code></p>
-        </div>
-        <div class="column">
-          <p><strong>Шаг 2:</strong> Создаем файл миграции (инструкцию)</p>
-        </div>
-        <div class="column">
-          <p><strong>Шаг 3:</strong> Применяем миграцию к базе данных</p>
-        </div>
-      </div>
+      <p>Опишем модель для мероприятий ЛФМШ «Квант» (лекции, спортивные часы, вечерние дела):</p>
+      <pre style="font-size: 0.9rem; line-height: 1.35;"><code>from django.db import models
+
+class Event(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Название события")
+    description = models.TextField(verbose_name="Описание события")
+    date = models.DateField(verbose_name="Дата проведения")
+    start_time = models.CharField(max_length=5, verbose_name="Время начала") # Например, "17:00"
+    cover = models.ImageField(upload_to='events/', blank=True, null=True, verbose_name="Обложка")
+
+    def __str__(self):
+        return f"{self.date} | {self.start_time} - {self.title}"</code></pre>
     </div>
   </div>
 
-  <!-- Слайд 9 -->
+  <!-- Слайд 12: Описание модели News -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Модель News (Новость лагеря)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Опишем модель для новостной ленты летней школы:</p>
+      <pre style="font-size: 0.9rem; line-height: 1.35;"><code>from django.db import models
+
+class News(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    content = models.TextField(verbose_name="Текст новости")
+    created_at = models.DateField(auto_now_add=True, verbose_name="Дата публикации")
+    image = models.ImageField(upload_to='news/', blank=True, null=True, verbose_name="Изображение")
+
+    def __str__(self):
+        return f"{self.created_at} | {self.title}"</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 13: Описание модели Schedule -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Модель Schedule (Расписание занятий)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Расписание учебных пар для физико-математических групп лагеря:</p>
+      <pre style="font-size: 0.9rem; line-height: 1.35;"><code>from django.db import models
+
+class Schedule(models.Model):
+    date = models.DateField(verbose_name="Дата занятий")
+    time_slot = models.CharField(max_length=50, verbose_name="Временной интервал") # Например, "09:00 - 10:30"
+    classroom = models.IntegerField(verbose_name="Номер кабинета")
+
+    def __str__(self):
+        return f"{self.date} | {self.time_slot} (Каб. {self.classroom})"</code></pre>
+    </div>
+  </div>
+
+  <!-- Слайд 14: Метаданные моделей: class Meta -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Класс Meta: Метаданные моделей</h2>
+    </div>
+    <div class="slide-body">
+      <p>Для настройки поведения модели используется внутренний класс <code>Meta</code>:</p>
+      <pre style="font-size: 0.85rem; line-height: 1.3;"><code>class Schedule(models.Model):
+    date = models.DateField(verbose_name="Дата")
+    time_slot = models.CharField(max_length=50, verbose_name="Интервал")
+    classroom = models.IntegerField(verbose_name="Кабинет")
+
+    class Meta:
+        verbose_name = "Пункт расписания"
+        verbose_name_plural = "Расписание занятий"
+        ordering = ['date', 'time_slot'] # Сортировка по дате, затем по времени</code></pre>
+      <p style="font-size: 1rem; color: #555;">
+        Параметр <code>ordering</code> задает сортировку по умолчанию. Знак минус (например, <code>'-date'</code>) отсортирует записи в обратном порядке (по убыванию).
+      </p>
+    </div>
+  </div>
+
+  <!-- Слайд 15: Роль миграций в Django -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>Что такое миграции и зачем они нужны?</h2>
+    </div>
+    <div class="slide-body">
+      <p>Когда вы создаете класс в <code>models.py</code>, база данных о нем ничего не знает. Нам нужно как-то перенести эту структуру в СУБД.</p>
+      <div class="highlight-box warning" style="margin: 15px 0;">
+        <strong>Миграции</strong> — это файлы-инструкции на языке Python, которые описывают изменения структуры вашей базы данных. Они играют роль «системы контроля версий» для БД.
+      </div>
+      <p><strong>Жизненный цикл изменений:</strong></p>
+      <ol style="margin-left: 30px;">
+        <li>Вносим изменения в файл <code>models.py</code> (создаем класс, добавляем или удаляем поле).</li>
+        <li>Создаем файл миграции (команда <code>makemigrations</code>).</li>
+        <li>Применяем миграцию к базе данных (команда <code>migrate</code>).</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Слайд 16: Команда makemigrations -->
   <div class="slide">
     <div class="slide-header">
       <h2>Создание миграций: makemigrations</h2>
     </div>
     <div class="slide-body">
-      <p>После изменения моделей выполняем консольную команду:</p>
+      <p>После написания моделей в <code>models.py</code> выполните команду в терминале:</p>
       <pre><code>python manage.py makemigrations</code></pre>
-      <p>Django анализирует файлы <code>models.py</code>, сравнивает их с предыдущим состоянием и создает новый файл Python-скрипта в папке <code>migrations/</code> внутри приложения (например, <code>0001_initial.py</code>).</p>
-      <div class="highlight-box">
-        <strong>Что внутри файла миграции?</strong><br>
-        Декларативное описание изменений. Не редактируйте эти файлы вручную без крайней необходимости! Django сам полностью контролирует их генерацию.
+      <p>Django сравнивает текущие модели с предыдущими файлами миграций и автоматически генерирует новый файл-чертеж в папке <code>migrations/</code> внутри приложения (например, <code>0001_initial.py</code>).</p>
+      <div class="highlight-box success" style="margin-top: 15px;">
+        <strong>Важно:</strong> На этом этапе база данных на диске <strong>еще не изменилась</strong>! Создан только файл-инструкция, описывающий, какие изменения нужно будет сделать.
       </div>
     </div>
   </div>
 
-  <!-- Слайд 10 -->
+  <!-- Слайд 17: Команда migrate -->
   <div class="slide">
     <div class="slide-header">
       <h2>Применение миграций: migrate</h2>
     </div>
     <div class="slide-body">
-      <p>Чтобы изменения действительно применились и таблицы создались/изменились в базе данных, введите:</p>
+      <p>Чтобы физически создать таблицы или добавить колонки в СУБД, примените миграции:</p>
       <pre><code>python manage.py migrate</code></pre>
-      <p>Django считывает файлы миграций, которые еще не были применены, транслирует их в SQL-запросы к вашей СУБД и выполняет их.</p>
-      <div class="highlight-box success">
-        <strong>Как Django помнит, что применено?</strong><br>
-        В вашей базе данных есть специальная системная таблица <code>django_migrations</code>. В ней Django отмечает названия файлов миграций, которые уже применены, чтобы не запускать их повторно.
+      <p>Django считывает все новые файлы миграций, переводит их инструкции в SQL-команды под используемую СУБД (в нашем случае SQLite) и выполняет их в базе данных.</p>
+      <div class="highlight-box">
+        <strong>Как Django понимает, какие миграции уже применены?</strong><br>
+        В базе данных создается таблица <code>django_migrations</code>. В нее записываются имена всех выполненных файлов миграций. Django повторно их не запускает.
       </div>
     </div>
   </div>
 
-  <!-- Слайд 11 -->
+  <!-- Слайд 18: База данных SQLite под капотом -->
   <div class="slide">
     <div class="slide-header">
       <h2>База данных под капотом</h2>
     </div>
     <div class="slide-body">
-      <p>Как Django преобразует имена моделей в имена таблиц?</p>
       <ul>
-        <li>Имя таблицы по умолчанию составляется как: <code>имя_приложения_имя_модели_в_нижнем_регистре</code>.</li>
-        <li>Например, если приложение называется <code>blog</code>, а модель — <code>Article</code>, то таблица в БД будет иметь имя <strong><code>blog_article</code></strong>.</li>
-        <li>Django автоматически добавляет автоинкрементное целочисленное поле <strong><code>id</code></strong> в качестве первичного ключа (Primary Key), если вы не указали другое поле с параметром <code>primary_key=True</code>.</li>
+        <li><strong>Именование таблиц:</strong> По умолчанию Django создает таблицы с именем в формате <code>имяПриложения_имяМодели</code> в нижнем регистре (например, <code>kvant_event</code>).</li>
+        <li><strong>Уникальный идентификатор:</strong> Django автоматически добавляет целочисленное автоинкрементное поле <strong><code>id</code></strong> в каждую модель. Это первичный ключ (Primary Key).</li>
+        <li>С каждым новым объектом его <code>id</code> автоматически увеличивается на 1: 1, 2, 3 и т.д.</li>
       </ul>
       <div class="highlight-box warning" style="margin-top: 15px;">
-        <strong>Важно:</strong> При переименовании полей или моделей всегда делайте коммит в Git <strong>до</strong> и <strong>после</strong> выполнения миграций, чтобы не запутаться в версиях структуры БД!
+        Никогда не удаляйте файлы миграций вручную, если проект уже запущен! Это приведет к рассинхронизации кода моделей и структуры реальной БД.
       </div>
     </div>
   </div>
 
-  <!-- Слайд 12 -->
+  <!-- Слайд 19: Django Shell — командный центр -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Django Shell — интерактивная консоль</h2>
+      <h2>Django Shell — Интерактивная консоль</h2>
     </div>
     <div class="slide-body">
-      <p>Чтобы быстро поработать с моделями, протестировать запросы или импортировать данные, обычный интерактивный Python REPL не подойдет, так как он не знает о настройках Django.</p>
-      <p>Для запуска консоли в контексте Django используйте специальную команду:</p>
+      <p>Чтобы взаимодействовать с базой данных из терминала, обычный Python REPL не подойдет, так как он не знает о настройках проекта. Используйте команду:</p>
       <pre><code>python manage.py shell</code></pre>
+      <p>Эта команда запускает консоль Python, предварительно импортируя настройки <code>settings.py</code> и инициализируя Django.</p>
       <div class="highlight-box success">
-        Перед началом работы с моделями в консоли их нужно импортировать:<br>
-        <code>from blog.models import Article</code>
-      </div>
-      <p style="font-size: 1.1rem; color: #555;">Любые CRUD-операции, сделанные здесь, мгновенно отражаются в реальной базе данных проекта.</p>
-    </div>
-  </div>
-
-  <!-- Слайд 13 -->
-  <div class="slide">
-    <div class="slide-header">
-      <h2>CRUD: Create (Создание записей)</h2>
-    </div>
-    <div class="slide-body">
-      <p>Есть два основных способа создать запись в базе данных:</p>
-      <div class="columns">
-        <div class="column">
-          <strong>Способ 1: Сначала в памяти, затем сохранение</strong>
-          <pre><code># Создаем экземпляр в памяти
-art = Article(title="Привет!", content="Текст")
-# Сохраняем в БД
-art.save()</code></pre>
-        </div>
-        <div class="column">
-          <strong>Способ 2: В одно действие (через Manager)</strong>
-          <pre><code># Сразу сохраняется в БД
-art = Article.objects.create(
-    title="Привет!", 
-    content="Текст"
-)</code></pre>
-        </div>
-      </div>
-      <div class="highlight-box success" style="margin-top: 10px; font-size: 1.1rem;">
-        Метод <code>create()</code> возвращает уже сохраненный объект, у которого заполнен атрибут <code>id</code>.
+        Перед работой с моделями в консоли их обязательно нужно импортировать:<br>
+        <code>from kvant.models import Event, News, Schedule</code>
       </div>
     </div>
   </div>
 
-  <!-- Слайд 14 -->
+  <!-- Слайд 20: CRUD: Create — Создание записей -->
   <div class="slide">
     <div class="slide-header">
-      <h2>CRUD: Read (Чтение данных) — Поиск и выборка</h2>
+      <h2>CRUD: Create (Создание данных)</h2>
     </div>
     <div class="slide-body">
-      <p>Для чтения записей используется специальный менеджер <code>objects</code>, который возвращает коллекцию <strong>QuerySet</strong>:</p>
-      <ul style="margin-top: 10px;">
-        <li><strong>Получить все записи:</strong>
-          <pre><code>all_articles = Article.objects.all() # Возвращает QuerySet</code></pre>
+      <p>Есть два способа создать запись в таблице через Django ORM:</p>
+      <div class="columns" style="margin-top: 10px;">
+        <div class="column">
+          <strong>Способ 1: Сначала в памяти, затем save()</strong>
+          <pre style="font-size: 0.85rem; line-height: 1.3;"><code># Создаем объект в оперативной памяти
+event = Event(
+    title="Открытие смены Квант",
+    description="Торжественная линейка",
+    date="2026-06-30",
+    start_time="10:00"
+)
+# Записываем в базу данных
+event.save()</code></pre>
+        </div>
+        <div class="column">
+          <strong>Способ 2: Метод objects.create()</strong>
+          <pre style="font-size: 0.85rem; line-height: 1.3;"><code># Объект сразу записывается в БД
+event = Event.objects.create(
+    title="Олимпиадная математика",
+    description="Лекция по теории чисел",
+    date="2026-06-30",
+    start_time="11:30"
+)
+# event.id уже заполнен автоматически!</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Слайд 21: CRUD: Read — Запросы на чтение -->
+  <div class="slide">
+    <div class="slide-header">
+      <h2>CRUD: Read (Чтение и выборка данных)</h2>
+    </div>
+    <div class="slide-body">
+      <p>Для получения записей используется менеджер <code>objects</code>, возвращающий коллекцию <strong>QuerySet</strong>:</p>
+      <ul style="margin-top: 15px;">
+        <li><strong>Получить абсолютно все записи:</strong>
+          <pre><code>all_news = News.objects.all()</code></pre>
         </li>
-        <li><strong>Фильтрация (выборка по критерию):</strong>
-          <pre><code>pub_articles = Article.objects.filter(is_published=True)</code></pre>
+        <li><strong>Фильтрация (выбрать записи по условию):</strong>
+          <pre><code>news_today = News.objects.filter(created_at="2026-06-30")</code></pre>
         </li>
         <li><strong>Исключение (выбрать все, кроме):</strong>
-          <pre><code>not_pub_articles = Article.objects.exclude(is_published=True)</code></pre>
+          <pre><code>other_days_news = News.objects.exclude(created_at="2026-06-30")</code></pre>
         </li>
       </ul>
     </div>
   </div>
 
-  <!-- Слайд 15 -->
+  <!-- Слайд 22: CRUD: Read — Получение по ID и сортировка -->
   <div class="slide">
     <div class="slide-header">
-      <h2>CRUD: Read — Получение одной записи и сортировка</h2>
+      <h2>CRUD: Read (Получение по ID и сортировка)</h2>
     </div>
     <div class="slide-body">
       <div class="columns">
         <div class="column">
-          <strong>Получение одного объекта: <code>.get()</code></strong>
-          <pre><code># Возвращает конкретный объект, а не QuerySet
-art = Article.objects.get(id=1)</code></pre>
-          <p style="font-size: 0.95rem; color: #555;">
-            Если объект не найден, выбрасывается исключение <code>DoesNotExist</code>. Если найдено больше одного — <code>MultipleObjectsReturned</code>.
-          </p>
+          <strong>Поиск по уникальному ID: <code>.get()</code></strong>
+          <pre><code># Возвращает один конкретный объект
+news = News.objects.get(id=1)</code></pre>
+          <div class="highlight-box warning" style="font-size: 0.95rem; padding: 10px; margin-top: 10px;">
+            <strong>Внимание!</strong> Метод <code>.get()</code> вызовет ошибку <code>DoesNotExist</code>, если запись не найдена, или <code>MultipleObjectsReturned</code>, если найдено несколько записей.
+          </div>
         </div>
         <div class="column">
           <strong>Сортировка: <code>.order_by()</code></strong>
-          <pre><code># По возрастанию даты
-Article.objects.order_by('created_at')
+          <pre><code># Сортировка по кабинетам (по возрастанию)
+Schedule.objects.order_by('classroom')
 
-# По убыванию (знак минус)
-Article.objects.order_by('-views_count')</code></pre>
+# Сортировка по дате (по убыванию)
+Schedule.objects.order_by('-date')</code></pre>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Слайд 16 -->
+  <!-- Слайд 23: Field Lookups — Сложная фильтрация -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Field Lookups (Сложная фильтрация)</h2>
+      <h2>Field Lookups (Условия фильтрации)</h2>
     </div>
     <div class="slide-body">
-      <p>Для сравнения значений полей Django использует синтаксис с двойным подчеркиванием <code>__</code>:</p>
+      <p>Для детального поиска Django использует двойное подчеркивание <code>__</code> после имени поля:</p>
       <ul style="margin-top: 10px;">
-        <li><strong>Поиск подстроки (LIKE):</strong> <code>__contains</code> (чувствительно к регистру) и <code>__icontains</code> (нечувствительно к регистру)
-          <pre><code>Article.objects.filter(title__icontains="python")</code></pre>
+        <li><strong>Поиск подстроки без учета регистра: <code>__icontains</code></strong>
+          <pre><code>News.objects.filter(title__icontains="физика")</code></pre>
         </li>
-        <li><strong>Сравнения:</strong> <code>__gt</code> (больше), <code>__gte</code> (больше или равно), <code>__lt</code> (меньше), <code>__lte</code> (меньше или равно)
-          <pre><code>Article.objects.filter(views_count__gte=100)</code></pre>
+        <li><strong>Сравнения: <code>__gt</code> (больше) и <code>__lt</code> (меньше)</strong>
+          <pre><code># Кабинеты с номером больше 300
+Schedule.objects.filter(classroom__gt=300)</code></pre>
         </li>
-        <li><strong>Вхождение в список:</strong> <code>__in</code>
-          <pre><code>Article.objects.filter(id__in=[1, 3, 5])</code></pre>
+        <li><strong>Вхождение в список значений: <code>__in</code></strong>
+          <pre><code>Schedule.objects.filter(classroom__in=[101, 102, 105])</code></pre>
         </li>
       </ul>
     </div>
   </div>
 
-  <!-- Слайд 17 -->
+  <!-- Слайд 24: CRUD: Update — Обновление записей -->
   <div class="slide">
     <div class="slide-header">
-      <h2>CRUD: Update (Обновление записей)</h2>
+      <h2>CRUD: Update (Изменение данных)</h2>
     </div>
     <div class="slide-body">
-      <p>Как и в случае с созданием, обновить данные можно двумя способами:</p>
-      <div class="columns" style="margin-top: 15px;">
+      <div class="columns">
         <div class="column">
-          <strong>Способ 1: У одного объекта</strong>
-          <pre><code>art = Article.objects.get(id=1)
-art.views_count += 1
-art.save() # Сохраняет только этот объект</code></pre>
-          <p style="font-size: 0.95rem; color: #7f8c8d;">
-            Обратите внимание: вызывается метод <code>save()</code>.
-          </p>
+          <strong>Способ 1: Изменение конкретного объекта</strong>
+          <pre style="font-size: 0.9rem;"><code># Находим объект в БД
+lesson = Schedule.objects.get(id=3)
+# Меняем атрибут
+lesson.classroom = 404
+# Сохраняем изменения в базу
+lesson.save()</code></pre>
         </div>
         <div class="column">
           <strong>Способ 2: Массовое обновление (на QuerySet)</strong>
-          <pre><code># Обновит просмотры у ВСЕХ опубликованных
-Article.objects.filter(
-    is_published=True
-).update(views_count=100)</code></pre>
-          <p style="font-size: 0.95rem; color: #7f8c8d;">
-            Метод <code>update()</code> выполняется за один SQL-запрос UPDATE к БД.
+          <pre style="font-size: 0.9rem;"><code># Переносим все занятия 
+# из 101 кабинета в 202
+Schedule.objects.filter(
+    classroom=101
+).update(classroom=202)</code></pre>
+          <p style="font-size: 0.95rem; color: #555; margin-top: 10px;">
+            Метод <code>.update()</code> выполняется сразу на уровне БД одним SQL-запросом.
           </p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Слайд 18 -->
+  <!-- Слайд 25: CRUD: Delete — Удаление записей -->
   <div class="slide">
     <div class="slide-header">
-      <h2>CRUD: Delete (Удаление записей)</h2>
+      <h2>CRUD: Delete (Удаление данных)</h2>
     </div>
     <div class="slide-body">
-      <p>Удалить данные из базы можно как у одиночного объекта, так и у целой выборки (QuerySet):</p>
-      <div class="columns" style="margin-top: 15px;">
+      <div class="columns">
         <div class="column">
           <strong>Удаление одного объекта:</strong>
-          <pre><code>art = Article.objects.get(id=1)
-art.delete() # Удалит запись из БД</code></pre>
+          <pre><code>event = Event.objects.get(id=2)
+# Полное удаление из базы данных
+event.delete()</code></pre>
         </div>
         <div class="column">
-          <strong>Массовое удаление (QuerySet):</strong>
-          <pre><code># Удалит все неопубликованные статьи
-Article.objects.filter(
-    is_published=False
+          <strong>Массовое удаление (на QuerySet):</strong>
+          <pre><code># Удаляем все события на дату
+Event.objects.filter(
+    date="2026-06-25"
 ).delete()</code></pre>
         </div>
       </div>
       <div class="highlight-box warning" style="margin-top: 15px;">
-        Будьте осторожны! Вызов метода <code>.delete()</code> на <code>Article.objects.all().delete()</code> удалит вообще все записи из таблицы. Это действие необратимо!
+        <strong>Внимание:</strong> Вызов <code>Event.objects.all().delete()</code> мгновенно сотрет абсолютно все мероприятия из базы данных лагеря. Это действие необратимо!
       </div>
     </div>
   </div>
 
-  <!-- Слайд 19 -->
+  <!-- Слайд 26: Метод __str__ — Человекочитаемое представление -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Магия метода __str__ и класс Meta</h2>
+      <h2>Отображение объектов: Метод __str__</h2>
     </div>
     <div class="slide-body">
-      <p>По умолчанию при печати объекта в консоли или отображении в админке Django вы увидите малоинформативное <code>&lt;Article: Article object (1)&gt;</code>.</p>
-      <p>Чтобы исправить это, переопределите метод <strong><code>__str__()</code></strong> и используйте внутренний класс <strong><code>Meta</code></strong>:</p>
-      <pre style="margin: 10px 0; font-size: 0.9rem;"><code>class Article(models.Model):
-    title = models.CharField(max_length=200, verbose_name="Заголовок")
-    
-    def __str__(self):
-        return f"{self.id} | {self.title}"
+      <p>Без переопределения метода <code>__str__</code> Django выведет объект в виде <code>&lt;Event: Event object (1)&gt;</code>. Это крайне неудобно при отладке.</p>
+      <pre><code>class Event(models.Model):
+    title = models.CharField(max_length=200)
+    date = models.DateField()
 
-    class Meta:
-        verbose_name = "Статья"
-        verbose_name_plural = "Статьи"
-        ordering = ['-created_at'] # Сортировка по умолчанию</code></pre>
+    # Переопределяем метод строкового представления:
+    def __str__(self):
+        return f"{self.date} | {self.title}"</code></pre>
+      <div class="highlight-box success" style="margin-top: 15px;">
+        Теперь при вызове <code>print(event)</code> или при просмотре списка событий в админ-панели мы увидим понятное: <strong><code>2026-06-30 | Открытие смены Квант</code></strong>.
+      </div>
     </div>
   </div>
 
-  <!-- Слайд 20 -->
+  <!-- Слайд 27: Резюме: Жизненный цикл работы с БД -->
   <div class="slide">
     <div class="slide-header">
-      <h2>Резюме и план практики</h2>
+      <h2>Резюме: Алгоритм работы с моделями</h2>
     </div>
     <div class="slide-body">
       <div class="columns">
         <div class="column">
-          <p><strong>Чек-лист создания модели:</strong></p>
-          <ol style="margin-top: 10px;">
-            <li>Описать класс в <code>models.py</code>, унаследовать от <code>models.Model</code>.</li>
-            <li>Добавить поля (CharField, TextField и др.) и настройки.</li>
-            <li>Определить метод <code>__str__</code> и `class Meta`.</li>
-            <li>Выполнить <code>makemigrations</code>.</li>
-            <li>Выполнить <code>migrate</code>.</li>
+          <ol style="margin-left: 20px; line-height: 1.6;">
+            <li>Описать модель как класс в <code>models.py</code> (наследование от <code>models.Model</code>).</li>
+            <li>Добавить поля с нужными типами (CharField, TextField, DateField и др.).</li>
+            <li>Определить метод <code>__str__</code> и <code>class Meta</code>.</li>
+            <li>Создать файлы миграций: <code>python manage.py makemigrations</code>.</li>
+            <li>Применить изменения к базе: <code>python manage.py migrate</code>.</li>
+            <li>Использовать Django Shell или View для CRUD-операций.</li>
           </ol>
         </div>
         <div class="column">
           <div class="highlight-box success">
             <strong>Переходим к практике!</strong>
-            <p style="margin-top: 10px; font-size: 1.1rem;">Сегодня мы напишем модель товара для интернет-магазина, выполним миграции, а затем в консоли <code>python manage.py shell</code> наполним базу данных товарами, научимся фильтровать их по цене и импортировать данные из файлов.</p>
+            <p style="margin-top: 10px; font-size: 1.05rem;">Сегодня на практике мы объявим модели событий, новостей и расписания для сайта «Квант», применим миграции, а затем наполним базу данных реальной сеткой мероприятий смены и научимся делать сложные выборки!</p>
           </div>
         </div>
       </div>
@@ -503,7 +653,7 @@ Article.objects.filter(
 </div>
 
 <!-- Элементы управления презентацией -->
-<div class="slide-counter" id="slide-counter">1 / 20</div>
+<div class="slide-counter" id="slide-counter">1 / 27</div>
 <div class="controls">
   <button class="control-btn" id="prev-btn">&larr; Назад</button>
   <button class="control-btn" id="fullscreen-btn">Экран [F]</button>

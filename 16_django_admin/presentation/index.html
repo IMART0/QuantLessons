@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Занятие 16: Панель администратора Django Admin</title>
+  <title>Занятие 16: Панель администратора Django Admin для сайта лагеря Квант</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,18 +11,21 @@
     
     <!-- Слайд 1: Титульный -->
     <div class="slide active">
-      <div style="text-align: center; margin-top: 100px;">
-        <h1 style="font-size: 3.5rem; color: var(--primary-color); margin-bottom: 20px;">Django Admin</h1>
-        <h2 style="font-size: 1.8rem; color: var(--text-color); font-weight: 400; margin-bottom: 50px;">
-          Панель администратора: настройка, кастомизация и управление данными
+      <div style="text-align: center; margin-top: 80px;">
+        <h1 style="font-size: 3.2rem; color: var(--primary-color); margin-bottom: 20px;">Django Admin</h1>
+        <h2 style="font-size: 1.8rem; color: var(--text-color); font-weight: 500; margin-bottom: 40px;">
+          Панель администратора: настройка, кастомизация и управление данными лагеря
         </h2>
-        <div style="font-size: 1.2rem; color: #7f8c8d;">
+        <div class="highlight-box success" style="display: inline-block; padding: 10px 20px; font-size: 1.1rem;">
+          <strong>Проект занятия:</strong> «Сайт летней школы Квант»
+        </div>
+        <div style="font-size: 1.1rem; color: #7f8c8d; margin-top: 40px;">
           ЛФМШ "Квант" • Курс веб-разработки на Django
         </div>
       </div>
     </div>
 
-    <!-- Слайд 2: Введение -->
+    <!-- Слайд 2: Что такое Django Admin? -->
     <div class="slide">
       <div class="slide-header">
         <h2>Что такое Django Admin?</h2>
@@ -30,50 +33,64 @@
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p><strong>Django Admin</strong> — это встроенное приложение Django, которое автоматически генерирует профессиональный веб-интерфейс для управления данными вашего сайта.</p>
-            <ul style="margin-top: 20px;">
-              <li><strong>Готовый CRUD:</strong> Создание, чтение, обновление и удаление записей без написания HTML и форм.</li>
-              <li><strong>Экономия времени:</strong> Автоматически подстраивается под структуру ваших моделей.</li>
-              <li><strong>Безопасность:</strong> Встроенная система авторизации, ролей и логирования действий.</li>
+            <p><strong>Django Admin</strong> — встроенное приложение Django (<code>django.contrib.admin</code>), генерирующее готовый веб-интерфейс для администрирования базы данных.</p>
+            <ul style="margin-top: 15px;">
+              <li><strong>Мгновенный CRUD:</strong> Создание, чтение, обновление и удаление данных без написания HTML и форм.</li>
+              <li><strong>Экономия времени:</strong> Автоматически считывает метаданные ваших моделей.</li>
+              <li><strong>Бэк-офис проекта:</strong> Идеально подходит для вожатых и кураторов летней школы Квант.</li>
             </ul>
           </div>
           <div class="column">
             <div class="highlight-box success">
-              <h3>Кому это нужно?</h3>
-              <p>Разработчикам для быстрого наполнения БД, тестирования моделей, а также контент-менеджерам и администраторам сайта для управления контентом без доступа к коду.</p>
+              <h3>Преимущества:</h3>
+              <ul>
+                <li>Встроенная авторизация и роли.</li>
+                <li>История действий пользователей (LogEntry).</li>
+                <li>Гибкая кастомизация под любые задачи.</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 3: Создание суперпользователя -->
+    <!-- Слайд 3: Создание суперпользователя лагеря -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Шаг 1: Создание суперпользователя</h2>
+        <h2>Создание суперпользователя лагеря</h2>
       </div>
       <div class="slide-body">
-        <p>Прежде чем войти в панель администратора, необходимо создать пользователя с максимальными правами (Superuser):</p>
+        <p>Для входа в панель администратора необходим аккаунт с правами суперпользователя (Superuser). Создаем его через CLI:</p>
         <pre><code>python manage.py createsuperuser</code></pre>
-        <p>После ввода команды терминал предложит вам ввести:</p>
-        <ol>
-          <li><strong>Username:</strong> Имя пользователя (например, <code>admin</code>)</li>
-          <li><strong>Email address:</strong> Почту (можно оставить пустой и нажать Enter)</li>
-          <li><strong>Password:</strong> Пароль (символы при вводе скрываются в целях безопасности)</li>
-          <li><strong>Password (again):</strong> Подтверждение пароля</li>
-        </ol>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="column">
+            <p><strong>Поля ввода в консоли:</strong></p>
+            <ol>
+              <li><strong>Username:</strong> Логин (например, <code>kvant_admin</code>).</li>
+              <li><strong>Email address:</strong> Почта (например, <code>admin@kvant.ru</code>).</li>
+              <li><strong>Password:</strong> Пароль (символы при вводе скрываются!).</li>
+              <li><strong>Password (again):</strong> Подтверждение пароля.</li>
+            </ol>
+          </div>
+          <div class="column">
+            <div class="highlight-box warning">
+              <h3>Внимание!</h3>
+              <p>Отсутствие символов на экране при вводе пароля — это стандарт безопасности терминала. Не думайте, что консоль зависла, просто вводите пароль и жмите Enter.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Слайд 4: Вход в админку -->
+    <!-- Слайд 4: Вход в админ-панель -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Шаг 2: Вход в панель администратора</h2>
+        <h2>Вход в панель администратора</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p>По умолчанию маршрут для админки уже прописан в главном <code>urls.py</code> вашего проекта:</p>
+            <p>Стандартный маршрут админки изначально настроен в файле <code>urls.py</code> вашего проекта:</p>
             <pre><code># core/urls.py
 from django.contrib import admin
 from django.urls import path
@@ -83,120 +100,132 @@ urlpatterns = [
 ]</code></pre>
           </div>
           <div class="column">
+            <p><strong>Алгоритм входа:</strong></p>
             <ol>
-              <li>Запустите сервер разработки: <code>python manage.py runserver</code></li>
-              <li>Перейдите по адресу <a href="http://127.0.0.1:8000/admin/" target="_blank">http://127.0.0.1:8000/admin/</a></li>
-              <li>Введите логин и пароль, которые вы указали при создании суперпользователя.</li>
+              <li>Запустите сервер: <code>python manage.py runserver</code></li>
+              <li>Откройте ссылку <a href="http://127.0.0.1:8000/admin/" target="_blank">http://127.0.0.1:8000/admin/</a></li>
+              <li>Введите учетные данные созданного суперпользователя.</li>
             </ol>
             <div class="highlight-box warning" style="margin-top: 15px;">
-              <strong>Важно:</strong> Не забудьте применить миграции перед запуском, так как таблицы пользователей хранятся в базе данных.
+              <strong>Важно:</strong> Всегда применяйте миграции (<code>migrate</code>) перед входом, иначе Django не сможет проверить учетные данные!
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 5: Регистрация моделей -->
+    <!-- Слайд 5: Регистрация моделей лагеря -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Регистрация моделей (Простой способ)</h2>
+        <h2>Регистрация моделей лагеря</h2>
       </div>
       <div class="slide-body">
-        <p>Чтобы ваша модель появилась в панели администратора, её нужно зарегистрировать в файле <code>admin.py</code> вашего приложения:</p>
-        <pre><code># apps/library/admin.py
+        <p>Изначально новые модели не видны в админке. Их необходимо зарегистрировать в файле <code>admin.py</code> приложения:</p>
+        <pre><code># camp_site/admin.py
 from django.contrib import admin
-from .models import Book
+from .models import Student
 
-# Регистрируем модель Book
-admin.site.register(Book)</code></pre>
-        <div class="highlight-box">
-          <p><strong>Результат:</strong> Модель <code>Book</code> появится в интерфейсе админки. Название в списке будет строиться на основе метода <code>__str__()</code>, определенного в модели.</p>
+# Простая регистрация модели Учеников
+admin.site.register(Student)</code></pre>
+        <div class="highlight-box success" style="margin-top: 15px;">
+          <h3>Результат:</h3>
+          <p>В веб-интерфейсе появляется блок модели <code>Student</code>. Названия строк списка формируются на основе метода <code>__str__()</code>, определенного в классе модели.</p>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 6: Настройка через ModelAdmin -->
+    <!-- Слайд 6: Класс ModelAdmin и декоратор @admin.register -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Кастомизация админки: Класс ModelAdmin</h2>
+        <h2>Класс ModelAdmin и декоратор @admin.register</h2>
       </div>
       <div class="slide-body">
-        <p>Для детальной настройки отображения модели создают специальный класс-представление, наследуемый от <code>admin.ModelAdmin</code>.</p>
-        <p>Для регистрации класса используется декоратор <code>@admin.register</code>:</p>
-        <pre><code># apps/library/admin.py
+        <div class="columns">
+          <div class="column">
+            <p>Для детальной настройки отображения и поведения модели создают специальный класс настроек, наследуемый от <code>admin.ModelAdmin</code>.</p>
+            <p style="margin-top: 15px;">Современный способ связывания модели лагеря и класса настроек — декоратор <code>@admin.register</code>.</p>
+          </div>
+          <div class="column">
+            <pre><code># camp_site/admin.py
 from django.contrib import admin
-from .models import Book
+from .models import Student
 
-@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    # Здесь настраиваются все параметры отображения модели
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    # Здесь настраиваются свойства админки
     pass</code></pre>
-        <p style="font-size: 1.1rem; color: #7f8c8d; margin-top: 10px;">
-          <em>Использование декоратора считается более современным и чистым стилем по сравнению с <code>admin.site.register(Book, BookAdmin)</code>.</em>
-        </p>
-      </div>
-    </div>
-
-    <!-- Слайд 7: list_display -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Настройка списка записей: list_display</h2>
-      </div>
-      <div class="slide-body">
-        <p>По умолчанию в списке записей выводится только строковое представление объекта (<code>__str__</code>). Свойство <code>list_display</code> позволяет задать конкретные поля модели для отображения в виде таблицы:</p>
-        <pre><code>@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'price', 'is_available')</code></pre>
-        <div class="highlight-box success">
-          <strong>Возможности таблицы:</strong>
-          <ul>
-            <li>Поля автоматически становятся заголовками столбцов.</li>
-            <li>Поля БД поддерживают автоматическую сортировку по клику на заголовок.</li>
-            <li>Первое поле списка по умолчанию становится ссылкой на страницу редактирования записи.</li>
-          </ul>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 8: search_fields -->
+    <!-- Слайд 7: Настройка табличного списка: list_display -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Поиск по записям: search_fields</h2>
+        <h2>Настройка списка: list_display</h2>
       </div>
       <div class="slide-body">
-        <p>Атрибут <code>search_fields</code> добавляет поисковую строку на страницу списка записей и определяет, по каким полям будет производиться поиск:</p>
-        <pre><code>@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'price')
-    search_fields = ('title', 'author__name', 'isbn')</code></pre>
-        <div class="highlight-box warning" style="margin-top: 15px;">
-          <strong>Поиск по связанным моделям (ForeignKey):</strong>
-          Для поиска по полю внешней связи используется синтаксис с двойным подчеркиванием (<code>__</code>): <code>'author__name'</code>. Если написать просто <code>'author'</code>, Django выдаст ошибку, пытаясь искать по объекту связи.
+        <p>Свойство <code>list_display</code> определяет столбцы таблицы в списке записей. Показываем ФИО, класс, отряд и группу ученика:</p>
+        <pre><code>@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'grade', 'squad', 'group', 'is_active')</code></pre>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="column">
+            <div class="highlight-box success">
+              <strong>Порядок колонок:</strong> Определяется порядком перечисления полей в кортеже.
+            </div>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <strong>Сортировка:</strong> Все поля таблицы автоматически становятся сортируемыми при клике по заголовку.
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 9: list_filter -->
+    <!-- Слайд 8: Фильтрация данных: list_filter -->
     <div class="slide">
       <div class="slide-header">
         <h2>Фильтрация данных: list_filter</h2>
       </div>
       <div class="slide-body">
-        <p>Атрибут <code>list_filter</code> добавляет правую боковую панель для быстрой фильтрации записей по выбранным полям:</p>
-        <pre><code>@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'price', 'is_available')
-    list_filter = ('is_available', 'genre', 'published_date')</code></pre>
-        <p style="margin-top: 15px;"><strong>Типы полей, поддерживающие фильтрацию:</strong></p>
-        <ul>
-          <li><strong>Boolean:</strong> Фильтры "Да" / "Нет" / "Все".</li>
-          <li><strong>ForeignKey / Choices:</strong> Автоматический список доступных значений.</li>
-          <li><strong>DateField / DateTimeField:</strong> Удобные временные фильтры (Сегодня, Последние 7 дней, Этот месяц, Этот год).</li>
-        </ul>
+        <div class="columns">
+          <div class="column">
+            <p>Свойство <code>list_filter</code> генерирует боковую панель фильтров. Фильтруем учеников лагеря по классу, отряду, учебной группе и активности:</p>
+            <pre><code>@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'grade', 'squad', 'group')
+    list_filter = ('grade', 'squad', 'group', 'is_active')</code></pre>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3>Умные фильтры:</h3>
+              <p>Django автоматически анализирует тип данных. Для булевых полей генерируется фильтр (Да/Нет/Все), а для отряда — список присутствующих в базе номеров отрядов.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Слайд 10: list_editable -->
+    <!-- Слайд 9: Поиск по записям: search_fields -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Поиск по записям: search_fields</h2>
+      </div>
+      <div class="slide-body">
+        <p>Свойство <code>search_fields</code> создает поисковую строку. Ищем преподавателей по ФИО и предмету:</p>
+        <pre><code>@admin.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ('name', 'subject')
+    search_fields = ('name', 'subject')</code></pre>
+        <div class="highlight-box warning" style="margin-top: 15px;">
+          <strong>Поиск по внешним связям (ForeignKey):</strong> Если вы ищете слоты расписания по преподавателю, писать просто <code>'teacher'</code> в поиске нельзя. Используйте двойное подчеркивание для перехода к полю связанной таблицы: <code>search_fields = ('title', 'teacher__name')</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 10: Быстрое редактирование: list_editable -->
     <div class="slide">
       <div class="slide-header">
         <h2>Быстрое редактирование: list_editable</h2>
@@ -204,18 +233,18 @@ class BookAdmin(admin.ModelAdmin):
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p>Позволяет редактировать поля записей прямо в общем списке без перехода на детальную страницу. Изменения сохраняются одной кнопкой "Сохранить" внизу страницы.</p>
-            <pre><code>@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price', 'is_available')
-    list_editable = ('price', 'is_available')</code></pre>
+            <p>Свойство <code>list_editable</code> позволяет вожатым изменять отряд, учебную группу и статус активности учеников прямо из общей таблицы:</p>
+            <pre><code>@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'grade', 'squad', 'group', 'is_active')
+    list_editable = ('squad', 'group', 'is_active')</code></pre>
           </div>
           <div class="column">
             <div class="highlight-box warning">
-              <h3>Два важных правила:</h3>
+              <h3>Два жестких правила:</h3>
               <ol>
-                <li>Поля из <code>list_editable</code> <strong>обязательно</strong> должны присутствовать в <code>list_display</code>.</li>
-                <li>Поля из <code>list_editable</code> <strong>не могут</strong> быть ссылками на детальную страницу (по умолчанию это первое поле из <code>list_display</code>).</li>
+                <li>Редактируемые поля должны быть перечислены в <code>list_display</code>.</li>
+                <li>Поля в <code>list_editable</code> не могут быть ссылками на форму редактирования (по умолчанию это первое поле).</li>
               </ol>
             </div>
           </div>
@@ -223,91 +252,124 @@ class BookAdmin(admin.ModelAdmin):
       </div>
     </div>
 
-    <!-- Слайд 11: Вычисляемые поля и HTML -->
+    <!-- Слайд 11: Кастомные поля и format_html -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Пользовательские и вычисляемые поля</h2>
+        <h2>Кастомные поля и format_html</h2>
       </div>
       <div class="slide-body">
-        <p>В <code>list_display</code> можно передавать функции или методы класса <code>ModelAdmin</code>. Для вывода форматированного HTML используется функция <code>format_html</code>:</p>
+        <p>Методы класса <code>ModelAdmin</code> позволяют выводить вычисляемые данные. Используем <code>format_html</code> для рендеринга тегов HTML:</p>
         <pre><code style="font-size: 0.85rem;">from django.utils.html import format_html
 
-@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'colored_status')
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'squad', 'squad_badge')
 
-    @admin.display(description='Статус наличия')
-    def colored_status(self, obj):
-        if obj.is_available:
-            return format_html('&lt;span style="color: green; font-weight: bold;"&gt;В наличии&lt;/span&gt;')
-        return format_html('&lt;span style="color: red;"&gt;Нет на складе&lt;/span&gt;')</code></pre>
-        <p style="font-size: 1rem; color: #7f8c8d;">Декоратор <code>@admin.display</code> задает заголовок колонки (вместо названия метода) и позволяет настраивать сортировку.</p>
+    @admin.display(description="Цветной значок отряда")
+    def squad_badge(self, obj):
+        colors = {1: "red", 2: "blue", 3: "green", 4: "yellow", 5: "purple"}
+        badge_color = colors.get(obj.squad, "gray")
+        return format_html(
+            '&lt;span style="background: {}; color: white; padding: 3px 6px;"&gt;Отряд {}&lt;/span&gt;',
+            badge_color, obj.squad
+        )</code></pre>
       </div>
     </div>
 
-    <!-- Слайд 12: Группировка полей: fieldsets -->
+    <!-- Слайд 12: Группировка полей формы: fieldsets -->
     <div class="slide">
       <div class="slide-header">
         <h2>Группировка полей формы: fieldsets</h2>
       </div>
       <div class="slide-body">
-        <p>Позволяет структурировать форму добавления/редактирования записи, разделяя поля на смысловые блоки и скрывая редко используемые:</p>
-        <pre><code style="font-size: 0.85rem;">@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
+        <div class="columns">
+          <div class="column">
+            <p>Свойство <code>fieldsets</code> позволяет разделить длинные формы создания на логические секции.</p>
+            <p style="margin-top: 15px;">Мы можем скрыть второстепенную информацию (например, биографию и email учителя) под раскрывающийся спойлер.</p>
+          </div>
+          <div class="column">
+            <pre><code style="font-size: 0.85rem;"># camp_site/admin.py
+class TeacherAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title', 'author', 'isbn')
+            'fields': ('name', 'subject')
         }),
-        ('Экономика и Доступность', {
-            'classes': ('collapse',), # Блок будет изначально скрыт
-            'fields': ('price', 'is_available'),
+        ('Контакты и биография', {
+            'classes': ('collapse',),
+            'fields': ('email', 'bio')
         }),
     )</code></pre>
-        <p style="font-size: 1rem; color: #7f8c8d;">Класс <code>'collapse'</code> добавляет кнопку "Показать / Скрыть" для соответствующей секции.</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Слайд 13: Inlines (Связанные модели) -->
+    <!-- Слайд 13: Вложенное редактирование (Inlines) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Редактирование связанных моделей (Inlines)</h2>
-      </div>
-      <div class="slide-body">
-        <p>Позволяет редактировать дочерние объекты прямо на странице родительского объекта. Например, добавлять книги автора на странице редактирования автора:</p>
-        <pre><code style="font-size: 0.85rem;"># admin.py
-class BookInline(admin.TabularInline): # или admin.StackedInline
-    model = Book
-    extra = 1 # количество пустых полей по умолчанию
-
-@admin.register(Author)
-class AuthorAdmin(admin.ModelAdmin):
-    inlines = [BookInline]</code></pre>
-        <ul>
-          <li><strong>TabularInline:</strong> Отображает связанные объекты в виде компактной таблицы.</li>
-          <li><strong>StackedInline:</strong> Отображает связанные объекты в виде блоков друг под другом.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Слайд 14: Кастомные действия (Actions) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Массовые операции: Django Actions</h2>
+        <h2>Связанные модели: Inline-формы</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p><strong>Административные действия (Actions)</strong> позволяют выполнить одну и ту же операцию сразу над множеством выбранных галочками записей в списке.</p>
-            <p style="margin-top: 15px;">По умолчанию в Django доступно только одно действие — <strong>"Удалить выбранные объекты"</strong>. Однако мы можем писать любые собственные действия!</p>
+            <p><strong>Inlines</strong> позволяют управлять связанными моделями (ForeignKey) прямо на странице родительского объекта.</p>
+            <p style="margin-top: 15px;"><strong>Типы Inline-форм:</strong></p>
+            <ul>
+              <li><code>admin.TabularInline</code> — компактное отображение записей в виде горизонтальной таблицы.</li>
+              <li><code>admin.StackedInline</code> — отображение в виде крупных вертикальных блоков.</li>
+            </ul>
           </div>
           <div class="column">
             <div class="highlight-box success">
-              <h3>Примеры действий:</h3>
+              <h3>Пример в лагере:</h3>
+              <p>Управление слотами расписания (<code>ScheduleSlot</code>) непосредственно на странице редактирования преподавателя (<code>Teacher</code>).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 14: Реализация ScheduleSlotInline -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Реализация ScheduleSlotInline</h2>
+      </div>
+      <div class="slide-body">
+        <pre><code style="font-size: 0.85rem;">from django.contrib import admin
+from .models import Teacher, ScheduleSlot
+
+# 1. Описываем inline-класс для слотов расписания
+class ScheduleSlotInline(admin.TabularInline):
+    model = ScheduleSlot
+    extra = 1  # Количество пустых строк для добавления новых записей
+    fields = ('title', 'room', 'date', 'start_time', 'end_time')
+
+# 2. Регистрируем преподавателя с inline
+@admin.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ('name', 'subject')
+    inlines = [ScheduleSlotInline]</code></pre>
+      </div>
+    </div>
+
+    <!-- Слайд 15: Групповые действия: Admin Actions -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Групповые действия: Admin Actions</h2>
+      </div>
+      <div class="slide-body">
+        <div class="columns">
+          <div class="column">
+            <p><strong>Действия (Actions)</strong> позволяют выполнять одну операцию сразу над множеством записей, отмеченных галочками в списке.</p>
+            <p style="margin-top: 15px;">По умолчанию в Django доступно только действие «Удалить выбранные объекты». Мы можем написать свое!</p>
+          </div>
+          <div class="column">
+            <div class="highlight-box success">
+              <h3>Примеры действий лагеря:</h3>
               <ul>
-                <li>Опубликовать все выбранные статьи.</li>
-                <li>Выдать скидку 10% на выделенные товары.</li>
-                <li>Снять с продажи выбранные книги.</li>
-                <li>Сгенерировать PDF-отчет по заказам.</li>
+                <li>Одобрить выбранные мероприятия.</li>
+                <li>Сделать активными выбранных учеников.</li>
+                <li>Снять с публикации предложенные отрядами идеи событий.</li>
               </ul>
             </div>
           </div>
@@ -315,66 +377,39 @@ class AuthorAdmin(admin.ModelAdmin):
       </div>
     </div>
 
-    <!-- Слайд 15: Создание и регистрация действия -->
+    <!-- Слайд 16: Создание действия одобрения мероприятий -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Реализация кастомного действия (Action)</h2>
+        <h2>Создание действия одобрения мероприятий</h2>
       </div>
       <div class="slide-body">
-        <p>Функция действия принимает три аргумента: <code>modeladmin</code> (текущий класс админки), <code>request</code> (объект запроса) и <code>queryset</code> (выбранные пользователем объекты).</p>
-        <pre><code style="font-size: 0.85rem;"># 1. Объявляем функцию действия с декоратором
-@admin.action(description='Снять выбранные книги с продажи')
-def make_unavailable(modeladmin, request, queryset):
-    updated = queryset.update(is_available=False)
-    # Выводим сообщение пользователю в интерфейсе
-    modeladmin.message_user(request, f'Успешно обновлено книг: {updated}.')
+        <pre><code style="font-size: 0.82rem;"># 1. Пишем функцию действия с описанием
+@admin.action(description="Одобрить выбранные лагерные мероприятия")
+def approve_events(modeladmin, request, queryset):
+    # queryset содержит только отмеченные галочками записи Event
+    count = queryset.update(status='approved')
+    # Отправляем сообщение-уведомление в интерфейс
+    modeladmin.message_user(request, f"Успешно одобрено мероприятий: {count}.")
 
-# 2. Регистрируем действие в классе ModelAdmin
-@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'is_available')
-    actions = [make_unavailable]</code></pre>
+# 2. Подключаем действие к EventAdmin
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('title', 'organizer_squad', 'status')
+    actions = [approve_events]</code></pre>
       </div>
     </div>
 
-    <!-- Слайд 16: Безопасность и права доступа -->
+    <!-- Слайд 17: Итоги лекции -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Безопасность и права доступа</h2>
+        <h2>Итоги лекции и рекомендации</h2>
       </div>
       <div class="slide-body">
-        <div class="columns">
-          <div class="column">
-            <p>Django Admin тесно связан со встроенной системой авторизации <code>django.contrib.auth</code>:</p>
-            <ul>
-              <li><strong>Пользователи и группы:</strong> Права можно выдавать индивидуально или настраивать целые роли (например, "Редакторы", "Модераторы").</li>
-              <li><strong>Типы прав:</strong> Для каждой модели создаются права: <em>View (Просмотр), Add (Создание), Change (Редактирование), Delete (Удаление)</em>.</li>
-            </ul>
-          </div>
-          <div class="column">
-            <div class="highlight-box warning">
-              <h3>Управление правами в коде</h3>
-              <p>Вы можете программно переопределять права доступа в классе <code>ModelAdmin</code>:</p>
-              <pre style="margin: 5px 0; font-size: 0.8rem;"><code style="font-size: 0.8rem;">def has_delete_permission(self, request, obj=None):
-    # Запретить удаление всем, кроме суперпользователей
-    return request.user.is_superuser</code></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 17: Заключение -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Резюме и практические рекомендации</h2>
-      </div>
-      <div class="slide-body">
-        <ul style="font-size: 1.3rem; line-height: 1.8;">
-          <li>Панель администратора Django — мощный инструмент для внутреннего управления проектом.</li>
-          <li>Для простых проектов админка может служить готовым интерфейсом управления (back-office).</li>
-          <li>Никогда не давайте обычным пользователям сайта доступ к админ-панели. Для них создавайте обычные публичные Django-формы и представления.</li>
-          <li>Изучите возможности настройки с помощью <code>list_display</code>, <code>list_filter</code>, <code>search_fields</code>, <code>inlines</code> и <code>actions</code> — этого достаточно для 95% задач администрирования.</li>
+        <ul style="font-size: 1.25rem; line-height: 1.8;">
+          <li>Django Admin — готовый инструмент для внутреннего управления (Back-Office) проектом.</li>
+          <li>Для простых проектов админка полностью заменяет необходимость писать кастомные панели управления.</li>
+          <li>Никогда не давайте обычным пользователям сайта (ученикам лагеря) доступ к админ-панели (флаг <code>is_staff=False</code>).</li>
+          <li>Основные инструменты кастомизации: <code>list_display</code>, <code>list_filter</code>, <code>search_fields</code>, <code>inlines</code>, <code>actions</code>.</li>
         </ul>
       </div>
     </div>

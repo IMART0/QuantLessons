@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Урок 8: Шаблоны в Django</title>
+  <title>Урок 8: Шаблоны в Django (Django Templates)</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,128 +15,160 @@
       <div class="slide-body" style="text-align: center; justify-content: center; align-items: center;">
         <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1rem; padding: 6px 12px;">Урок 8</span>
         <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800;">Шаблоны в Django</h1>
-        <p style="font-size: 1.8rem; font-weight: 500; margin-bottom: 30px;">Рендеринг динамического контента и разделение логики</p>
+        <p style="font-size: 1.6rem; font-weight: 500; margin-bottom: 30px;">Рендеринг динамического контента для «Сайта летней школы Квант»</p>
         <div style="border-top: 2px solid var(--border-color); width: 60%; margin: 20px 0; padding-top: 20px;">
           <p style="color: #7f8c8d; font-size: 1.1rem;">ЛФМШ &laquo;Квант&raquo; &bull; Летняя физико-математическая школа</p>
-          <p style="color: #7f8c8d; font-size: 1.1rem;">Курс: &laquo;Веб-разработка на Python (Django)&raquo; &bull; 29 июня, 10:00-11:20</p>
+          <p style="color: #7f8c8d; font-size: 1.1rem;">Изучение функции render(), структуры папок и словаря context</p>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 2: Проблема: Формирование HTML в Python-коде -->
+    <!-- Слайд 2: Проблема: HTML в Python-коде Views -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Проблема: HTML внутри Python-кода</h2>
+        <h2>Проблема: HTML внутри Python-кода Views</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p>До сих пор мы возвращали HTML-строки прямо из View:</p>
+            <p>До сих пор мы формировали ответ в виде текстовых строк прямо во View:</p>
             <pre><code>from django.http import HttpResponse
 
-def home_view(request):
-    name = "Алексей"
-    # ❌ Смешивание логики и разметки:
-    html = f"&lt;html&gt;&lt;body&gt;&lt;h1&gt;Привет, {name}!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;"
+def news_view(request):
+    title = "Турнир по робототехнике"
+    # ❌ Смешивание логики Python и HTML-верстки:
+    html = f"&lt;html&gt;&lt;body&gt;&lt;h1&gt;Новость: {title}&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;"
     return HttpResponse(html)</code></pre>
-            <p><strong>Минусы такого подхода:</strong></p>
+            <p><strong>Минусы смешанного подхода:</strong></p>
             <ul>
-              <li>Сложно писать и поддерживать сложную верстку.</li>
-              <li>Смешивается бизнес-логика (Python) и интерфейс (HTML).</li>
-              <li>Веб-дизайнер не может редактировать страницу без знания Python.</li>
+              <li><strong>Неудобство:</strong> Трудности написания CSS, JS и больших HTML-страниц.</li>
+              <li><strong>Хрупкость:</strong> Любая опечатка ломает Python-код бэкенда.</li>
+              <li><strong>Коллаборация:</strong> Дизайнеры не могут править верстку.</li>
             </ul>
           </div>
           <div class="column" style="display: flex; align-items: center; justify-content: center;">
             <div class="highlight-box warning" style="width: 100%;">
               <span style="font-size: 3rem;">⚠️</span>
-              <h3 style="color: var(--accent-color); margin-top: 15px;">Спагетти-код</h3>
-              <p style="font-size: 1rem; margin-top: 10px;">Встраивание HTML в Python-строки делает проект хрупким и нечитаемым при росте приложения.</p>
+              <h3 style="color: var(--accent-color); margin-top: 15px;">«Спагетти-код»</h3>
+              <p style="font-size: 1rem; margin-top: 10px;">Нарушается базовый паттерн разработки: смешивание логики приложения с его визуальным представлением.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 3: Решение: Паттерн MVT и Шаблоны -->
+    <!-- Слайд 3: Решение: Архитектурный паттерн MVT -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Решение: Паттерн MVT и Шаблоны</h2>
+        <h2>Решение: Паттерн MVT в Django</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 20px;">Django реализует архитектурную схему <strong>MVT (Model-View-Template)</strong>. Это разновидность MVC, адаптированная под веб:</p>
+        <p style="margin-bottom: 20px;">Django разделяет обязанности компонентов по схеме <strong>Model-View-Template</strong>:</p>
         
         <div class="columns">
           <div class="column">
-            <div style="background: #ebf5fb; padding: 20px; border-radius: 8px; border-left: 5px solid var(--primary-color);">
+            <div style="background: #ebf5fb; padding: 20px; border-radius: 8px; border-left: 5px solid var(--primary-color); height: 100%;">
               <h4><strong>View (Представление)</strong></h4>
-              <p style="font-size: 0.95rem;">Получает запрос, работает с базой данных (через Model), формирует контекст (данные) и вызывает шаблон.</p>
+              <p style="font-size: 0.95rem; margin-top: 10px;">Обрабатывает HTTP-запросы, извлекает данные (списки новостей, преподавателей, событий), упаковывает их в словарь <strong>context</strong> и вызывает шаблон.</p>
             </div>
           </div>
           <div class="column">
-            <div style="background: #e8f8f5; padding: 20px; border-radius: 8px; border-left: 5px solid var(--secondary-color);">
+            <div style="background: #e8f8f5; padding: 20px; border-radius: 8px; border-left: 5px solid var(--secondary-color); height: 100%;">
               <h4><strong>Template (Шаблон)</strong></h4>
-              <p style="font-size: 0.95rem;">HTML-файл со специальной разметкой, которая указывает, куда вставлять динамические данные из View.</p>
+              <p style="font-size: 0.95rem; margin-top: 10px;">HTML-файл с разметкой DTL (Django Template Language). Служит каркасом, определяющим, <em>как</em> отобразить переданные данные.</p>
             </div>
           </div>
         </div>
         
-        <div class="highlight-box success" style="margin-top: 20px;">
-          <strong>Главный принцип:</strong> Разделение ответственности (Separation of Concerns). View отвечает за <em>что отобразить</em> (данные), а Template — за <em>как отобразить</em> (внешний вид).
+        <div class="highlight-box success" style="margin-top: 25px;">
+          <strong>Принцип разделения ответственности:</strong> View отвечает за <em>что отобразить</em> (данные), а Template — за <em>как отобразить</em> (дизайн страницы).
         </div>
       </div>
     </div>
 
-    <!-- Слайд 4: Настройка шаблонов в settings.py -->
+    <!-- Слайд 4: Структура папок для шаблонов -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Настройка шаблонов в settings.py</h2>
+        <h2>Где Django ищет шаблоны?</h2>
       </div>
       <div class="slide-body">
-        <p>В файле настроек за конфигурацию отвечает список <code>TEMPLATES</code>:</p>
+        <p>Существует два основных подхода к хранению HTML-файлов:</p>
+        <div class="columns">
+          <div class="column">
+            <h4>1. Глобальная папка (Project-level)</h4>
+            <p style="font-size: 0.95rem;">Общие шаблоны для всего сайта (например, базовая верстка, футер, шапка).</p>
+            <pre><code>kvant_site/
+├── templates/      # Глобальная папка
+│   └── base.html
+└── settings.py</code></pre>
+          </div>
+          <div class="column">
+            <h4>2. Папка приложения (App-level)</h4>
+            <p style="font-size: 0.95rem;">Изолированные шаблоны конкретных модулей (новости, расписание, контакты).</p>
+            <pre><code>kvant_site/
+└── news/
+    └── templates/   # Папка внутри app
+        └── news/
+            └── list.html</code></pre>
+          </div>
+        </div>
+        <div class="highlight-box" style="margin-top: 10px; padding: 10px;">
+          <strong>Важное правило (Пространство имен):</strong> Шаблоны внутри приложения кладут в подпапку с тем же именем: <code>templates/news/list.html</code>. Это предотвращает коллизии имен!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 5: Настройка шаблонов в settings.py -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Конфигурация TEMPLATES в settings.py</h2>
+      </div>
+      <div class="slide-body">
+        <p>За поиск шаблонов отвечает параметр <code>TEMPLATES</code> в файле настроек:</p>
         <pre><code style="font-size: 0.9rem;">TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # Глобальная папка шаблонов проекта
-        'APP_DIRS': True,                 # Искать шаблоны внутри папок приложений
+        'DIRS': [BASE_DIR / 'templates'], # Указываем путь к глобальным шаблонам
+        'APP_DIRS': True,                 # Автопоиск в папках templates/ приложений
         'OPTIONS': {
-            'context_processors': [ ... ],
+            'context_processors': [
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                ...
+            ],
         },
     },
 ]</code></pre>
         <ul>
-          <li><strong><code>DIRS</code></strong>: Django ищет шаблоны в указанных папках на уровне проекта (например, в корневой папке <code>templates</code>).</li>
-          <li><strong><code>APP_DIRS: True</code></strong>: Автоматический поиск в папке <code>templates/</code> каждого зарегистрированного в <code>INSTALLED_APPS</code> приложения.</li>
+          <li><strong><code>DIRS</code></strong>: Списки абсолютных путей, где Django будет искать шаблоны в первую очередь.</li>
+          <li><strong><code>APP_DIRS: True</code></strong>: Фреймворк ищет шаблоны внутри каждого приложения из <code>INSTALLED_APPS</code>.</li>
         </ul>
       </div>
     </div>
 
-    <!-- Слайд 5: Анатомия рендеринга: Функция render() -->
+    <!-- Слайд 6: Анатомия рендеринга: Функция render() -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Анатомия рендеринга: Функция render()</h2>
+        <h2>Функция render()</h2>
       </div>
       <div class="slide-body">
-        <p>Для загрузки шаблона и наполнения его данными используется встроенная функция <code>render()</code>:</p>
+        <p>Для загрузки HTML-шаблона и его заполнения данными используется функция-хелпер <code>render()</code>:</p>
         <pre><code>from django.shortcuts import render
 
-def home_view(request):
-    # Данные для шаблона упаковываются в словарь context
-    context = {
-        'username': 'Алексей',
-        'age': 16,
-    }
-    # Функция render объединяет request, путь к шаблону и данные
-    return render(request, 'homepage.html', context)</code></pre>
-        <p>Параметры функции <code>render</code>:</p>
+def index_view(request):
+    # Логика сбора данных
+    return render(request, 'news/list.html', context={})</code></pre>
+        <p><strong>Параметры функции <code>render</code>:</strong></p>
         <ol>
-          <li><code>request</code> — исходный HTTP-запрос (обязательно).</li>
-          <li><code>template_name</code> — имя файла шаблона (путь относительно папки шаблонов).</li>
-          <li><code>context</code> — словарь с данными для вывода (необязательно, но почти всегда передается).</li>
+          <li><code>request</code> — исходный объект HTTP-запроса (обязательный аргумент).</li>
+          <li><code>template_name</code> — относительный путь к файлу шаблона (например, <code>'news/list.html'</code>).</li>
+          <li><code>context</code> — необязательный словарь с динамическими данными (по умолчанию пуст).</li>
         </ol>
+        <p style="margin-top: 10px;"><strong>Результат работы:</strong> Возвращает объект <code>HttpResponse</code> с готовым HTML-кодом.</p>
       </div>
     </div>
 
-    <!-- Слайд 6: Контекст шаблона (Context Dictionary) -->
+    <!-- Слайд 7: Контекст шаблона (Context Dictionary) -->
     <div class="slide">
       <div class="slide-header">
         <h2>Контекст шаблона (Context Dictionary)</h2>
@@ -144,28 +176,25 @@ def home_view(request):
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p><strong>Контекст</strong> — это обычный Python-словарь (<code>dict</code>), ключи которого становятся переменными в HTML-файле шаблона:</p>
+            <p><strong>Контекст</strong> — это Python-словарь, ключи которого становятся именами переменных в HTML-шаблоне:</p>
             <pre><code># В файле views.py
 context = {
-    'title': 'Личный кабинет',
-    'rating': 4.95,
-    'tags': ['math', 'python', 'django']
+    'camp_name': 'Квант',
+    'shift_year': 2026,
+    'news_list': [
+        'Приезд лекторов',
+        'Турнир по футболу'
+    ]
 }</code></pre>
-            <p>В HTML-шаблоне:</p>
-            <ul>
-              <li><code>title</code> вернет строку <code>"Личный кабинет"</code></li>
-              <li><code>rating</code> вернет число <code>4.95</code></li>
-              <li><code>tags</code> вернет список тегов</li>
-            </ul>
           </div>
           <div class="column">
-            <div class="highlight-box" style="margin-top: 15px;">
+            <div class="highlight-box success" style="height: 100%;">
               <h4>Что можно передавать?</h4>
               <ul>
-                <li>Простые типы: <code>str</code>, <code>int</code>, <code>float</code>, <code>bool</code>.</li>
-                <li>Коллекции: <code>list</code>, <code>dict</code>, <code>set</code>, <code>tuple</code>.</li>
-                <li>Объекты классов (включая модели БД).</li>
-                <li>Функции и методы объектов.</li>
+                <li><strong>Простые типы:</strong> строки, числа, логические флаги.</li>
+                <li><strong>Коллекции:</strong> списки, словари, кортежи.</li>
+                <li><strong>Сложные объекты:</strong> объекты пользовательских классов, инстансы моделей.</li>
+                <li>Методы объектов (вызываются автоматически).</li>
               </ul>
             </div>
           </div>
@@ -173,19 +202,19 @@ context = {
       </div>
     </div>
 
-    <!-- Слайд 7: Синтаксис шаблонов Django (DTL) -->
+    <!-- Слайд 8: Введение в Django Template Language (DTL) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Синтаксис шаблонов Django (DTL)</h2>
+        <h2>Язык шаблонов Django (DTL)</h2>
       </div>
       <div class="slide-body">
-        <p>Для разметки HTML используется <strong>Django Template Language (DTL)</strong>. У него есть четыре основных конструкции:</p>
+        <p>DTL содержит 4 основных синтаксических блока для управления разметкой:</p>
         
         <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 1.1rem;">
           <thead>
             <tr style="border-bottom: 2px solid var(--primary-color); text-align: left;">
               <th style="padding: 10px;">Синтаксис</th>
-              <th style="padding: 10px;">Название</th>
+              <th style="padding: 10px;">Тип</th>
               <th style="padding: 10px;">Назначение</th>
               <th style="padding: 10px;">Пример</th>
             </tr>
@@ -194,334 +223,308 @@ context = {
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 10px; font-family: monospace;">{{ variable }}</td>
               <td style="padding: 10px;">Переменные</td>
-              <td style="padding: 10px;">Вывод значения на экран</td>
-              <td style="padding: 10px; font-family: monospace;">{{ username }}</td>
+              <td style="padding: 10px;">Вывод значений в HTML</td>
+              <td style="padding: 10px; font-family: monospace;">{{ camp_name }}</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 10px; font-family: monospace;">{% tag %}</td>
               <td style="padding: 10px;">Теги</td>
-              <td style="padding: 10px;">Логика: циклы, условия, блоки</td>
-              <td style="padding: 10px; font-family: monospace;">{% if age >= 18 %}</td>
+              <td style="padding: 10px;">Управляющие конструкции</td>
+              <td style="padding: 10px; font-family: monospace;">{% for n in news_list %}</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 10px; font-family: monospace;">{{ var|filter }}</td>
               <td style="padding: 10px;">Фильтры</td>
-              <td style="padding: 10px;">Преобразование вывода переменных</td>
-              <td style="padding: 10px; font-family: monospace;">{{ username|lower }}</td>
+              <td style="padding: 10px;">Форматирование вывода</td>
+              <td style="padding: 10px; font-family: monospace;">{{ camp_name|upper }}</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border-color);">
               <td style="padding: 10px; font-family: monospace;">{# comment #}</td>
               <td style="padding: 10px;">Комментарии</td>
-              <td style="padding: 10px;">Скрытый от пользователя текст</td>
-              <td style="padding: 10px; font-family: monospace;">{# это комментарий #}</td>
+              <td style="padding: 10px;">Бэкенд-комментарии</td>
+              <td style="padding: 10px; font-family: monospace;">{# Скрыто от клиента #}</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Слайд 8: Вывод переменных: Синтаксис {{ variable }} -->
+    <!-- Слайд 9: Вывод переменных и Dot Notation -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Вывод переменных</h2>
+        <h2>Вывод переменных и обращение через точку</h2>
       </div>
       <div class="slide-body">
-        <p>Двойные фигурные скобки заменяются на значение переменной в момент рендеринга:</p>
-        <pre><code>&lt;!-- Шаблон: profile.html --&gt;
-&lt;div class="user-card"&gt;
-    &lt;h2&gt;Пользователь: {{ username }}&lt;/h2&gt;
-    &lt;p&gt;Возраст: {{ age }} лет&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-        <p>Результат сборки на сервере (то, что увидит браузер клиента):</p>
-        <pre><code>&lt;div class="user-card"&gt;
-    &lt;h2&gt;Пользователь: Алексей&lt;/h2&gt;
-    &lt;p&gt;Возраст: 16 лет&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-        <div class="highlight-box success">
-          Если переменная отсутствует в словаре <code>context</code>, Django не вызывает ошибку! Вместо этого он молча выведет пустую строку (или значение, заданное настройкой <code>string_if_invalid</code>).
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 9: Обращение через точку (Dot Notation) -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Обращение через точку (Dot Notation)</h2>
-      </div>
-      <div class="slide-body">
-        <p>В DTL используется <strong>универсальный оператор точки</strong> для доступа к вложенным структурам. Django сам понимает, что нужно сделать:</p>
-        <ul>
-          <li><strong>Ключи словаря:</strong> <code>{{ user.email }}</code> &rarr; <code>user['email']</code></li>
-          <li><strong>Атрибуты объекта:</strong> <code>{{ book.title }}</code> &rarr; <code>book.title</code></li>
-          <li><strong>Методы объекта:</strong> <code>{{ user.get_full_name }}</code> &rarr; <code>user.get_full_name()</code> <br>
-            <small style="color:#7f8c8d;">(Внимание: методы вызываются <strong>без круглых скобок</strong> и не должны принимать аргументы!)</small></li>
-          <li><strong>Индексы списков:</strong> <code>{{ participants.0 }}</code> &rarr; <code>participants[0]</code> <br>
-            <small style="color:#7f8c8d;">(Отрицательные индексы типа <code>-1</code> не поддерживаются через точку)</small></li>
-        </ul>
-        <div class="highlight-box success">
-          Порядок поиска: если вы пишете <code>foo.bar</code>, Django пытается сделать: 1) <code>foo['bar']</code>, 2) <code>foo.bar</code>, 3) <code>foo.bar()</code>, 4) <code>foo[bar]</code> (если bar — индекс).
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 10: Фильтры шаблонов: Преобразование данных -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Фильтры шаблонов: Преобразование данных</h2>
-      </div>
-      <div class="slide-body">
-        <p>Фильтры модифицируют отображение переменной. Они записываются через вертикальную черту <code>|</code>:</p>
+        <p>Для доступа к вложенным структурам в DTL используется единый оператор — <strong>точка (.)</strong>:</p>
         <div class="columns">
           <div class="column">
+            <pre><code># views.py
+teacher = {
+    'name': 'Иван Иванов',
+    'subject': 'Математика',
+    'contacts': {'phone': '123-45'}
+}</code></pre>
+            <p><strong>Обращение к элементам:</strong></p>
             <ul>
-              <li><code>{{ name|upper }}</code> &mdash; переведет в верхний регистр (<code>АЛЕКСЕЙ</code>).</li>
-              <li><code>{{ text|lower }}</code> &mdash; переведет в нижний регистр.</li>
-              <li><code>{{ desc|default:"Описание отсутствует" }}</code> &mdash; выведет текст по умолчанию, если переменная пуста или равна <code>None</code>.</li>
-              <li><code>{{ students|length }}</code> &mdash; вернет количество элементов в списке.</li>
+              <li>Ключ словаря: <code>{{ teacher.name }}</code></li>
+              <li>Вложенный ключ: <code>{{ teacher.contacts.phone }}</code></li>
             </ul>
           </div>
           <div class="column">
+            <pre><code># views.py
+news = ['Новость 1', 'Новость 2']
+# Наследует методы строк и списков</code></pre>
             <ul>
-              <li><code>{{ title|truncatewords:3 }}</code> &mdash; обрежет строку до 3 слов и добавит многоточие.</li>
-              <li><code>{{ price|floatformat:2 }}</code> &mdash; округлит число с плавающей точкой до 2 знаков после запятой.</li>
-              <li><code>{{ date|date:"Y-m-d" }}</code> &mdash; отформатирует объект даты (например, <code>2026-06-29</code>).</li>
+              <li>Индекс списка: <code>{{ news.0 }}</code> (первый элемент)</li>
+              <li>Метод (без скобок): <code>{{ teacher.name.upper }}</code></li>
             </ul>
-          </div>
-        </div>
-        <pre style="margin-top: 10px;"><code>{# Можно комбинировать (цепочки фильтров): #}
-&lt;p&gt;{{ user.get_full_name|upper|default:"ГОСТЬ" }}&lt;/p&gt;</code></pre>
-      </div>
-    </div>
-
-    <!-- Слайд 11: Безопасность и автоэкранирование: Фильтр safe -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Безопасность и фильтр safe</h2>
-      </div>
-      <div class="slide-body">
-        <div class="columns">
-          <div class="column" style="flex: 1.2;">
-            <p>По умолчанию Django <strong>автоматически экранирует</strong> все спецсимволы HTML (<code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, <code>'</code>, <code>"</code>) для защиты от XSS-атак (внедрения вредоносного JS-кода).</p>
-            <pre><code># views.py: context = {'comment': '&lt;b&gt;Привет&lt;/b&gt;'}
-# HTML: {{ comment }}
-# В браузере отобразится как текст: &lt;b&gt;Привет&lt;/b&gt;</code></pre>
-            <p>Если вы уверены в безопасности HTML-кода и хотите отрендерить его как теги, используйте фильтр <strong><code>safe</code></strong>:</p>
-            <pre><code>&lt;p&gt;Форматированный текст: {{ comment|safe }}&lt;/p&gt;
-&lt;!-- Отобразится жирным: Привет --&gt;</code></pre>
-          </div>
-          <div class="column" style="flex: 0.8;">
-            <div class="highlight-box warning" style="margin-top: 15px;">
-              <h4>⚠️ Осторожно!</h4>
-              <p>Никогда не применяйте фильтр <code>safe</code> к данным, которые ввел пользователь (комментарии, имена, отзывы). Это открывает уязвимость для межсайтового скриптинга (XSS).</p>
+            <div class="highlight-box warning" style="margin-top: 10px; padding: 10px;">
+              <strong>Важно:</strong> Вызов методов со скобками <code>{{ name.upper() }}</code> в DTL вызовет синтаксическую ошибку. Параметры передавать нельзя!
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 12: Теги шаблонов (Tags): Цикл {% for %} -->
+    <!-- Слайд 10: Фильтры шаблонов (Template Filters) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Теги: Цикл {% for %}</h2>
+        <h2>Фильтры шаблонов: Изменение вывода данных</h2>
       </div>
       <div class="slide-body">
-        <p>Используется для перебора списков, кортежей или словарей в HTML:</p>
+        <p>Фильтры применяются с помощью вертикальной черты <code>|</code> и позволяют преобразовывать данные прямо в шаблоне:</p>
+        <div class="columns">
+          <div class="column">
+            <ul>
+              <li><code>{{ camp_name|upper }}</code> &rarr; перевод в верхний регистр (КВАНТ).</li>
+              <li><code>{{ teacher.bio|default:"Биография отсутствует" }}</code> &rarr; значение по умолчанию.</li>
+              <li><code>{{ news_list|length }}</code> &rarr; количество элементов в списке.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <ul>
+              <li><code>{{ event.date|date:"d.m.Y" }}</code> &rarr; форматирование даты.</li>
+              <li><code>{{ event.title|truncatewords:5 }}</code> &rarr; обрезка длинного текста.</li>
+              <li><code>{{ teacher.rating|floatformat:1 }}</code> &rarr; округление вещественного числа.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box success">
+          <strong>Цепочки фильтров:</strong> Фильтры можно комбинировать по цепочке: <code>{{ event.text|default:"нет текста"|truncatewords:10 }}</code>. Обработка идет слева направо.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 11: Безопасность и фильтр safe -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Безопасность: Автоэкранирование и фильтр safe</h2>
+      </div>
+      <div class="slide-body">
+        <p>По умолчанию Django автоматически экранирует спецсимволы HTML (<code>&lt;, &gt;, &amp;, &quot;, &#x27;</code>). Это защищает приложение от XSS-атак (внедрения вредоносных скриптов).</p>
+        
+        <div class="columns">
+          <div class="column">
+            <p><strong>Пример из views.py:</strong></p>
+            <pre><code>context = {
+    'tag_html': '&lt;b&gt;Срочно!&lt;/b&gt;'
+}</code></pre>
+            <ul>
+              <li>Обычный вывод <code>{{ tag_html }}</code> отобразится в браузере как текст: <code>&lt;b&gt;Срочно!&lt;/b&gt;</code>.</li>
+              <li>Браузер не интерпретирует HTML.</li>
+            </ul>
+          </div>
+          <div class="column">
+            <p><strong>Отключение защиты через фильтр safe:</strong></p>
+            <pre><code># В шаблоне HTML:
+{{ tag_html|safe }}</code></pre>
+            <ul>
+              <li>Результат в браузере: <strong>Срочно!</strong> (жирный шрифт).</li>
+              <li>Используйте <code>|safe</code> только для проверенных данных, сгенерированных вами.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 12: Циклы в шаблонах: Тег {% for %} -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Вывод списков: Тег {% for %}</h2>
+      </div>
+      <div class="slide-body">
+        <p>Для отображения динамических списков (новостей, событий, преподавателей) используется тег <code>for</code>:</p>
         <pre><code>&lt;ul&gt;
-    {% for student in students %}
-        &lt;li&gt;{{ forloop.counter }}. {{ student }}&lt;/li&gt;
+    {% for teacher in teachers %}
+        &lt;li&gt;{{ forloop.counter }}. {{ teacher.name }} &mdash; {{ teacher.subject }}&lt;/li&gt;
     {% empty %}
-        &lt;li&gt;Список студентов пуст&lt;/li&gt;
+        &lt;li&gt;Преподаватели еще не добавлены в список.&lt;/li&gt;
     {% endfor %}
 &lt;/ul&gt;</code></pre>
-        <p><strong>Ключевые фичи:</strong></p>
         <ul>
-          <li><strong><code>{% empty %}</code></strong> — блок, который выполнится, если список пуст или равен <code>None</code>.</li>
-          <li><strong><code>forloop.counter</code></strong> — автоматическая переменная цикла, хранит индекс текущей итерации (начиная с 1).</li>
-          <li><code>forloop.counter0</code> (начиная с 0), <code>forloop.first</code> / <code>forloop.last</code> (булевы флаги).</li>
+          <li><strong><code>{% empty %}</code></strong>: Опциональный блок. Отрендерится, если переданный список пуст или равен <code>None</code>.</li>
+          <li><strong><code>forloop.counter</code></strong>: Служебная переменная, хранящая текущий шаг цикла (начиная с 1).</li>
+          <li><strong><code>forloop.first</code> / <code>forloop.last</code></strong>: Булевы флаги для первой и последней итерации.</li>
         </ul>
       </div>
     </div>
 
-    <!-- Слайд 13: Теги шаблонов (Tags): Условие {% if %} -->
+    <!-- Слайд 13: Условный оператор: Тег {% if %} -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Теги: Условие {% if %}</h2>
+        <h2>Ветвление в шаблоне: Тег {% if %}</h2>
       </div>
       <div class="slide-body">
-        <p>Условные операторы позволяют отображать элементы интерфейса выборочно:</p>
-        <pre><code>{% if score >= 90 %}
-    &lt;div class="badge success"&gt;Отличный результат (A)!&lt;/div&gt;
-{% elif score >= 75 %}
-    &lt;div class="badge info"&gt;Хороший результат (B)&lt;/div&gt;
+        <p>Используется для управления показом блоков верстки в зависимости от условий:</p>
+        <pre><code>{% if event.capacity <= event.current_registrations %}
+    &lt;span class="badge badge-accent"&gt;Мест нет&lt;/span&gt;
+{% elif event.current_registrations >= 15 %}
+    &lt;span class="badge badge-secondary"&gt;Осталось мало мест&lt;/span&gt;
 {% else %}
-    &lt;div class="badge warning"&gt;Нужно потренироваться&lt;/div&gt;
+    &lt;span class="badge badge-primary"&gt;Регистрация открыта&lt;/span&gt;
 {% endif %}</code></pre>
-        <p><strong>Логические операторы в условиях DTL:</strong></p>
+        <p><strong>Возможности условных выражений в DTL:</strong></p>
         <ul>
-          <li><code>and</code>, <code>or</code>, <code>not</code> (например, <code>{% if user.is_authenticated and not user.is_staff %}</code>).</li>
-          <li>Операторы сравнения: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>.</li>
-          <li>Проверка вхождения: <code>in</code>, <code>not in</code> (например, <code>{% if "admin" in user.groups %}</code>).</li>
+          <li>Логические операторы: <code>and</code>, <code>or</code>, <code>not</code>.</li>
+          <li>Операции сравнения: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>.</li>
+          <li>Проверка вхождения: <code>in</code>, <code>not in</code> (например, <code>{% if user in event.registrations %}</code>).</li>
         </ul>
       </div>
     </div>
 
-    <!-- Слайд 14: Комментарии в DTL -->
+    <!-- Слайд 14: Комментарии в шаблонах -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Комментарии в DTL</h2>
+        <h2>Комментарии: DTL vs HTML</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p><strong>Однострочные комментарии:</strong></p>
-            <pre><code>{# Это примечание не попадет в итоговый HTML #}
-&lt;p&gt;Добро пожаловать!&lt;/p&gt;</code></pre>
-            <p><strong>Многострочные комментарии:</strong></p>
-            <pre><code>{% comment "Комментарий для отладки" %}
-    &lt;div class="debug-info"&gt;
-        &lt;p&gt;Этот блок полностью игнорируется Django.&lt;/p&gt;
-    &lt;/div&gt;
+            <h4>Однострочные комментарии DTL</h4>
+            <pre><code>{# Это комментарий DTL. Он не попадет в HTML #}</code></pre>
+            
+            <h4>Многострочные комментарии DTL</h4>
+            <pre><code>{% comment "Пояснение разработчику" %}
+  &lt;p&gt;Этот кусок кода полностью&lt;/p&gt;
+  &lt;p&gt;будет проигнорирован Django&lt;/p&gt;
 {% endcomment %}</code></pre>
           </div>
           <div class="column">
-            <div class="highlight-box success">
-              <h4>DTL против HTML комментариев</h4>
-              <p>Обычные HTML комментарии вида <code>&lt;!-- ... --&gt;</code> передаются в браузер и видны пользователю при просмотре исходного кода страницы. Комментарии DTL обрабатываются на сервере и <strong>полностью вырезаются</strong> из итогового ответа.</p>
+            <h4>HTML-комментарии (Опасность!)</h4>
+            <pre><code>&lt;!-- &lt;h1&gt;{{ user.password }}&lt;/h1&gt; --&gt;</code></pre>
+            <div class="highlight-box warning">
+              <strong>Будьте осторожны:</strong> HTML-комментарии <code>&lt;!-- --&gt;</code> скрывают элементы на экране, но отправляются в браузер. Тэги DTL внутри них <strong>продолжают выполняться</strong> на сервере, что может привести к утечке конфиденциальных данных!
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 15: Важность разделения логики и представления -->
+    <!-- Слайд 15: Разделение логики: Что можно и что нельзя -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Разделение логики и представления</h2>
+        <h2>Архитектурные правила: Разделение логики</h2>
       </div>
       <div class="slide-body">
-        <p>Архитектурное правило хорошего тона при написании шаблонов:</p>
         <div class="columns">
-          <div class="column">
-            <div class="highlight-box warning" style="border-left-color: var(--accent-color);">
-              <h4 style="color: var(--accent-color);">Что НЕЛЬЗЯ делать в шаблоне:</h4>
-              <ul>
-                <li>Писать сложные вычисления или бизнес-логику.</li>
-                <li>Делать запросы к базе данных напрямую.</li>
-                <li>Вызывать тяжелые методы, изменяющие состояние БД.</li>
-                <li>Писать код, требующий передачи аргументов в функции.</li>
-              </ul>
-            </div>
+          <div class="column" style="background-color: #e8f8f5; border-radius: 8px; padding: 15px;">
+            <h4 style="color: var(--secondary-color);">Что ДЕЛАТЬ в шаблоне (Можно)</h4>
+            <ul>
+              <li>Форматировать данные (выровнять регистр, дату, округлить число).</li>
+              <li>Перебирать коллекции для генерации списков/таблиц.</li>
+              <li>Переключать видимость блоков с помощью простых ветвлений.</li>
+            </ul>
           </div>
-          <div class="column">
-            <div class="highlight-box success">
-              <h4 style="color: var(--secondary-color);">Что НУЖНО делать во View:</h4>
-              <ul>
-                <li>Выполнить все фильтрации и вычисления на Python.</li>
-                <li>Получить готовые списки и объекты из БД.</li>
-                <li>Сформировать простой словарь контекста.</li>
-                <li>Передать подготовленные данные в шаблон для простой отрисовки.</li>
-              </ul>
-            </div>
+          <div class="column" style="background-color: #fdf2e9; border-radius: 8px; padding: 15px;">
+            <h4 style="color: var(--accent-color);">Чего НЕ ДЕЛАТЬ в шаблоне (Нельзя)</h4>
+            <ul>
+              <li>Делать SQL-запросы в БД.</li>
+              <li>Вызывать сложные расчеты, тяжелые алгоритмы.</li>
+              <li>Изменять состояние объектов (сохранять данные).</li>
+              <li>Записывать пароли или токены.</li>
+            </ul>
           </div>
         </div>
+        <p style="margin-top: 10px; font-size: 0.95rem; text-align: center; color: #7f8c8d;">Помните: шаблон должен быть глупым и заниматься исключительно выводом.</p>
       </div>
     </div>
 
-    <!-- Слайд 16: Типичные ошибки при работе с шаблонами -->
+    <!-- Слайд 16: Типичные ошибки разработчиков -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Типичные ошибки разработчиков</h2>
+        <h2>Типичные ошибки при работе с шаблонами</h2>
       </div>
       <div class="slide-body">
         <ul>
-          <li><strong><code>TemplateDoesNotExist</code></strong> — Django не может найти файл шаблона. Проверьте:
+          <li><strong>Ошибка <code>TemplateDoesNotExist</code>:</strong>
             <ul>
-              <li>Прописана ли папка в <code>DIRS</code> настроек <code>settings.py</code>?</li>
-              <li>Добавлено ли приложение в <code>INSTALLED_APPS</code> (если используется <code>APP_DIRS: True</code>)?</li>
-              <li>Правильно ли указаны регистр букв и расширение файла (<code>.html</code>)?</li>
+              <li>Забыли зарегистрировать приложение в <code>INSTALLED_APPS</code>.</li>
+              <li>Неверно написан путь в <code>DIRS</code> в <code>settings.py</code> или опечатка в имени файла.</li>
             </ul>
           </li>
-          <li><strong>Пустые значения на экране</strong> — опечатка в имени переменной в HTML или в ключе словаря во View (например, <code>{{ user_name }}</code> вместо <code>{{ username }}</code>).</li>
-          <li><strong>Попытка вызова метода со скобками</strong> — запись вида <code>{{ user.get_full_name() }}</code> вызовет синтаксическую ошибку DTL. Пишите: <code>{{ user.get_full_name }}</code>.</li>
+          <li><strong>Опечатки в названиях переменных:</strong>
+            <ul>
+              <li>Если во View передан <code>'teachers'</code>, а в шаблоне написано <code>{{ teacher_list }}</code>, Django промолчит и выведет пустую строку. Будьте внимательны!</li>
+            </ul>
+          </li>
+          <li><strong>Вызов методов со скобками:</strong>
+            <ul>
+              <li>Попытка написать <code>{{ name.lower() }}</code> приведет к игнорированию или ошибке разбора шаблона.</li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>
 
-    <!-- Слайд 17: Разбор демонстрации: Динамическое табло -->
+    <!-- Слайд 17: Демо: Главная страница «Сайта летней школы Квант» -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Практическая демонстрация</h2>
+        <h2>Практическая сборка главной страницы</h2>
       </div>
       <div class="slide-body">
-        <p>Мы создадим мини-проект «Динамическое табло ЛФМШ "Квант"»:</p>
-        <div class="columns">
-          <div class="column" style="flex: 1.2;">
-            <ol>
-              <li>Настроим единую папку <code>templates/</code> в проекте.</li>
-              <li>Создадим View, передающую сложный контекст:
-                <ul>
-                  <li>Название лагеря и текущую дату.</li>
-                  <li>Список учебных групп и количество участников.</li>
-                  <li>Статус работы столовой (булев флаг).</li>
-                  <li>Список объявлений дня.</li>
-                </ul>
-              </li>
-              <li>Напишем шаблон с использованием переменных, циклов, условий и встроенных фильтров.</li>
-            </ol>
-          </div>
-          <div class="column" style="flex: 0.8; display: flex; align-items: center; justify-content: center;">
-            <div style="background: #f8f9fa; border: 2px dashed var(--secondary-color); padding: 20px; border-radius: 8px; text-align: center;">
-              <span style="font-size: 3.5rem;">📋</span>
-              <h3 style="color: var(--secondary-color); margin-top: 10px;">Кодинг-тайм</h3>
-              <p style="font-size: 0.95rem; margin-top: 5px;">Разворачиваем проект и переносим разметку в шаблоны</p>
-            </div>
-          </div>
+        <p>В ходе практического демо мы создадим View, передающий в шаблон:</p>
+        <ol>
+          <li>Список срочных новостей школы с автообрезкой текста.</li>
+          <li>Мероприятия с проверкой наличия свободных мест и статусом регистрации.</li>
+          <li>Список преподавателей с их предметами и рейтингом.</li>
+        </ol>
+        <div class="highlight-box success">
+          <strong>Цель:</strong> Получить работающую динамическую веб-страницу с адаптивной версткой на основе DTL без единого жестко зашитого HTML-элемента в Python-коде!
         </div>
       </div>
     </div>
 
     <!-- Слайд 18: Итоги урока -->
     <div class="slide">
-      <div class="slide-header">
-        <h2>Итоги урока</h2>
-      </div>
-      <div class="slide-body">
-        <div class="columns">
-          <div class="column">
-            <ul>
-              <li><strong>Шаблоны Django</strong> отделяют верстку (HTML) от кода управления (Python).</li>
-              <li>Функция <strong><code>render()</code></strong> связывает HTTP-запрос, HTML-шаблон и словарь контекста.</li>
-              <li><strong>Контекст</strong> — словарь, ключи которого доступны в шаблоне как переменные.</li>
-              <li><strong>DTL</strong> предоставляет синтаксис переменных (<code>{{ }}</code>), тегов (<code>{% %}</code>), фильтров (<code>|</code>) и комментариев (<code>{# #}</code>).</li>
-              <li>Через <strong>точку</strong> можно обращаться к ключам словаря, атрибутам, методам и индексам.</li>
-            </ul>
-          </div>
-          <div class="column" style="display: flex; justify-content: center; align-items: center;">
-            <div class="highlight-box success" style="text-align: center; padding: 25px; border-radius: 8px; width: 100%;">
-              <span style="font-size: 3rem;">🎓</span>
-              <h3 style="color: var(--secondary-color); margin-top: 15px;">Вы готовы к практике!</h3>
-              <p style="font-size: 1rem; margin-top: 10px;">Давайте напишем наши первые шаблоны!</p>
-            </div>
-          </div>
+      <div class="slide-body" style="text-align: center; justify-content: center; align-items: center;">
+        <h2 style="color: var(--primary-color); font-size: 2.8rem; margin-bottom: 20px;">Итоги урока</h2>
+        <div style="text-align: left; max-width: 800px; margin-bottom: 30px;">
+          <ul>
+            <li>Изучили паттерн <strong>MVT</strong> и отделили логику бэкенда от фронтенда.</li>
+            <li>Научились конфигурировать шаблоны в <code>settings.py</code>.</li>
+            <li>Освоили синтаксис <strong>DTL</strong>: переменные, точки, теги, фильтры и комментарии.</li>
+            <li>Поняли основы XSS-безопасности и автоэкранирования.</li>
+          </ul>
         </div>
+        <p style="font-size: 1.4rem; font-weight: bold; color: var(--secondary-color);">Время переходить к практике в VS Code!</p>
       </div>
     </div>
 
-    <!-- Управление -->
-    <div class="controls">
-      <button class="control-btn" id="prev-btn">&larr; Назад</button>
-      <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
-      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
-    </div>
+  </div>
 
-    <!-- Счетчик слайдов -->
-    <div class="slide-counter" id="slide-counter">1 / 18</div>
+  <!-- Кнопки управления презентацией -->
+  <div class="controls">
+    <button class="control-btn" id="prev-btn">&larr; Назад</button>
+    <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
+    <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+  </div>
 
-    <!-- Прогресс-бар -->
-    <div class="progress-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
+  <!-- Счетчики слайдов -->
+  <div class="slide-counter" id="slide-counter">1 / 18</div>
 
+  <!-- Прогресс-бар -->
+  <div class="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
   </div>
 
   <script src="script.js"></script>

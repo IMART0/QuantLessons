@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <!-- Мета-тег viewport для корректного отображения на мобильных -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Летняя школа Квант - Верстка</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Шапка сайта -->
+  <header class="site-header">
+    <div class="logo">Квант.Camp</div>
+    <nav class="nav-menu">
+      <a href="#" class="nav-link">О лагере</a>
+      <a href="#" class="nav-link">Направления</a>
+      <a href="#" class="nav-link">Преподаватели</a>
+      <a href="#" class="nav-link btn-reg">Регистрация</a>
+    </nav>
+  </header>
+
+  <!-- Секция преподавателей -->
+  <main class="main-content">
+    <section class="teachers-section">
+      <h2 class="section-title">Наши наставники</h2>
+      <p class="section-desc">Ученые, разработчики и преподаватели ведущих вузов страны</p>
+
+      <div class="teachers-list">
+        <!-- Карточка 1 -->
+        <div class="teacher-card">
+          <div class="avatar-box">
+            <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#2980b9"/>
+              <text x="50" y="55" font-size="20" fill="white" font-family="sans-serif" text-anchor="middle">АД</text>
+            </svg>
+          </div>
+          <h3>Алексей Давыдов</h3>
+          <span class="subject">Физика и Робототехника</span>
+          <p>К.ф.-м.н., сотрудник Института прикладной физики. Учит проектировать роботов.</p>
+        </div>
+
+        <!-- Карточка 2 -->
+        <div class="teacher-card">
+          <div class="avatar-box">
+            <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#27ae60"/>
+              <text x="50" y="55" font-size="20" fill="white" font-family="sans-serif" text-anchor="middle">ЕС</text>
+            </svg>
+          </div>
+          <h3>Елена Смирнова</h3>
+          <span class="subject">Python & Django</span>
+          <p>Senior Developer. Рассказывает, как создавать серверную архитектуру с нуля.</p>
+        </div>
+
+        <!-- Карточка 3 -->
+        <div class="teacher-card">
+          <div class="avatar-box">
+            <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#e74c3c"/>
+              <text x="50" y="55" font-size="20" fill="white" font-family="sans-serif" text-anchor="middle">МК</text>
+            </svg>
+          </div>
+          <h3>Михаил Козлов</h3>
+          <span class="subject">Олимпиадная математика</span>
+          <p>Призер всероссийских олимпиад. Объясняет теорию графов на пальцах.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>

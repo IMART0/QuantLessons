@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Урок 5: CSS3: Селекторы, Box Model, Flexbox, Grid и Адаптивность — ЛФМШ "Квант"</title>
+  <title>Урок 5: Современный CSS3 на примере Сайта летней школы Квант — ЛФМШ "Квант"</title>
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
 </head>
@@ -15,33 +15,33 @@
     <div class="slide active">
       <div class="slide-body" style="text-align: center;">
         <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
-        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
-          Современный CSS3:<br>Селекторы, Box Model, Flexbox, Grid и Адаптивность
+        <h1 style="font-size: 2.8rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
+          Современный CSS3:<br>Стилизация «Сайта летней школы Квант»
         </h1>
-        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Курс «Веб-разработка на Python (Django)»</p>
+        <p style="font-size: 1.4rem; color: #7f8c8d; margin-bottom: 40px;">Селекторы, Box Model, Flexbox, Grid и Адаптивность в едином проекте</p>
         <p style="font-size: 1.1rem; font-style: italic;">Урок 5 • 27 июня, 11:30 - 12:50</p>
       </div>
     </div>
 
-    <!-- Слайд 2: Введение -->
+    <!-- Слайд 2: Зачем нам CSS3 в проекте? -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Зачем нам CSS3?</h2>
+        <h2>Зачем нам CSS3 на сайте «Кванта»?</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p style="font-size: 1.3rem; margin-bottom: 20px;"><strong>CSS3 (Cascading Style Sheets)</strong> — это язык стилей, который превращает сырую HTML-разметку в красивый веб-интерфейс.</p>
+            <p style="font-size: 1.2rem; margin-bottom: 15px;"><strong>CSS3 (Cascading Style Sheets)</strong> превращает простую HTML-разметку нашего лагерного сайта в современный адаптивный веб-интерфейс.</p>
             <ul>
-              <li><strong>Отделяет</strong> структуру документа от его внешнего вида.</li>
-              <li><strong>Позволяет</strong> создавать адаптивные сетки под любые экраны.</li>
-              <li><strong>Добавляет</strong> анимацию, тени, скругления и градиенты.</li>
+              <li><strong>Отделяет</strong> структуру ("О лагере", "Расписание", "Форма") от внешнего вида.</li>
+              <li><strong>Выстраивает</strong> элементы: хедер, карточки преподавателей в ряд, расписание в сетку.</li>
+              <li><strong>Адаптирует</strong> сайт под экраны телефонов, планшетов и ноутбуков.</li>
             </ul>
           </div>
           <div class="column">
             <div class="highlight-box success">
-              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Аналогия</h3>
-              <p>Если HTML — это кирпичные стены и каркас здания, то CSS — это внешняя отделка, дизайн интерьера, цвет обоев и расстановка мебели.</p>
+              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Аналогия проекта</h3>
+              <p>HTML — это бетонный каркас учебного корпуса «Кванта» и голые стены. CSS — это фасад, покраска, окна, расположение комнат, расстановка парт и указатели в коридорах.</p>
             </div>
           </div>
         </div>
@@ -51,31 +51,34 @@
     <!-- Слайд 3: Базовые селекторы -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Базовые селекторы CSS</h2>
+        <h2>Находим элементы: Базовые селекторы</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 10px;">Селекторы указывают, к каким элементам применить стили:</p>
+        <p style="margin-bottom: 10px; font-size: 1.1rem;">Чтобы стилизовать наш сайт, нужно точно указать браузеру, какие HTML-элементы мы оформляем:</p>
         <div class="columns">
           <div class="column">
             <ul>
-              <li><strong>По тегу:</strong> выбирает все элементы указанного тега.
-                <pre><code>p { color: red; }</code></pre>
+              <li><strong>По тегу:</strong> стилизует структуру.
+                <pre style="margin: 5px 0;"><code>header { background: #2c3e50; }
+section { padding: 40px; }</code></pre>
               </li>
-              <li><strong>По классу (<code>.</code>):</strong> выбирает элементы с данным классом.
-                <pre><code>.btn { padding: 10px; }</code></pre>
-              </li>
-              <li><strong>По ID (<code>#</code>):</strong> уникальный элемент на странице.
-                <pre><code>#header { background: blue; }</code></pre>
+              <li><strong>По классу (<code>.</code>):</strong> многократные элементы (карточки учителей).
+                <pre style="margin: 5px 0;"><code>.teacher-card { border: 1px solid; }
+.form-input { padding: 10px; }</code></pre>
               </li>
             </ul>
           </div>
           <div class="column">
             <ul>
-              <li><strong>Универсальный селектор (<code>*</code>):</strong> все элементы.
-                <pre><code>* { box-sizing: border-box; }</code></pre>
+              <li><strong>По ID (<code>#</code>):</strong> уникальный элемент на странице.
+                <pre style="margin: 5px 0;"><code>#registration-section {
+  background-color: #f9f9f9;
+}</code></pre>
               </li>
-              <li><strong>Группировка:</strong> стили для нескольких селекторов.
-                <pre><code>h1, h2, h3 { font-family: sans-serif; }</code></pre>
+              <li><strong>Группировка (<code>,</code>):</strong> общие стили заголовков.
+                <pre style="margin: 5px 0;"><code>h1, h2, h3 {
+  font-family: 'Segoe UI';
+}</code></pre>
               </li>
             </ul>
           </div>
@@ -86,22 +89,19 @@
     <!-- Слайд 4: Комбинаторы селекторов -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Связи между селекторами (Комбинаторы)</h2>
+        <h2>Связи в разметке: Комбинаторы</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 15px;">Как стилизовать элементы в зависимости от их взаимного расположения в DOM-дереве:</p>
+        <p style="margin-bottom: 10px; font-size: 1.1rem;">Стилизуем элементы в зависимости от их взаимного расположения в структуре сайта:</p>
         <ul>
-          <li><strong>Потомок (пробел):</strong> Выбирает всех детей, внуков и т.д.
-            <pre><code>div p { color: green; } /* Любой p внутри div */</code></pre>
+          <li><strong>Потомок (пробел):</strong> стилизует все ссылки внутри навигации (на любой глубине).
+            <pre style="margin: 5px 0;"><code>.nav-menu a { color: #3498db; }</code></pre>
           </li>
-          <li><strong>Дочерний селектор (<code>&gt;</code>):</strong> Выбирает только непосредственных детей (первый уровень).
-            <pre><code>ul > li { list-style: none; }</code></pre>
+          <li><strong>Дочерний селектор (<code>&gt;</code>):</strong> стилизует только прямых детей.
+            <pre style="margin: 5px 0;"><code>.teacher-card > h3 { margin-top: 15px; } /* Только h3 внутри карточки */</code></pre>
           </li>
-          <li><strong>Соседний селектор (<code>+</code>):</strong> Выбирает первый элемент сразу ПОСЛЕ указанного (на одном уровне).
-            <pre><code>h1 + p { font-weight: bold; } /* p сразу после h1 */</code></pre>
-          </li>
-          <li><strong>Родственный селектор (<code>~</code>):</strong> Выбирает все элементы после указанного на одном уровне.
-            <pre><code>h1 ~ p { color: gray; } /* Все p после h1 на том же уровне */</code></pre>
+          <li><strong>Соседний селектор (<code>+</code>):</strong> стилизует первый элемент сразу после заголовка.
+            <pre style="margin: 5px 0;"><code>h2 + p { color: #7f8c8d; } /* Вводный абзац сразу под h2 */</code></pre>
           </li>
         </ul>
       </div>
@@ -110,27 +110,26 @@
     <!-- Слайд 5: Псевдоклассы и псевдоэлементы -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Псевдоклассы и псевдоэлементы</h2>
+        <h2>Интерактив: Псевдоклассы и Псевдоэлементы</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Псевдоклассы (состояние элемента)</h3>
+            <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.2rem;">Псевдоклассы (состояние элемента)</h3>
             <ul>
-              <li><code>:hover</code> — при наведении курсора.</li>
-              <li><code>:focus</code> — когда элемент в фокусе (например, инпут).</li>
-              <li><code>:active</code> — в момент клика.</li>
-              <li><code>:nth-child(n)</code> — выбор по порядковому номеру (например, <code>:nth-child(2n)</code> для четных).</li>
+              <li><code>a:hover</code> — наведение мыши на пункт меню.</li>
+              <li><code>input:focus</code> — подсветка рамки при вводе имени/email.</li>
+              <li><code>button:active</code> — эффект нажатия на кнопку регистрации.</li>
             </ul>
           </div>
           <div class="column">
-            <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Псевдоэлементы (виртуальный контент)</h3>
+            <h3 style="color: var(--secondary-color); margin-bottom: 5px; font-size: 1.2rem;">Псевдоэлементы (виртуальный контент)</h3>
             <ul>
-              <li><code>::before</code> — вставляет контент перед содержимым элемента.</li>
-              <li><code>::after</code> — вставляет контент после содержимого элемента.
-                <pre><code>.required::after {
+              <li><code>::before</code> и <code>::after</code> вставляют декоративные элементы или текст.
+                <pre style="margin: 5px 0;"><code>/* Звездочка для обязательных полей */
+.required::after {
   content: " *";
-  color: red;
+  color: #e74c3c;
 }</code></pre>
               </li>
             </ul>
@@ -139,49 +138,49 @@
       </div>
     </div>
 
-    <!-- Слайд 6: Специфичность и Каскад -->
+    <!-- Слайд 6: Каскадность и Специфичность -->
     <div class="slide">
       <div class="slide-header">
         <h2>Каскадность и Специфичность (Specificity)</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 15px;">Если к одному элементу подходят разные правила, браузер рассчитывает их «вес»:</p>
+        <p style="margin-bottom: 10px; font-size: 1.15rem;">Какое правило победит, если мы написали разные цвета для ссылки?</p>
         <div class="columns">
           <div class="column">
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 1.1rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
               <tr style="border-bottom: 2px solid var(--primary-color);">
-                <th style="padding: 8px; text-align: left;">Компонент</th>
-                <th style="padding: 8px; text-align: left;">Пример</th>
-                <th style="padding: 8px; text-align: left;">Вес</th>
+                <th style="padding: 5px; text-align: left;">Селектор</th>
+                <th style="padding: 5px; text-align: left;">Пример</th>
+                <th style="padding: 5px; text-align: left;">Вес</th>
               </tr>
               <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 8px;">Inline-стиль</td>
-                <td style="padding: 8px;"><code>style="..."</code></td>
-                <td style="padding: 8px; font-weight: bold; color: var(--accent-color);">1000</td>
+                <td style="padding: 5px;">Inline-стиль</td>
+                <td style="padding: 5px;"><code>style="color: red"</code></td>
+                <td style="padding: 5px; font-weight: bold; color: var(--accent-color);">1000</td>
               </tr>
               <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 8px;">Идентификатор (ID)</td>
-                <td style="padding: 8px;"><code>#header</code></td>
-                <td style="padding: 8px; font-weight: bold; color: var(--primary-color);">100</td>
+                <td style="padding: 5px;">Идентификатор (ID)</td>
+                <td style="padding: 5px;"><code>#reg-submit</code></td>
+                <td style="padding: 5px; font-weight: bold; color: var(--primary-color);">100</td>
               </tr>
               <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 8px;">Класс / Псевдокласс</td>
-                <td style="padding: 8px;"><code>.btn / :hover</code></td>
-                <td style="padding: 8px; font-weight: bold; color: var(--secondary-color);">10</td>
+                <td style="padding: 5px;">Класс / Псевдокласс</td>
+                <td style="padding: 5px;"><code>.teacher-card / :hover</code></td>
+                <td style="padding: 5px; font-weight: bold; color: var(--secondary-color);">10</td>
               </tr>
               <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 8px;">Тег / Псевдоэлемент</td>
-                <td style="padding: 8px;"><code>div / ::before</code></td>
-                <td style="padding: 8px;">1</td>
+                <td style="padding: 5px;">Тег / Псевдоэлемент</td>
+                <td style="padding: 5px;"><code>header / ::after</code></td>
+                <td style="padding: 5px;">1</td>
               </tr>
             </table>
           </div>
           <div class="column">
-            <div class="highlight-box warning">
-              <strong>Правило переопределения:</strong> При одинаковом весе побеждает правило, написанное в CSS-файле ниже.
+            <div class="highlight-box warning" style="margin: 0 0 10px 0; padding: 10px;">
+              При одинаковом весе побеждает правило, написанное в CSS-файле ниже.
             </div>
-            <div class="highlight-box accent" style="background-color: #fce4d6; border-left: 4px solid var(--accent-color);">
-              <strong>!important:</strong> Ломает каскад, перебивая любые веса (использовать крайне осторожно!).
+            <div class="highlight-box accent" style="background-color: #fce4d6; border-left: 4px solid var(--accent-color); margin: 0; padding: 10px;">
+              <strong>!important:</strong> Ломает каскад, перебивая любые веса. Использовать крайне осторожно!
             </div>
           </div>
         </div>
@@ -191,28 +190,28 @@
     <!-- Слайд 7: Блочная модель -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Блочная модель (Box Model)</h2>
+        <h2>Блочная модель (Box Model) карточки</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 15px;">Каждый HTML-элемент представляется браузером в виде прямоугольного бокса:</p>
         <div class="columns">
           <div class="column">
+            <p style="font-size: 1.1rem; margin-bottom: 10px;">Каждый элемент сайта «Кванта» (например, карточка преподавателя) — это прямоугольник из 4 слоев:</p>
             <ul>
-              <li><strong>Content:</strong> сам текст или изображение (задается через <code>width</code> и <code>height</code>).</li>
-              <li><strong>Padding (внутренний отступ):</strong> пространство между контентом и границей.</li>
-              <li><strong>Border (рамка):</strong> линия вокруг контента и внутренного отступа.</li>
-              <li><strong>Margin (внешний отступ):</strong> пустое пространство снаружи элемента, отделяющее его от соседей.</li>
+              <li><strong>Content (Содержимое):</strong> фото и имя (<code>width</code>, <code>height</code>).</li>
+              <li><strong>Padding (Внутренний отступ):</strong> воздух от текста до границы карточки.</li>
+              <li><strong>Border (Рамка):</strong> линия контура карточки.</li>
+              <li><strong>Margin (Внешний отступ):</strong> расстояние между соседними карточками.</li>
             </ul>
           </div>
           <div class="column" style="display: flex; align-items: center; justify-content: center;">
-            <div style="border: 2px dashed #7f8c8d; padding: 20px; background: #f2f4f4; text-align: center; font-size: 0.9rem; width: 100%;">
-              <div style="color: #7f8c8d; margin-bottom: 5px;">Margin (Внешний)</div>
-              <div style="border: 2px solid var(--primary-color); padding: 15px; background: #d6eaf8;">
-                <div style="color: var(--primary-color); margin-bottom: 5px;">Border (Граница)</div>
-                <div style="border: 2px dashed var(--secondary-color); padding: 15px; background: #d5f5e3;">
-                  <div style="color: var(--secondary-color); margin-bottom: 5px;">Padding (Внутренний)</div>
-                  <div style="background: white; border: 1px solid #ccc; padding: 10px; font-weight: bold;">
-                    Content (Контент)
+            <div style="border: 2px dashed #7f8c8d; padding: 12px; background: #f2f4f4; text-align: center; font-size: 0.85rem; width: 100%;">
+              <div style="color: #7f8c8d; margin-bottom: 3px;">Margin (Внешний отступ)</div>
+              <div style="border: 2px solid var(--primary-color); padding: 10px; background: #d6eaf8;">
+                <div style="color: var(--primary-color); margin-bottom: 3px;">Border (Граница)</div>
+                <div style="border: 2px dashed var(--secondary-color); padding: 10px; background: #d5f5e3;">
+                  <div style="color: var(--secondary-color); margin-bottom: 3px;">Padding (Внутренний отступ)</div>
+                  <div style="background: white; border: 1px solid #ccc; padding: 8px; font-weight: bold;">
+                    Content (Фото + Имя)
                   </div>
                 </div>
               </div>
@@ -222,28 +221,32 @@
       </div>
     </div>
 
-    <!-- Слайд 8: box-sizing: border-box -->
+    <!-- Слайд 8: Свойство box-sizing -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Проблема размеров: Свойство box-sizing</h2>
+        <h2>box-sizing: border-box на практике</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
             <h3 style="color: var(--accent-color); margin-bottom: 10px;"><code>content-box</code> (по умолчанию)</h3>
-            <p>Ширина элемента = <code>width</code> + <code>padding</code> + <code>border</code>.</p>
-            <pre><code>/* Итоговая ширина = 300 + 40 + 4 = 344px! */
-.box {
+            <p style="font-size: 1.1rem;">Размеры рамки и внутренние отступы прибавляются снаружи к ширине.</p>
+            <pre style="margin: 5px 0;"><code>/* Реальная ширина на экране:
+   300px + 20px*2 + 2px*2 = 344px! 
+   Форма вылезет за пределы экрана! */
+.form-input {
   width: 300px;
   padding: 20px;
   border: 2px solid;
 }</code></pre>
           </div>
           <div class="column">
-            <h3 style="color: var(--secondary-color); margin-bottom: 10px;"><code>border-box</code> (современный стандарт)</h3>
-            <p>Ширина элемента = в точности <code>width</code>. Отступы и границы «съедают» место внутри.</p>
-            <pre><code>/* Итоговая ширина = ровно 300px! */
-.box {
+            <h3 style="color: var(--secondary-color); margin-bottom: 10px;"><code>border-box</code> (стандарт верстки)</h3>
+            <p style="font-size: 1.1rem;">Ширина элемента фиксируется. Отступы и границы уходят внутрь.</p>
+            <pre style="margin: 5px 0;"><code>/* Реальная ширина на экране:
+   ровно 300px! 
+   Идеально ложится в сетку. */
+.form-input {
   box-sizing: border-box;
   width: 300px;
   padding: 20px;
@@ -251,8 +254,8 @@
 }</code></pre>
           </div>
         </div>
-        <div class="highlight-box success" style="margin-top: 15px; text-align: center;">
-          Рекомендуется всегда делать сброс в начале CSS: <code>* { box-sizing: border-box; }</code>
+        <div class="highlight-box success" style="margin-top: 15px; padding: 10px; text-align: center; font-size: 1.1rem;">
+          Всегда сбрасываем модель в начале CSS: <code>* { box-sizing: border-box; }</code>
         </div>
       </div>
     </div>
@@ -260,23 +263,23 @@
     <!-- Слайд 9: Введение во Flexbox -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Что такое Flexbox?</h2>
+        <h2>Flexbox: Управляем осями и строками</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 20px;"><strong>CSS Flexible Box Layout (Flexbox)</strong> — это одномерный интерфейс раскладки, разработанный для выравнивания элементов по горизонтали или вертикали.</p>
+        <p style="margin-bottom: 15px; font-size: 1.2rem;"><strong>CSS Flexible Box Layout (Flexbox)</strong> — одномерная раскладка. Позволяет выстроить элементы в ряд или столбец.</p>
         <div class="columns">
           <div class="column">
             <ul>
-              <li><strong>Одномерный:</strong> работает либо с одной строкой, либо с одной колонкой за раз.</li>
-              <li><strong>Главная ось (Main Axis):</strong> ось, вдоль которой располагаются элементы (зависит от направления).</li>
-              <li><strong>Поперечная ось (Cross Axis):</strong> перпендикулярна главной оси.</li>
+              <li><strong>Одномерный:</strong> работает строго по одной оси в один момент времени.</li>
+              <li><strong>Главная ось (Main Axis):</strong> направление движения элементов.</li>
+              <li><strong>Поперечная ось (Cross Axis):</strong> перпендикулярна главной.</li>
             </ul>
           </div>
           <div class="column">
-            <div class="highlight-box" style="height: 100%;">
-              <h3 style="color: var(--primary-color); margin-bottom: 10px;">Как активировать?</h3>
-              <p>Достаточно задать родителю свойство:</p>
-              <pre><code>.container {
+            <div class="highlight-box" style="margin: 0; padding: 15px;">
+              <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.2rem;">Как включить?</h3>
+              <p>Задаем родителю (например, хедеру сайта):</p>
+              <pre style="margin: 5px 0;"><code>.site-header {
   display: flex;
 }</code></pre>
             </div>
@@ -293,61 +296,60 @@
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <h3 style="color: var(--primary-color); margin-bottom: 10px;"><code>flex-direction</code> (Направление оси)</h3>
+            <h3 style="color: var(--primary-color); margin-bottom: 10px; font-size: 1.2rem;"><code>flex-direction</code> (Направление)</h3>
             <ul>
-              <li><code>row</code> (дефолт) — слева направо.</li>
-              <li><code>row-reverse</code> — справа налево.</li>
-              <li><code>column</code> — сверху вниз.</li>
-              <li><code>column-reverse</code> — снизу вверх.</li>
+              <li><code>row</code> (дефолт) — элементы стоят горизонтально (логотип и меню).</li>
+              <li><code>column</code> — элементы стоят вертикально (версия для телефонов).</li>
             </ul>
+            <pre style="margin: 5px 0;"><code>.site-header {
+  flex-direction: column;
+}</code></pre>
           </div>
           <div class="column">
-            <h3 style="color: var(--secondary-color); margin-bottom: 10px;"><code>flex-wrap</code> (Перенос строк)</h3>
+            <h3 style="color: var(--secondary-color); margin-bottom: 10px; font-size: 1.2rem;"><code>flex-wrap</code> (Перенос строк)</h3>
             <ul>
-              <li><code>nowrap</code> (дефолт) — сжимать элементы, чтобы они влезли в одну строчку.</li>
-              <li><code>wrap</code> — переносить невлезающие элементы на новую строку.</li>
+              <li><code>nowrap</code> (дефолт) — сжимать элементы до упора в один ряд.</li>
+              <li><code>wrap</code> — переносить карточки преподавателей на новую строку, если они не помещаются.</li>
             </ul>
-            <pre><code>.container {
+            <pre style="margin: 5px 0;"><code>.teacher-list {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap; /* Сокращенно: flex-flow: row wrap; */
+  flex-wrap: wrap;
 }</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 11: justify-content -->
+    <!-- Слайд 11: justify-content в хедере -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Выравнивание по главной оси: <code>justify-content</code></h2>
+        <h2>Выравнивание по главной оси: justify-content</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 15px;">Определяет, как распределяется свободное пространство вдоль главной оси:</p>
+        <p style="margin-bottom: 10px; font-size: 1.15rem;">Распределяем свободное пространство между логотипом сайта и меню навигации:</p>
         <div class="columns">
           <div class="column">
             <ul>
-              <li><code>flex-start</code> — элементы прижаты к началу строки.</li>
-              <li><code>flex-end</code> — прижаты к концу строки.</li>
-              <li><code>center</code> — по центру.</li>
+              <li><code>flex-start</code> — все элементы прижаты к левому краю.</li>
+              <li><code>flex-end</code> — прижаты к правому краю.</li>
+              <li><code>center</code> — собраны в центре.</li>
             </ul>
           </div>
           <div class="column">
             <ul>
-              <li><code>space-between</code> — крайние элементы прижаты к краям, пространство распределено равномерно между ними.</li>
-              <li><code>space-around</code> — равное пространство вокруг каждого элемента.</li>
-              <li><code>space-evenly</code> — равные отступы между всеми элементами и краями.</li>
+              <li><code>space-between</code> — крайние элементы прижаты к границам (логотип слева, меню справа).</li>
+              <li><code>space-around</code> / <code>space-evenly</code> — равные отступы вокруг элементов.</li>
             </ul>
           </div>
         </div>
-        <pre style="margin-top: 15px;"><code>.container {
+        <pre style="margin-top: 10px;"><code>.site-header {
   display: flex;
-  justify-content: space-between; /* Элементы «разлетятся» по краям */
+  justify-content: space-between; /* Логотип и меню разъедутся по краям */
 }</code></pre>
       </div>
     </div>
 
-    <!-- Слайд 12: align-items и align-content -->
+    <!-- Слайд 12: align-items и align-self -->
     <div class="slide">
       <div class="slide-header">
         <h2>Выравнивание по поперечной оси</h2>
@@ -355,44 +357,49 @@
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <h3 style="color: var(--primary-color); margin-bottom: 10px;"><code>align-items</code> (выравнивание в строке)</h3>
+            <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.2rem;"><code>align-items</code> (для всех элементов)</h3>
+            <p>Выравнивает логотип и ссылки хедера по вертикали:</p>
             <ul>
-              <li><code>stretch</code> (дефолт) — растянуть на всю высоту контейнера.</li>
-              <li><code>flex-start</code> — прижать к началу поперечной оси.</li>
-              <li><code>flex-end</code> — прижать к концу.</li>
-              <li><code>center</code> — выровнять по центру.</li>
-              <li><code>baseline</code> — выровнять по базовой линии текста.</li>
+              <li><code>stretch</code> (дефолт) — растянуть по высоте.</li>
+              <li><code>center</code> — отцентровать по высоте хедера (самое популярное).</li>
+              <li><code>flex-start</code> / <code>flex-end</code> — прижать к верху/низу.</li>
             </ul>
           </div>
           <div class="column">
-            <h3 style="color: var(--secondary-color); margin-bottom: 10px;"><code>align-content</code> (между строками)</h3>
-            <p>Работает только при многострочном режиме (<code>flex-wrap: wrap</code>), распределяет пространство между строками аналогично <code>justify-content</code>.</p>
+            <h3 style="color: var(--secondary-color); margin-bottom: 5px; font-size: 1.2rem;"><code>align-self</code> (индивидуально)</h3>
+            <p>Переопределяет выравнивание для одной конкретной кнопки или иконки:</p>
+            <pre style="margin: 5px 0;"><code>.login-button {
+  align-self: flex-end; /* прижать вниз */
+}</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 13: Свойства элементов во Flexbox -->
+    <!-- Слайд 13: Флекс-свойства элементов (Items) -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Свойства Flex-элементов (Items)</h2>
+        <h2>Управление гибкостью элементов</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 10px;">Задаются дочерним элементам внутри flex-контейнера:</p>
+        <p style="margin-bottom: 10px; font-size: 1.15rem;">Задаем правила поведения для самих карточек внутри flex-контейнера:</p>
         <div class="columns">
           <div class="column">
             <ul>
-              <li><strong><code>flex-grow</code>:</strong> Коэффициент роста (доля от свободного места). По умолчанию <code>0</code>.</li>
-              <li><strong><code>flex-shrink</code>:</strong> Коэффициент сжатия при нехватке места. По умолчанию <code>1</code>.</li>
-              <li><strong><code>flex-basis</code>:</strong> Базовый размер элемента перед распределением места.</li>
+              <li><strong><code>flex-grow</code>:</strong> коэффициент роста. Насколько элемент может вырасти, чтобы занять пустое место (по умолчанию <code>0</code>).</li>
+              <li><strong><code>flex-shrink</code>:</strong> способность сжиматься при нехватке места (по умолчанию <code>1</code>).</li>
+              <li><strong><code>flex-basis</code>:</strong> базовый размер элемента до распределения пространства (например, <code>300px</code>).</li>
             </ul>
           </div>
           <div class="column">
-            <ul>
-              <li><strong><code>flex</code>:</strong> Короткая запись для <code>grow shrink basis</code> (например, <code>flex: 1 1 auto;</code>).</li>
-              <li><strong><code>align-self</code>:</strong> Переопределяет <code>align-items</code> для отдельного элемента.</li>
-              <li><strong><code>order</code>:</strong> Позволяет менять визуальный порядок элементов без изменения HTML.</li>
-            </ul>
+            <div class="highlight-box success" style="margin: 0; padding: 15px;">
+              <h3 style="margin-bottom: 5px; font-size: 1.2rem;">Shorthand flex</h3>
+              <pre style="margin: 5px 0;"><code>/* grow | shrink | basis */
+.teacher-card {
+  flex: 1 1 300px;
+}</code></pre>
+              <p style="font-size: 0.95rem;">Карточка пытается занять 300px, но может расти и сжиматься при необходимости.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -401,22 +408,22 @@
     <!-- Слайд 14: Введение в Grid Layout -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Что такое Grid Layout?</h2>
+        <h2>CSS Grid Layout: Двумерные сетки</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 15px;"><strong>CSS Grid Layout</strong> — это двумерная сетка (колонки + строки). Идеальна для построения макетов крупных страниц.</p>
+        <p style="margin-bottom: 15px; font-size: 1.2rem;"><strong>CSS Grid Layout</strong> управляет сеткой из колонок и строк одновременно. Идеален для сетки Расписания смен и мероприятий.</p>
         <div class="columns">
           <div class="column">
-            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Главное отличие от Flexbox</h3>
+            <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.2rem;">Flexbox vs Grid</h3>
             <ul>
-              <li><strong>Flexbox:</strong> одномерный (верстаем либо строками, либо колонками).</li>
-              <li><strong>Grid:</strong> двумерный (управляем строками и колонками одновременно).</li>
+              <li><strong>Flexbox:</strong> одномерный (верстаем Хедер или Карточки).</li>
+              <li><strong>Grid:</strong> двумерный (верстаем общую сетку страницы, календари и расписания).</li>
             </ul>
           </div>
           <div class="column">
-            <div class="highlight-box success">
-              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Как активировать?</h3>
-              <pre><code>.grid-container {
+            <div class="highlight-box success" style="margin: 0; padding: 15px;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 5px; font-size: 1.2rem;">Включаем сетку:</h3>
+              <pre style="margin: 5px 0;"><code>.schedule-grid {
   display: grid;
 }</code></pre>
             </div>
@@ -428,62 +435,57 @@
     <!-- Слайд 15: Сетка колонок и строк -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Создание сетки: Колонки и строки</h2>
+        <h2>Размечаем сетку: repeat() и fr</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <h3 style="color: var(--primary-color); margin-bottom: 5px;">Размеры колонок и строк:</h3>
+            <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.2rem;">Фракции (fr) и Шаблоны</h3>
             <ul>
               <li><code>grid-template-columns</code> — ширина колонок.</li>
-              <li><code>grid-template-rows</code> — высота строк.</li>
-              <li><code>fr</code> — фракции (свободные части пространства).</li>
+              <li><code>fr</code> (fraction) — доля свободного места.
+                <pre style="margin: 5px 0;"><code>/* 3 колонки: 1-я 200px,
+   остальные делят остаток 1:2 */
+grid-template-columns: 200px 1fr 2fr;</code></pre>
+              </li>
             </ul>
-            <pre><code>/* 3 колонки: 1-я 200px, остальные делят остаток 1:2 */
-.grid {
-  display: grid;
-  grid-template-columns: 200px 1fr 2fr;
-}</code></pre>
           </div>
           <div class="column">
-            <h3 style="color: var(--secondary-color); margin-bottom: 5px;">Полезные функции:</h3>
+            <h3 style="color: var(--secondary-color); margin-bottom: 5px; font-size: 1.2rem;">Полезные функции</h3>
             <ul>
-              <li><code>repeat(кол-во, размер)</code> — автоповтор.</li>
-              <li><code>minmax(min, max)</code> — адаптивный размер.</li>
+              <li><code>repeat(кол-во, размер)</code> — автоповтор колонок.</li>
+              <li><code>minmax(min, max)</code> — гибкий адаптивный размер.</li>
             </ul>
-            <pre><code>/* 3 колонки одинаковой ширины */
-grid-template-columns: repeat(3, 1fr);
-
-/* Адаптивная автосетка */
-grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));</code></pre>
+            <pre style="margin: 5px 0;"><code>/* 3 одинаковые колонки для расписания */
+grid-template-columns: repeat(3, 1fr);</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 16: Отступы и Позиционирование в Grid -->
+    <!-- Слайд 16: Позиционирование в Grid -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Отступы и Позиционирование элементов в Grid</h2>
+        <h2>Управление ячейками и отступами (gap)</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <h3 style="color: var(--primary-color); margin-bottom: 10px;">Промежутки (Gap)</h3>
-            <p>Свойство <code>gap</code> (или <code>row-gap</code> и <code>column-gap</code>) задает расстояние между ячейками без использования margin.</p>
-            <pre><code>.grid {
+            <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.2rem;">Отступы сетки (gap)</h3>
+            <p>Задает расстояние между строками и колонками без margin:</p>
+            <pre style="margin: 5px 0;"><code>.schedule-grid {
   display: grid;
-  gap: 20px; /* Отступы по 20px */
+  gap: 15px; /* отступы 15px */
 }</code></pre>
           </div>
           <div class="column">
-            <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Управление элементом</h3>
-            <p>Вы можете растянуть элемент на несколько ячеек по номерам линий сетки:</p>
-            <pre><code>.grid-item-wide {
-  grid-column: 1 / 3; /* От 1-й линии до 3-й */
+            <h3 style="color: var(--secondary-color); margin-bottom: 5px; font-size: 1.2rem;">Объединение ячеек</h3>
+            <p>Растягиваем важное мероприятие в расписании на две колонки или строки:</p>
+            <pre style="margin: 5px 0;"><code>.main-lecture {
+  grid-column: span 2; /* Занять 2 колонки */
 }
-.grid-item-span {
-  grid-column: span 2; /* Растянуть на 2 ячейки */
+.full-day-event {
+  grid-column: 1 / 4; /* От 1-й линии до 4-й */
 }</code></pre>
           </div>
         </div>
@@ -493,19 +495,19 @@ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));</code></pre>
     <!-- Слайд 17: Адаптивность и Viewport -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Адаптивная верстка и Viewport</h2>
+        <h2>Адаптивность: Подготовка к мобильным</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p style="font-size: 1.25rem; margin-bottom: 15px;">Сайт должен отлично выглядеть как на мониторе 4K, так и на экране смартфона.</p>
-            <p>Для корректного масштабирования на мобильных устройствах <strong>всегда</strong> прописывайте этот тег в <code>&lt;head&gt;</code>:</p>
-            <pre style="font-size: 0.9rem;"><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></pre>
+            <p style="font-size: 1.2rem; margin-bottom: 15px;">Наш сайт «Кванта» должен удобно читаться на телефонах ребят и планшетах преподавателей.</p>
+            <p>Для корректного масштабирования на мобильных устройствах <strong>всегда</strong> пишем этот тег в <code>&lt;head&gt;</code>:</p>
+            <pre style="font-size: 0.95rem; margin: 10px 0;"><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></pre>
           </div>
           <div class="column">
-            <div class="highlight-box warning">
-              <h3 style="color: var(--accent-color); margin-bottom: 10px;">Без этого тега:</h3>
-              <p>Смартфон симулирует экран настольного компьютера (~980px) и сжимает весь сайт до крошечного масштаба, делая его нечитаемым.</p>
+            <div class="highlight-box warning" style="margin: 0; padding: 15px;">
+              <h3 style="color: var(--accent-color); margin-bottom: 5px; font-size: 1.2rem;">Если забыть этот тег:</h3>
+              <p>Мобильный телефон симулирует огромный экран компьютера (~980px) и сожмет весь сайт до микроскопического размера. Читать расписание или заполнить форму будет невозможно.</p>
             </div>
           </div>
         </div>
@@ -515,84 +517,101 @@ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));</code></pre>
     <!-- Слайд 18: Медиа-запросы @media -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Медиа-запросы (@media)</h2>
+        <h2>Медиа-запросы и брейкпоинты</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 10px;">Позволяют применять CSS-правила выборочно, в зависимости от ширины экрана:</p>
+        <p style="margin-bottom: 10px; font-size: 1.15rem;">Позволяют применять правила CSS выборочно, в зависимости от ширины экрана устройства:</p>
         <div class="columns">
           <div class="column">
-            <pre><code>/* Базовые стили (например, для мобильных) */
-.content {
+            <pre style="margin: 5px 0; font-size: 0.9rem;"><code>/* Базовый стиль под мобильные */
+.teacher-list {
   flex-direction: column;
 }
 
-/* Стили для экранов шире 768px */
+/* От планшетов и шире (>= 768px) */
 @media screen and (min-width: 768px) {
-  .content {
+  .teacher-list {
     flex-direction: row;
   }
 }</code></pre>
           </div>
           <div class="column">
-            <div class="highlight-box success">
-              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Mobile First подход</h3>
-              <p>Сначала пишем стили под мобильные (простые, в одну колонку), затем расширяем интерфейс с помощью <code>min-width</code> по мере роста экрана.</p>
+            <div class="highlight-box success" style="margin: 0; padding: 15px;">
+              <h3 style="color: var(--secondary-color); margin-bottom: 5px; font-size: 1.2rem;">Mobile First подход</h3>
+              <p>Сначала пишем простые стили в одну колонку (для телефонов). Затем с помощью медиа-запросов <code>min-width</code> расширяем интерфейс до многоколоночного для компьютеров.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 19: Пример адаптивной верстки -->
+    <!-- Слайд 19: Адаптивность элементов Сайта Кванта -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Пример: Адаптивная карточка товара</h2>
+        <h2>Адаптивный макет Сайта Кванта</h2>
       </div>
       <div class="slide-body">
-        <pre style="font-size: 0.85rem; margin: 5px 0;"><code>/* Карточка товара с использованием flexbox */
-.product-card {
+        <div class="columns">
+          <div class="column">
+            <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.1rem;">Форма регистрации (Mobile vs Desktop)</h3>
+            <pre style="font-size: 0.8rem; margin: 5px 0;"><code>/* Базовый CSS (Телефоны) */
+.reg-form {
+  display: grid;
+  grid-template-columns: 1fr; /* в 1 колонку */
+}
+
+@media screen and (min-width: 768px) {
+  .reg-form {
+    grid-template-columns: 1fr 1fr; /* в 2 колонки */
+  }
+  .submit-btn {
+    grid-column: span 2; /* кнопка на всю ширину */
+  }
+}</code></pre>
+          </div>
+          <div class="column">
+            <h3 style="color: var(--secondary-color); margin-bottom: 5px; font-size: 1.1rem;">Хедер сайта (Mobile vs Desktop)</h3>
+            <pre style="font-size: 0.8rem; margin: 5px 0;"><code>/* Базовый CSS (Телефоны) */
+.site-header {
   display: flex;
-  flex-direction: column; /* По умолчанию в колонку на мобильных */
-  border: 1px solid #ccc;
-  padding: 15px;
+  flex-direction: column;
+  align-items: center;
 }
 
 @media screen and (min-width: 600px) {
-  .product-card {
-    flex-direction: row; /* В ряд на больших экранах */
-    align-items: center;
-  }
-  .product-image {
-    margin-right: 20px;
-    width: 150px;
+  .site-header {
+    flex-direction: row;
+    justify-content: space-between;
   }
 }</code></pre>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Слайд 20: Резюме урока -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Резюме и практические задания</h2>
+        <h2>Резюме и переходим к практике!</h2>
       </div>
       <div class="slide-body">
         <div class="columns" style="text-align: left;">
           <div class="column">
             <ul>
-              <li><strong>Селекторы:</strong> точечно находят нужные элементы.</li>
-              <li><strong>Box Model:</strong> основа позиционирования (используем <code>border-box</code>).</li>
-              <li><strong>Flexbox:</strong> идеален для выравнивания вдоль одной линии.</li>
+              <li><strong>Селекторы:</strong> находят элементы на нашем Квант-сайте.</li>
+              <li><strong>Box Model:</strong> отступы и границы. Помним про <code>border-box</code>.</li>
+              <li><strong>Flexbox:</strong> идеален для хедера и горизонтальных блоков.</li>
             </ul>
           </div>
           <div class="column">
             <ul>
-              <li><strong>Grid Layout:</strong> лучший выбор для двумерных сеток.</li>
-              <li><strong>@media:</strong> делает ваш интерфейс адаптивным.</li>
-              <li><strong>Mobile First:</strong> начинаем верстку с мобильных экранов.</li>
+              <li><strong>Grid Layout:</strong> лучший выбор для сетки расписания и форм.</li>
+              <li><strong>@media:</strong> делает элементы гибкими на любых устройствах.</li>
+              <li><strong>Mobile First:</strong> начинаем верстку с мобильных версий.</li>
             </ul>
           </div>
         </div>
-        <p style="font-size: 1.3rem; margin-top: 20px; font-weight: bold; color: var(--primary-color); text-align: center;">Переходим к упражнениям! Давайте верстать красиво.</p>
+        <p style="font-size: 1.3rem; margin-top: 15px; font-weight: bold; color: var(--primary-color); text-align: center;">Давайте создадим стильный и отзывчивый сайт ЛФМШ «Квант»!</p>
       </div>
     </div>
 

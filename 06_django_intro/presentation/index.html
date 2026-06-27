@@ -3,27 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Урок 6: Django. Структура проекта. MTV — ЛФМШ "Квант"</title>
+  <title>Введение в Django. Создание сайта ЛФМШ «Квант»</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="script.js" defer></script>
 </head>
 <body>
-
   <div class="presentation-container">
-
+    
     <!-- Слайд 1: Титульный -->
     <div class="slide active">
-      <div class="slide-body" style="text-align: center;">
-        <span class="badge badge-primary" style="margin-bottom: 20px; font-size: 1.1rem; padding: 6px 12px;">ЛФМШ "Квант" — 2026</span>
-        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 800; line-height: 1.2;">
-          Введение в Django:<br>Структура проекта и паттерн MTV
-        </h1>
-        <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px;">Курс «Веб-разработка на Python (Django)»</p>
-        <p style="font-size: 1.1rem; font-style: italic;">Урок 6 • 28 июня, 10:00 - 11:20</p>
+      <div class="slide-header">
+        <h2>Введение в Django: Создание сайта ЛФМШ «Квант»</h2>
+      </div>
+      <div class="slide-body">
+        <div style="text-align: center; margin-top: 20px;">
+          <span class="badge badge-primary" style="font-size: 1.2rem; padding: 8px 15px;">Урок 6</span>
+          <h3 style="font-size: 2.5rem; color: var(--text-color); margin: 20px 0;">Структура проекта и паттерн MTV</h3>
+          <p style="font-size: 1.3rem; color: #7f8c8d; margin-bottom: 30px;">
+            Разработка веб-приложения <strong>«Сайт летней школы Квант»</strong> (kvant_site)
+          </p>
+          <div class="highlight-box" style="display: inline-block; padding: 15px 30px; font-weight: 500;">
+            Летняя физико-математическая школа «Квант» • 2026
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Слайд 2: Что такое фреймворк? -->
+    <!-- Слайд 2: Фреймворк vs Библиотека -->
     <div class="slide">
       <div class="slide-header">
         <h2>Библиотека vs Фреймворк</h2>
@@ -31,68 +36,60 @@
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p style="margin-bottom: 15px;"><strong>Библиотека</strong> — это набор инструментов, который <strong>вы</strong> вызываете из своего кода для решения конкретных задач (например, <code>math</code>, <code>requests</code>).</p>
-            <p><strong>Фреймворк</strong> — это каркас приложения. Он задает структуру проекта и сам вызывает ваш код в нужные моменты (<strong>Инверсия управления</strong> / IoC).</p>
+            <h3 style="color: var(--secondary-color); margin-bottom: 15px;">Библиотека (Library)</h3>
+            <p>Вы контролируете процесс. Вы сами вызываете функции библиотеки тогда, когда вам это нужно.</p>
+            <div class="highlight-box success">
+              <strong>Пример:</strong> <code>math.sqrt()</code>, <code>requests.get()</code>. Разработчик — главный.
+            </div>
           </div>
           <div class="column">
-            <div class="highlight-box success">
-              <h3 style="color: var(--secondary-color); margin-bottom: 10px;">Принцип Голливуда</h3>
-              <p style="font-style: italic;">«Не звоните нам, мы сами вам позвоним».</p>
-              <p style="margin-top: 10px; font-size: 0.95rem;">Вы пишете функции и классы, а Django решает, когда их запустить при обработке HTTP-запроса.</p>
+            <h3 style="color: var(--primary-color); margin-bottom: 15px;">Фреймворк (Framework)</h3>
+            <p>Фреймворк контролирует вас. Вы вставляете свой код в готовые "слоты", а фреймворк сам его запускает.</p>
+            <div class="highlight-box">
+              <strong>Инверсия управления (IoC):</strong> Принцип Голливуда — <em>«Не звоните нам, мы сами вам позвоним»</em>.
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 3: Знакомство с Django -->
+    <!-- Слайд 3: Философия Django -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Что такое Django?</h2>
+        <h2>Философия Django: «Батарейки в комплекте»</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 15px;"><strong>Django</strong> — это высокоуровневый веб-фреймворк на Python, который стимулирует быструю разработку и чистый, прагматичный дизайн.</p>
+        <ul>
+          <li><strong>Batteries Included:</strong> В комплекте уже идут СУБД (SQLite), админ-панель, система авторизации, защита от CSRF/SQL-инъекций и генератор HTML-шаблонов.</li>
+          <li><strong>DRY (Don't Repeat Yourself):</strong> Не повторяйся. Фреймворк минимизирует дублирование кода.</li>
+          <li><strong>Создан для скорости:</strong> Родился в редакции новостной газеты в 2003 году для быстрой публикации материалов журналистами. Назван в честь джазового гитариста Джанго Рейнхардта.</li>
+        </ul>
+        <div class="highlight-box success">
+          <strong>Результат для нас:</strong> Мы сосредоточимся на логике сайта «Квант», а не на написании систем авторизации с нуля.
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 4: Архитектура MVC -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Классический паттерн MVC</h2>
+      </div>
+      <div class="slide-body">
         <div class="columns">
           <div class="column">
             <ul>
-              <li><strong>«Батарейки в комплекте» (Batteries included):</strong> Внутри уже есть админка, СУБД-оркестратор (ORM), авторизация, валидация форм и защита от атак.</li>
-              <li><strong>Безопасность по умолчанию:</strong> Django автоматически блокирует CSRF-атаки, SQL-инъекции и XSS.</li>
+              <li><strong>Model (Модель):</strong> Работа с данными и базой данных. Хранит структуру и правила валидации.</li>
+              <li><strong>View (Представление):</strong> Внешний вид приложения. HTML-страница, которую видит пользователь.</li>
+              <li><strong>Controller (Контроллер):</strong> "Мозг". Принимает запросы от пользователя, просит данные у Модели и передает их в Представление.</li>
             </ul>
           </div>
           <div class="column">
-            <div class="highlight-box" style="margin-top: 0;">
-              <h3 style="color: var(--primary-color); margin-bottom: 5px;">История</h3>
-              <p style="font-size: 0.95rem;">Создан в 2003 году разработчиками новостного сайта для быстрой публикации статей. Назван в честь великого джазового гитариста Джанго Рейнхардта.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 4: Архитектурный паттерн MVC -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Классический веб-паттерн MVC</h2>
-      </div>
-      <div class="slide-body">
-        <p style="margin-bottom: 15px;"><strong>MVC (Model-View-Controller)</strong> разделяет приложение на три независимые части:</p>
-        <div class="columns" style="font-size: 1.1rem;">
-          <div class="column">
-            <div style="background: #f1f2f6; padding: 15px; border-radius: 6px; height: 100%;">
-              <h4 style="color: var(--primary-color); margin-bottom: 5px;">1. Model (Модель)</h4>
-              <p>Работа с данными и базой данных. Хранит бизнес-логику и проверяет валидность данных.</p>
-            </div>
-          </div>
-          <div class="column">
-            <div style="background: #f1f2f6; padding: 15px; border-radius: 6px; height: 100%;">
-              <h4 style="color: var(--secondary-color); margin-bottom: 5px;">2. View (Представление)</h4>
-              <p>Отображение данных пользователю. UI/Интерфейс (HTML/CSS страница).</p>
-            </div>
-          </div>
-          <div class="column">
-            <div style="background: #f1f2f6; padding: 15px; border-radius: 6px; height: 100%;">
-              <h4 style="color: var(--accent-color); margin-bottom: 5px;">3. Controller (Контроллер)</h4>
-              <p>Связующее звено. Принимает запросы пользователя, общается с Моделью и передает данные во View.</p>
+            <div class="highlight-box" style="text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+              <h3>Аналогия с рестораном:</h3>
+              <p>🍳 <strong>Кухня и склад</strong> = Модель</p>
+              <p>📋 <strong>Меню и оформленное блюдо</strong> = Представление (View)</p>
+              <p>🤵 <strong>Официант</strong> = Контроллер</p>
             </div>
           </div>
         </div>
@@ -102,369 +99,360 @@
     <!-- Слайд 5: Архитектура MTV в Django -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Паттерн MTV в Django</h2>
+        <h2>Архитектура MTV в Django</h2>
       </div>
       <div class="slide-body">
-        <p style="margin-bottom: 10px;">Django реализует концепцию MVC под названием <strong>MTV (Model-Template-View)</strong>:</p>
-        <div class="columns" style="font-size: 1.1rem;">
-          <div class="column">
-            <ul>
-              <li><strong>M - Model (Модель):</strong> Структура данных. Описывается как класс на Python и автоматически мапится в таблицы базы данных.</li>
-              <li><strong>T - Template (Шаблон):</strong> HTML-код со специальным шаблонизатором Django (DTL). Отвечает за то, <em>как</em> отобразить страницу.</li>
-              <li><strong>V - View (Представление):</strong> Python-функция или класс, который принимает HTTP-запрос, извлекает данные и возвращает HTTP-ответ.</li>
-            </ul>
-          </div>
-          <div class="column">
-            <div class="highlight-box success" style="margin-top: 0;">
-              <h4 style="color: var(--secondary-color); margin-bottom: 8px;">Где же Контроллер?</h4>
-              <p style="font-size: 1rem;">Роль контроллера берет на себя сам <strong>Django Framework</strong> (маршрутизатор URL и ядро фреймворка), который сопоставляет URL-адрес с конкретным View.</p>
-            </div>
-          </div>
+        <p>В Django используется адаптированная версия паттерна MVC, которая называется <strong>MTV (Model-Template-View)</strong>:</p>
+        <ul style="margin-top: 15px;">
+          <li><strong>M — Model (Модель):</strong> База данных и её описание в виде Python-классов (ORM).</li>
+          <li><strong>T — Template (Шаблон):</strong> HTML-страница со специальным синтаксисом (шаблонизатором) для вывода динамических данных. <em>(В MVC это View)</em>.</li>
+          <li><strong>V — View (Представление):</strong> Python-функция или класс, содержащий логику обработки запроса. <em>(В MVC это Controller)</em>.</li>
+        </ul>
+        <div class="highlight-box warning">
+          ⚠️ <strong>Внимание:</strong> Не путайте! <code>View</code> в Django — это <strong>логика (контроллер)</strong>, а не визуальное оформление!
         </div>
       </div>
     </div>
 
-    <!-- Слайд 6: Сравнение MVC и MTV -->
+    <!-- Слайд 6: Соответствие MVC и MTV -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Соответствие паттернов MVC и MTV</h2>
+        <h2>Соответствие паттернов</h2>
       </div>
       <div class="slide-body">
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 1.1rem;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 1.1rem; text-align: left;">
           <thead>
             <tr style="background-color: var(--primary-color); color: #fff;">
-              <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">MVC Паттерн</th>
-              <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">MTV в Django</th>
-              <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Роль в веб-приложении</th>
+              <th style="padding: 12px; border: 1px solid var(--border-color);">Классический MVC</th>
+              <th style="padding: 12px; border: 1px solid var(--border-color);">Django MTV</th>
+              <th style="padding: 12px; border: 1px solid var(--border-color);">Роль в проекте</th>
+              <th style="padding: 12px; border: 1px solid var(--border-color);">Где лежит в коде</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Model</td>
-              <td style="padding: 12px; border: 1px solid #ddd; color: var(--primary-color); font-weight: bold;">Model (models.py)</td>
-              <td style="padding: 12px; border: 1px solid #ddd;">Бизнес-логика, структура таблиц БД, валидация.</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><strong>Model</strong></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><strong>Model</strong></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Описание таблиц БД и данных</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><code>models.py</code></td>
             </tr>
             <tr style="background-color: #f9f9f9;">
-              <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">View</td>
-              <td style="padding: 12px; border: 1px solid #ddd; color: var(--secondary-color); font-weight: bold;">Template (шаблоны)</td>
-              <td style="padding: 12px; border: 1px solid #ddd;">HTML/CSS код с плейсхолдерами для динамических данных.</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><strong>View</strong></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><strong>Template</strong></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">HTML-верстка, стили, разметка</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><code>templates/*.html</code></td>
             </tr>
             <tr>
-              <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Controller</td>
-              <td style="padding: 12px; border: 1px solid #ddd; color: var(--accent-color); font-weight: bold;">View + URLconf (views.py)</td>
-              <td style="padding: 12px; border: 1px solid #ddd;">Обработка запроса, вызов нужных моделей, сборка шаблона.</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><strong>Controller</strong></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><strong>View</strong></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Бизнес-логика, обработка HTTP-запросов</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><code>views.py</code></td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+              <td style="padding: 12px; border: 1px solid var(--border-color);">—</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><strong>URL Conf</strong></td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);">Диспетчер запросов (распределяет по View)</td>
+              <td style="padding: 12px; border: 1px solid var(--border-color);"><code>urls.py</code></td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Слайд 7: Создание первого проекта -->
+    <!-- Слайд 7: Подготовка окружения -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Инициализация проекта Django</h2>
+        <h2>Подготовка окружения</h2>
       </div>
       <div class="slide-body">
-        <p>Для начала работы создаем изолированное окружение и устанавливаем Django:</p>
-        <pre><code># 1. Создаем виртуальное окружение
+        <p>Каждому Python-проекту требуется изолированное виртуальное окружение, чтобы зависимости не конфликтовали.</p>
+        <pre><code># 1. Создаем виртуальное окружение venv
 python -m venv venv
 
-# 2. Активируем окружение (Windows)
+# 2. Активируем его (в PowerShell / терминале Windows)
 venv\Scripts\activate
 
-# 3. Устанавливаем Django
-pip install django
-
-# 4. Создаем структуру проекта в текущей папке
-django-admin startproject mysite .</code></pre>
+# 3. Устанавливаем Django 5+
+pip install django</code></pre>
+        <div class="highlight-box success">
+          💡 После активации окружения в начале строки терминала появится префикс <code>(venv)</code>.
+        </div>
       </div>
     </div>
 
-    <!-- Слайд 8: Важность точки в конце команды -->
+    <!-- Слайд 8: Создание проекта kvant_site -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Зачем нужна точка "." в конце startproject?</h2>
+        <h2>Инициализация проекта kvant_site</h2>
       </div>
       <div class="slide-body">
-        <div class="columns">
+        <p>Создаем наш проект под именем <code>kvant_site</code>. <strong>Обязательно используйте точку на конце!</strong></p>
+        <pre><code>django-admin startproject kvant_site .</code></pre>
+        <div class="columns" style="margin-top: 15px;">
           <div class="column">
-            <h3 style="color: var(--accent-color); margin-bottom: 10px;">БЕЗ точки в конце:</h3>
-            <p style="font-size: 0.95rem; line-height: 1.4;">Команда <code>django-admin startproject mysite</code> создаст внешнюю папку <code>mysite/</code>, а внутри неё еще одну <code>mysite/</code> с настройками. Получится лишний уровень вложенности.</p>
-            <pre style="font-size: 0.85rem; margin: 10px 0;"><code>my_project_dir/
-└── mysite/          # Лишняя папка!
-    ├── manage.py
-    └── mysite/
-        └── settings.py</code></pre>
+            <h4 style="color: var(--secondary-color);">С точкой (ПРАВИЛЬНО):</h4>
+            <p style="font-size: 0.95rem;">Управляющий файл <code>manage.py</code> создается прямо в текущей папке, а конфигурация — внутри <code>kvant_site/</code>. Нет лишней вложенности.</p>
           </div>
           <div class="column">
-            <h3 style="color: var(--secondary-color); margin-bottom: 10px;">С точкой в конце:</h3>
-            <p style="font-size: 0.95rem; line-height: 1.4;">Команда <code>django-admin startproject mysite .</code> развернет файлы настроек во внутреннюю папку, а управляющий скрипт положит сразу в корень текущей рабочей директории.</p>
-            <pre style="font-size: 0.85rem; margin: 10px 0;"><code>my_project_dir/     # Наша рабочая папка
-├── manage.py        # Удобно запускать!
-└── mysite/
-    └── settings.py</code></pre>
+            <h4 style="color: var(--accent-color);">Без точки (НЕПРАВИЛЬНО):</h4>
+            <p style="font-size: 0.95rem;">Django создаст внешнюю папку <code>kvant_site/</code>, а в ней внутреннюю <code>kvant_site/</code> и <code>manage.py</code>. Получится неудобная "матрешка".</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Слайд 9: Структура файлов -->
+    <!-- Слайд 9: Анатомия проекта -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Анатомия созданного проекта</h2>
+        <h2>Анатомия проекта kvant_site</h2>
       </div>
-      <div class="slide-body">
-        <div class="columns" style="font-size: 1.05rem;">
-          <div class="column" style="flex: 0.45;">
-            <pre style="font-size: 0.85rem; margin: 0;"><code>mysite/             # Корень проекта
-├── manage.py       # Управляющий скрипт
-└── mysite/         # Пакет конфигурации
-    ├── __init__.py # Маркер пакета Python
-    ├── settings.py # Файл настроек
-    ├── urls.py     # Главный маршрутизатор
-    ├── asgi.py     # Точка входа для ASGI
-    └── wsgi.py     # Точка входа для WSGI</code></pre>
-          </div>
-          <div class="column" style="flex: 0.55;">
+      <div class="slide-body" style="font-size: 1.15rem;">
+        <ul>
+          <li>📂 <code>kvant_site/</code> — конфигурационный пакет нашего проекта.
             <ul>
-              <li><strong><code>manage.py</code>:</strong> Наш основной интерфейс командной строки для работы с проектом.</li>
-              <li><strong><code>settings.py</code>:</strong> Все настройки проекта (БД, язык, часовой пояс, секретные ключи).</li>
-              <li><strong><code>urls.py</code>:</strong> «Карта» сайта, определяющая, какая функция View обрабатывает конкретный URL.</li>
-              <li><strong><code>wsgi.py</code>/<code>asgi.py</code>:</strong> Конфигурация для веб-серверов.</li>
+              <li>📄 <code>__init__.py</code> — маркер Python-пакета.</li>
+              <li>📄 <code>settings.py</code> — главный конфигурационный файл проекта.</li>
+              <li>📄 <code>urls.py</code> — диспетчер URL-адресов (маршруты сайта).</li>
+              <li>📄 <code>wsgi.py</code> / <code>asgi.py</code> — точки входа для боевых веб-серверов.</li>
             </ul>
-          </div>
-        </div>
+          </li>
+          <li>📄 <code>manage.py</code> — скрипт управления проектом через терминал. <strong>Код в нем не редактируем!</strong></li>
+        </ul>
       </div>
     </div>
 
-    <!-- Слайд 10: Управляющий скрипт manage.py -->
+    <!-- Слайд 10: Проект vs Приложение -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Что такое manage.py?</h2>
-      </div>
-      <div class="slide-body">
-        <p><strong><code>manage.py</code></strong> — это автоматически генерируемый скрипт обёртка, который связывает командную строку с библиотеками Django.</p>
-        <div class="highlight-box warning">
-          <p><strong>Важное правило:</strong> этот файл никогда не редактируется вручную разработчиком! Мы используем его исключительно для запуска команд.</p>
-        </div>
-        <p style="margin-top: 10px;">Основные команды запускаются через терминал:</p>
-        <pre><code>python manage.py &lt;название_команды&gt; [опции]</code></pre>
-      </div>
-    </div>
-
-    <!-- Слайд 11: Запуск сервера runserver -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Запуск сервера разработчика</h2>
+        <h2>Проект vs Приложение (Project vs App)</h2>
       </div>
       <div class="slide-body">
         <div class="columns">
           <div class="column">
-            <p>Django поставляется со встроенным веб-сервером для разработки. Не используйте его на живых сайтах (production)!</p>
-            <pre style="margin-top: 10px;"><code># Запуск на хосте 127.0.0.1 и порту 8000
-python manage.py runserver</code></pre>
-            <p style="font-size: 0.95rem; color: #7f8c8d; margin-top: 10px;">Сервер автоматически перезагружается при изменении файлов (Auto-reload).</p>
+            <div class="highlight-box">
+              <h3>Проект (Project)</h3>
+              <p>Это весь веб-сайт целиком. Он объединяет в себе настройки, базы данных, маршруты и отдельные функциональные модули (приложения).</p>
+            </div>
           </div>
           <div class="column">
-            <div class="highlight-box success" style="margin-top: 0;">
-              <h4 style="margin-bottom: 5px;">Локальный адрес (Loopback)</h4>
-              <p style="font-size: 1rem;">Адрес <strong><code>127.0.0.1</code></strong> (или <strong><code>localhost</code></strong>) означает "себя самого". К этому серверу по умолчанию может подключиться только компьютер, на котором он запущен.</p>
+            <div class="highlight-box success">
+              <h3>Приложение (App)</h3>
+              <p>Это независимый, изолированный модуль внутри проекта, решающий одну конкретную задачу (например, форум, блог, расписание).</p>
             </div>
           </div>
         </div>
+        <p style="margin-top: 15px; font-weight: 500; text-align: center;">
+          🔥 Одно приложение можно легко перенести из одного проекта Django в другой!
+        </p>
       </div>
     </div>
 
-    <!-- Слайд 12: Порты и внешние хосты -->
+    <!-- Слайд 11: Создание приложений для сайта Кванта -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Настройка портов и хостов</h2>
+        <h2>Создание приложений для kvant_site</h2>
       </div>
       <div class="slide-body">
-        <p>Мы можем переопределить адрес и порт запуска:</p>
-        <pre style="font-size: 0.95rem; margin: 10px 0;"><code># Изменение порта на 8080
-python manage.py runserver 8080
+        <p>Для нашего сайта лагеря мы выделим три отдельных модуля:</p>
+        <ol>
+          <li><strong>main:</strong> Главная страница сайта, новости, контакты.</li>
+          <li><strong>users:</strong> Профили школьников и вожатых, авторизация, личные кабинеты.</li>
+          <li><strong>schedule:</strong> Сетка занятий, физико-математические курсы, лекции и события.</li>
+        </ol>
+        <pre style="margin-top: 10px;"><code>python manage.py startapp main
+python manage.py startapp users
+python manage.py startapp schedule</code></pre>
+      </div>
+    </div>
 
-# Изменение IP-адреса и порта (например, 127.0.0.1:9000)
-python manage.py runserver 127.0.0.1:9000
-
-# Запуск на ВСЕХ сетевых интерфейсах (0.0.0.0) на порту 8000
-python manage.py runserver 0.0.0.0:8000</code></pre>
-        <div class="highlight-box warning" style="padding: 10px; margin-top: 5px;">
-          <p style="font-size: 0.95rem;"><strong>Зачем нужен 0.0.0.0?</strong> Это позволяет другим устройствам (телефонам, планшетам) в той же Wi-Fi сети заходить на ваш сайт по IP-адресу вашего компьютера.</p>
+    <!-- Слайд 12: Регистрация приложений -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Регистрация приложений в settings.py</h2>
+      </div>
+      <div class="slide-body">
+        <p>После создания приложений их нужно "прописать" в главном конфигурационном файле <code>kvant_site/settings.py</code>:</p>
+        <pre><code># kvant_site/settings.py
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    ...
+    # Наши приложения для сайта школы Квант:
+    'main.apps.MainConfig',
+    'users.apps.UsersConfig',
+    'schedule.apps.ScheduleConfig',
+]</code></pre>
+        <div class="highlight-box warning">
+          ⚠️ Если забыть прописать приложение в <code>INSTALLED_APPS</code>, Django не увидит его модели базы данных и шаблоны!
         </div>
       </div>
     </div>
 
-    <!-- Слайд 13: settings.py Введение -->
+    <!-- Слайд 13: settings.py: BASE_DIR и SECRET_KEY -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Файл конфигурации settings.py</h2>
+        <h2>settings.py: BASE_DIR и SECRET_KEY</h2>
       </div>
       <div class="slide-body">
-        <p>В этом файле хранятся глобальные настройки проекта в виде стандартных переменных Python.</p>
+        <ul>
+          <li><strong>BASE_DIR:</strong> Корневой путь к проекту. Вычисляется автоматически через библиотеку <code>pathlib</code>:
+            <pre style="margin: 5px 0;"><code>BASE_DIR = Path(__file__).resolve().parent.parent</code></pre>
+            Это позволяет запускать проект на любом компьютере и сервере без жесткой привязки к путям.
+          </li>
+          <li><strong>SECRET_KEY:</strong> Уникальный криптографический ключ. Используется для подписи cookies, сессий и токенов безопасности.
+            <div class="highlight-box warning" style="margin: 5px 0; padding: 10px;">
+              🤫 <strong>Никогда</strong> не коммитьте боевой <code>SECRET_KEY</code> на GitHub! Если он утек, его нужно немедленно сменить.
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Слайд 14: settings.py: DEBUG и ALLOWED_HOSTS -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>settings.py: DEBUG и ALLOWED_HOSTS</h2>
+      </div>
+      <div class="slide-body">
         <div class="columns">
           <div class="column">
+            <h3 style="color: var(--secondary-color);">DEBUG = True</h3>
             <ul>
-              <li><strong>BASE_DIR:</strong> Путь к корневой директории проекта. Вычисляется динамически с помощью библиотеки <code>pathlib</code>.</li>
-              <li><strong>SECRET_KEY:</strong> Уникальный секретный ключ для шифрования (сессий, паролей, токенов). Должен оставаться в секрете!</li>
+              <li><strong>Режим разработки:</strong> При возникновении ошибок Django выводит подробный traceback прямо в браузер.</li>
+              <li>Автоматически включен автоперезапуск сервера (Auto-reload).</li>
             </ul>
           </div>
           <div class="column">
-            <pre style="font-size: 0.85rem; margin: 0;"><code>from pathlib import Path
-
-# Корень проекта
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Секретный ключ (генерируется при старте)
-SECRET_KEY = 'django-insecure-...'</code></pre>
+            <h3 style="color: var(--accent-color);">DEBUG = False</h3>
+            <ul>
+              <li><strong>Боевой режим (Production):</strong> Вместо отладки — лаконичные страницы 404 и 500.</li>
+              <li>Обязательно заполнение <code>ALLOWED_HOSTS</code> (список разрешенных доменов сайта).</li>
+            </ul>
           </div>
+        </div>
+        <div class="highlight-box warning">
+          ❌ Оставлять <code>DEBUG = True</code> на реальном сервере в сети — грубейшая ошибка безопасности!
         </div>
       </div>
     </div>
 
-    <!-- Слайд 14: DEBUG и ALLOWED_HOSTS -->
+    <!-- Слайд 15: Локализация и базы данных -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Режим DEBUG и ALLOWED_HOSTS</h2>
+        <h2>Настройки локализации и СУБД</h2>
       </div>
       <div class="slide-body">
-        <div class="columns" style="font-size: 1.1rem;">
-          <div class="column">
-            <h4 style="color: var(--accent-color); margin-bottom: 5px;">DEBUG = True / False</h4>
-            <ul>
-              <li>При <code>True</code> Django подробно показывает трассировку ошибок прямо в браузере при сбоях (удобно при разработке).</li>
-              <li>На живых серверах это должно быть <strong><code>False</code></strong>, иначе взломщики увидят структуру вашего кода и пароли к БД!</li>
-            </ul>
-          </div>
-          <div class="column">
-            <h4 style="color: var(--secondary-color); margin-bottom: 5px;">ALLOWED_HOSTS</h4>
-            <ul>
-              <li>Список строк, содержащих имена хостов/доменов, которые этот Django-сайт может обслуживать.</li>
-              <li>При <code>DEBUG = True</code> по умолчанию разрешены <code>localhost</code> и <code>127.0.0.1</code>.</li>
-              <li>При <code>DEBUG = False</code> этот список обязательно должен содержать ваш реальный домен.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Слайд 15: INSTALLED_APPS и DATABASES -->
-    <div class="slide">
-      <div class="slide-header">
-        <h2>Приложения и Базы Данных</h2>
-      </div>
-      <div class="slide-body">
-        <div class="columns" style="font-size: 1rem;">
-          <div class="column">
-            <h4 style="color: var(--primary-color);">INSTALLED_APPS</h4>
-            <p style="font-size: 0.9rem; margin-bottom: 5px;">Список всех включенных приложений (модулей) в проекте. Django по умолчанию подключает системные приложения:</p>
-            <pre style="font-size: 0.8rem; padding: 8px; margin: 5px 0;"><code>INSTALLED_APPS = [
-    'django.contrib.admin',      # Админка
-    'django.contrib.auth',       # Авторизация
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',   # Сессии
-    'django.contrib.messages',
-    'django.contrib.staticfiles',# Статика
-]</code></pre>
-          </div>
-          <div class="column">
-            <h4 style="color: var(--secondary-color);">DATABASES</h4>
-            <p style="font-size: 0.9rem; margin-bottom: 5px;">Словарь с настройками подключений к базам данных. По умолчанию настроена легкая встроенная СУБД <strong>SQLite</strong>:</p>
-            <pre style="font-size: 0.8rem; padding: 8px; margin: 5px 0;"><code>DATABASES = {
+        <p>Сделаем так, чтобы админка заговорила по-русски, а время соответствовало часовому поясу лагеря:</p>
+        <pre><code>LANGUAGE_CODE = 'ru-ru'
+TIME_ZONE = 'Asia/Novosibirsk' # Новосибирск/Кольцово
+USE_I18N = True
+USE_TZ = True</code></pre>
+        <p style="margin-top: 10px;"><strong>База данных по умолчанию:</strong> SQLite. Хранится в одном файле <code>db.sqlite3</code> в корне.</p>
+        <pre><code>DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }</code></pre>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- Слайд 16: Языковые настройки и шаблоны -->
+    <!-- Слайд 16: Запуск сервера разработки -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Локализация и шаблонизатор</h2>
+        <h2>Запуск локального сервера</h2>
       </div>
       <div class="slide-body">
-        <div class="columns" style="font-size: 1rem;">
-          <div class="column">
-            <h4 style="color: var(--primary-color);">Язык и часовой пояс</h4>
-            <pre style="font-size: 0.85rem; padding: 10px; margin: 10px 0;"><code># Код языка интерфейса админки
-LANGUAGE_CODE = 'ru-ru'
-
-# Временная зона для хранения дат
-TIME_ZONE = 'Europe/Moscow'
-
-# Использовать интернационализацию
-USE_I18N = True
-
-# Использовать временные зоны
-USE_TZ = True</code></pre>
-          </div>
-          <div class="column">
-            <h4 style="color: var(--secondary-color);">TEMPLATES</h4>
-            <p style="font-size: 0.95rem;">Список настроек для рендеринга шаблонов. Указывает, где Django искать HTML файлы и какой шаблонизатор использовать (по умолчанию DTL — Django Templates Language).</p>
-          </div>
+        <p>Запуск осуществляется через терминал с помощью <code>manage.py</code>:</p>
+        <pre><code>python manage.py runserver</code></pre>
+        <ul>
+          <li><strong>Хост по умолчанию:</strong> <code>http://127.0.0.1:8000/</code> (или <code>localhost:8000</code>). Это адрес вашего локального ПК.</li>
+          <li><strong>Auto-reload:</strong> Сервер отслеживает изменения в файлах <code>.py</code> и автоматически перезапускается при их сохранении.</li>
+        </ul>
+        <div class="highlight-box success">
+          🎉 При успешном запуске перейдите по ссылке в браузере — вы увидите стартовую ракету Django!
         </div>
       </div>
     </div>
 
-    <!-- Слайд 17: Важные команды manage.py -->
+    <!-- Слайд 17: Локальная сеть и порты -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Другие полезные команды manage.py</h2>
+        <h2>Настройка портов и хостов сервера</h2>
+      </div>
+      <div class="slide-body">
+        <p>Иногда порт 8000 занят, либо мы хотим протестировать сайт лагеря с телефона или компьютера соседа по комнате:</p>
+        <ul>
+          <li><strong>Запуск на другом порту:</strong>
+            <pre style="margin: 5px 0;"><code>python manage.py runserver 8080</code></pre>
+          </li>
+          <li><strong>Запуск для всей локальной сети:</strong>
+            <pre style="margin: 5px 0;"><code>python manage.py runserver 0.0.0.0:8000</code></pre>
+            Смысл <code>0.0.0.0</code> — принимать подключения на любой сетевой интерфейс ПК (Wi-Fi, Ethernet).
+          </li>
+        </ul>
+        <div class="highlight-box warning">
+          🔑 Чтобы сайт открылся с телефона, впишите ваш локальный IP-адрес ПК в <code>ALLOWED_HOSTS</code> в <code>settings.py</code>!
+        </div>
+      </div>
+    </div>
+
+    <!-- Слайд 18: Полезные команды manage.py -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Полезные команды manage.py</h2>
       </div>
       <div class="slide-body">
         <ul>
-          <li><strong><code>python manage.py check</code></strong> — Проверяет проект на наличие распространенных ошибок конфигурации, не запуская сервер.</li>
-          <li><strong><code>python manage.py migrate</code></strong> — Применяет миграции к базе данных (создает таблицы для встроенных приложений Django). Запустите её при первом старте проекта, чтобы убрать предупреждение в терминале.</li>
-          <li><strong><code>python manage.py shell</code></strong> — Запускает интерактивную консоль Python, в которой уже настроено окружение Django. Позволяет быстро тестировать код и запросы к БД.</li>
+          <li><strong>check:</strong> Статическая проверка конфигурации проекта на опечатки и ошибки.
+            <pre style="margin: 5px 0;"><code>python manage.py check</code></pre>
+          </li>
+          <li><strong>migrate:</strong> Применяет начальные миграции базы данных (создает таблицы для админки и пользователей).
+            <pre style="margin: 5px 0;"><code>python manage.py migrate</code></pre>
+          </li>
+          <li><strong>shell:</strong> Интерактивная консоль Python, предварительно загрузившая все настройки Django.
+            <pre style="margin: 5px 0;"><code>python manage.py shell</code></pre>
+          </li>
         </ul>
       </div>
     </div>
 
-    <!-- Слайд 18: Резюме -->
+    <!-- Слайд 19: Резюме и практика -->
     <div class="slide">
       <div class="slide-header">
-        <h2>Резюме урока</h2>
+        <h2>Резюме и практическая работа</h2>
       </div>
       <div class="slide-body">
-        <div class="columns" style="font-size: 1.1rem; text-align: left;">
-          <div class="column">
-            <ul>
-              <li><strong>Django</strong> — мощный MVC-фреймворк, реализующий архитектуру <strong>MTV</strong>.</li>
-              <li><strong>М</strong>одель — БД, <strong>Т</strong>емплейт — HTML, <strong>В</strong>ью — Python-логика.</li>
-              <li>Проект создается через <code>django-admin startproject &lt;имя&gt; .</code> (точка важна!).</li>
-            </ul>
-          </div>
-          <div class="column">
-            <ul>
-              <li><code>manage.py</code> — пульт управления проектом, мы не меняем его код.</li>
-              <li><code>settings.py</code> — главный конфиг; следите за <code>DEBUG</code> и <code>ALLOWED_HOSTS</code>!</li>
-              <li>Для локальной сети запускаем сервер как <code>runserver 0.0.0.0:8000</code>.</li>
-            </ul>
-          </div>
+        <ul>
+          <li>Мы познакомились с паттерном MTV.</li>
+          <li>Инициализировали проект <code>kvant_site</code> с чистой структурой.</li>
+          <li>Создали приложения <code>main</code>, <code>users</code>, <code>schedule</code>.</li>
+          <li>Изучили ключевые настройки безопасности и локализации в <code>settings.py</code>.</li>
+          <li>Запустили сервер разработки и научились открывать его в локальной сети лагеря.</li>
+        </ul>
+        <div class="highlight-box success" style="margin-top: 15px; text-align: center; font-weight: 500;">
+          🚀 Время применить знания! Переходим к выполнению практических упражнений.
         </div>
-        <p style="font-size: 1.3rem; margin-top: 20px; font-weight: bold; color: var(--primary-color); text-align: center;">Переходим к практике и разбору структуры проекта!</p>
       </div>
     </div>
 
     <!-- Кнопки управления -->
     <div class="controls">
-      <button class="control-btn" id="prev-btn">&larr; Назад</button>
+      <button class="control-btn" id="prev-btn">◀ Назад</button>
       <button class="control-btn" id="fullscreen-btn">Экран [F]</button>
-      <button class="control-btn" id="next-btn">Вперед &rarr;</button>
+      <button class="control-btn" id="next-btn">Вперед ▶</button>
     </div>
 
-    <!-- Счетчик и прогресс-бар -->
-    <div class="slide-counter" id="slide-counter">1 / 18</div>
+    <!-- Номер слайда -->
+    <div class="slide-counter" id="slide-counter">1 / 19</div>
+
+    <!-- Прогресс-бар -->
     <div class="progress-container">
       <div class="progress-bar" id="progress-bar"></div>
     </div>
 
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>

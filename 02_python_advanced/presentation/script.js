@@ -1,5 +1,4 @@
-// JS для презентации - ЛФМШ "Квант"
-
+// JS для презентации - ЛФМШ "Квант" - Урок 2
 document.addEventListener('DOMContentLoaded', () => {
   const slides = document.querySelectorAll('.slide');
   const nextBtn = document.getElementById('next-btn');
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Обновление счетчика
+    // Обновление счетчика слайдов
     if (counter) {
       counter.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
     }
@@ -48,19 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Ошибка перевода в полноэкранный режим: ${err.message}`);
+        console.error(`Ошибка при переходе в полноэкранный режим: ${err.message}`);
       });
     } else {
       document.exitFullscreen();
     }
   }
 
-  // Обработчики кнопок
+  // Обработчики событий для кнопок управления
   if (nextBtn) nextBtn.addEventListener('click', nextSlide);
   if (prevBtn) prevBtn.addEventListener('click', prevSlide);
   if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
 
-  // Клавиатурная навигация
+  // Обработчики клавиш клавиатуры
   document.addEventListener('keydown', (e) => {
     switch(e.key) {
       case 'ArrowRight':
@@ -76,11 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       case 'f':
       case 'F':
+        e.preventDefault();
         toggleFullscreen();
         break;
     }
   });
 
-  // Инициализация
+  // Первичная инициализация слайдов
   updateSlides();
 });

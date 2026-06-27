@@ -42,10 +42,10 @@ body {
 /* Слайд */
 .slide {
   position: absolute;
-  width: 90%;
-  max-width: 1200px;
-  height: 80%;
-  max-height: 675px; /* 16:9 соотношение */
+  width: 95%;
+  max-width: 1280px;
+  height: 85%;
+  max-height: 720px; /* 16:9 соотношение */
   background: var(--slide-bg);
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -55,7 +55,7 @@ body {
   justify-content: flex-start;
   opacity: 0;
   transform: scale(0.95);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
   pointer-events: none;
   border: 1px solid var(--border-color);
 }
@@ -69,7 +69,7 @@ body {
 
 /* Сетка контента */
 .slide-header {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   border-bottom: 3px solid var(--primary-color);
   padding-bottom: 10px;
 }
@@ -86,7 +86,11 @@ body {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Изменено с center для предотвращения обрезки при скролле */
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 8px;
+  margin-top: 10px;
 }
 
 /* Разметка колонок */
@@ -121,8 +125,10 @@ pre {
   padding: 15px;
   border-radius: 6px;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 260px; /* Ограничение высоты кода для предотвращения выхода за рамки слайда */
   font-family: 'Consolas', 'Courier New', Courier, monospace;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.4;
   margin: 15px 0;
   text-align: left;
@@ -134,7 +140,7 @@ code {
   color: var(--code-text);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 0.95em;
+  font-size: 0.9em;
 }
 
 pre code {
@@ -247,4 +253,20 @@ pre code {
   .slide-body {
     font-size: 1.1rem;
   }
+}
+
+/* Стилизация полосы прокрутки для слайдов и кода */
+.slide-body::-webkit-scrollbar, pre::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.slide-body::-webkit-scrollbar-track, pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+.slide-body::-webkit-scrollbar-thumb, pre::-webkit-scrollbar-thumb {
+  background-color: rgba(41, 128, 185, 0.2);
+  border-radius: 3px;
+}
+.slide-body::-webkit-scrollbar-thumb:hover, pre::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(41, 128, 185, 0.4);
 }
